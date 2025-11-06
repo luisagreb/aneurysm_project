@@ -1,0 +1,16 @@
+# Ignore large microscopy and binary data
+*.oir
+*.tif
+*.nii
+*.nrrd
+*.zip
+
+# Ignore raw/converted data folders
+data/raw/
+data/converted/
+data/annotations/
+
+# System and cache files
+.DS_Store
+__pycache__/
+*.log
