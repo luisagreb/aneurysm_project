@@ -1,0 +1,20 @@
+# Big microscopy + binaries
+*.oir
+*.tif
+*.nii
+*.nii.gz
+*.nrrd
+*.zip
+
+# Data folders (keep structure local, not in Git)
+data/raw/
+data/converted/
+data/segmented_training/
+
+# OS / cache
+.DS_Store
+__pycache__/
+*.log
+venv/
+aneurysm_project/__pycache__/
+*.pyc
