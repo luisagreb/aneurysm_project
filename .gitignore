@@ -1,9 +1,6 @@
-# data (never in Git)
-data/raw/
-data/converted/
-data/segmented_training/
 
-# big microscopy formats
+# data and large files
+data/
 *.nii
 *.nii.gz
 *.tif
@@ -12,9 +9,9 @@ data/segmented_training/
 *.oir
 *.zip
 
-# misc
-.DS_Store
+# env and cache
 venv/
 .venv/
 __pycache__/
-*.log
+.DS_Store
+
