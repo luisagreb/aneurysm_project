@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 from skimage.exposure import rescale_intensity
 from skimage.filters import threshold_otsu, threshold_yen, threshold_triangle, gaussian
-from skimage.filters.thresholding import sauvola
+from skimage.filters import threshold_sauvola as sauvola
 from skimage.morphology import remove_small_objects, remove_small_holes, ball, binary_opening, binary_closing
 from skimage.measure import label
 from skimage.util import img_as_ubyte
