@@ -1,0 +1,9 @@
+numpy
+nibabel
+scikit-image
+tifffile
+matplotlib
+python-dotenv
+# optional viewers/export
+pynrrd
+trimesh
