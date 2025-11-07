@@ -1,284 +1,100 @@
-#!/usr/bin/env python3
-"""
-Batch nucleus segmentation from DAPI (channel 1) NIfTI z-stacks.
-
-Inputs
-------
-- Root data folder with subject/cell subfolders that contain channel files.
-  We look for ch1 patterns like: "*_ch1.nii.gz" or "*_ch1.nii", or
-  a single "*allchannels.nii.gz" and we take channel index 0.
-
-Outputs
--------
-For each cell, in a mirrored folder under OUTPUT_ROOT:
-- nucleus_mask.nii.gz      (uint8, {0,1})
-- nucleus_mask.tif         (uint8 stack)
-- nucleus_mask.nrrd        (optional, requires 'pynrrd')
-- nucleus_surface.stl      (optional mesh; requires 'trimesh' or 'numpy-stl')
-
-Viewers
--------
-- 3D Slicer: open the .nii.gz or .nrrd, enable Volume Rendering or Segment Editor
-- Fiji: open .tif stack; or .nii.gz with NIfTI plugin
-- ParaView: open .nii.gz (ITK readers) or .stl mesh
-
-Dependencies
-------------
-pip install numpy nibabel scikit-image tifffile
-# optional:
-pip install pynrrd trimesh  # (or: pip install numpy-stl)
-"""
-
-from __future__ import annotations
-import os
+# debug_nuclei_one.py
 from pathlib import Path
-import re
 import numpy as np
 import nibabel as nib
-from tifffile import imsave
-from skimage.filters import threshold_otsu, gaussian
-from skimage.morphology import remove_small_objects, remove_small_holes, ball
-from skimage.measure import label, marching_cubes
-from skimage.segmentation import clear_border
+from skimage.exposure import rescale_intensity
+from skimage.filters import threshold_otsu, threshold_yen, threshold_triangle, gaussian
+from skimage.filters.thresholding import sauvola
+from skimage.morphology import remove_small_objects, remove_small_holes, ball, binary_opening, binary_closing
+from skimage.measure import label
+from skimage.util import img_as_ubyte
+import imageio.v2 as iio
 
+# --- EDIT THIS PATH to one ch1 file (or to allchannels) ---
+p = Path("data/segmented_training/01Asc-180/+coll/01ASC-0180 +coll 60x DMSO48h-Zstack cell1/01ASC-0180 +coll 60x DMSO48h-Zstack cell1_ch1.nii.gz")
+ALLCHANNELS = False         # set True if p is the *allchannels* file
+CH_INDEX = 0                # if ALLCHANNELS=True, which channel index is DAPI?
+
+# --- load ---
+img = nib.load(str(p))
+arr = img.get_fdata().astype(np.float32)
+
+print("Loaded shape:", arr.shape, "dtype:", arr.dtype, "min/max:", float(arr.min()), float(arr.max()))
+if arr.ndim == 4:
+    if not ALLCHANNELS:
+        raise RuntimeError("This file has multiple channels; set ALLCHANNELS=True and CH_INDEX correctly.")
+    arr = arr[..., CH_INDEX]
+    print("Selected channel", CH_INDEX, "->", arr.shape)
+
+# --- put to (Z,Y,X) if needed (heuristic) ---
+# For many microscopy NIfTIs, (Z,Y,X) or (X,Y,Z) are common. Make sure Z is the first axis.
+if arr.ndim != 3:
+    raise RuntimeError("Expected 3D after channel selection.")
+# If last axis is much smaller than the others, assume data=(Y,X,Z) -> move Z to front
+if arr.shape[2] < min(arr.shape[0], arr.shape[1]):
+    arr = np.moveaxis(arr, 2, 0)
+    print("Reordered: moved last axis to Z ->", arr.shape)
+# Else if looks like (X,Y,Z), swap to (Z,Y,X)
+elif arr.shape[0] > arr.shape[2] and arr.shape[1] > arr.shape[2]:
+    arr = np.moveaxis(arr, 2, 0)   # (X,Y,Z)->(Z,X,Y)
+    arr = np.swapaxes(arr, 1, 2)   # -> (Z,Y,X)
+    print("Reordered from (X,Y,Z) to (Z,Y,X) ->", arr.shape)
+else:
+    print("Assuming already (Z,Y,X) ->", arr.shape)
+
+# --- robust intensity normalization ---
+lo, hi = np.percentile(arr, (1, 99.9))
+if hi <= lo:  # pathological cases
+    hi = arr.max() if arr.max() > 0 else 1.0
+    lo = arr.min()
+arr_n = rescale_intensity(arr, in_range=(lo, hi), out_range=(0.0, 1.0))
+print(f"Rescale in_range=({lo:.4g}, {hi:.4g}) -> out [0,1]")
+
+# light denoise
+arr_s = gaussian(arr_n, sigma=1.0, preserve_range=True)
+
+# --- threshold (robust combo) ---
+# 1) global fallbacks
 try:
-    import nrrd  # type: ignore
-    HAS_NRRD = True
+    t_otsu = threshold_otsu(arr_s)
 except Exception:
-    HAS_NRRD = False
+    t_otsu = 0.0
+t_yen  = threshold_yen(arr_s)
+t_tri  = threshold_triangle(arr_s)
 
-try:
-    import trimesh  # type: ignore
-    HAS_TRIMESH = True
-except Exception:
-    HAS_TRIMESH = False
+# 2) per-slice Sauvola (adaptive) and combine
+Z = arr_s.shape[0]
+mask_slices = np.zeros_like(arr_s, dtype=bool)
+for z in range(Z):
+    sl = arr_s[z]
+    # window ~ 31 px is a good start; adjust if your XY pixel size is very fine
+    thr = sauvola(sl, window_size=31, k=0.2)
+    mask_slices[z] = sl > thr
 
+# 3) combine with a conservative global threshold (pick the mildest of the three)
+t_global = min(t for t in [t_otsu, t_yen, t_tri] if np.isfinite(t))
+mask_global = arr_s > t_global * 0.9  # slightly relaxed
 
-# ---------- CONFIG ----------
+mask = mask_slices | mask_global
 
-# Change this to your real root (you gave an example earlier):
-DATA_ROOT = Path("/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/segmented_training")
+# --- 3D clean (be gentle first) ---
+mask = binary_opening(mask, ball(1))
+mask = binary_closing(mask, ball(1))
+mask = remove_small_holes(mask, area_threshold=500)
+mask = remove_small_objects(mask, min_size=800)
 
-# Where to write results (mirrors the input tree):
-OUTPUT_ROOT = Path("/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/converted")
+# Do NOT drop border or keep_largest yet; we want to *see* what's there first.
+lab = label(mask)
+print("Mask voxels:", int(mask.sum()), "components:", lab.max())
 
-# Patterns we consider as channel-1 files
-CH1_PATTERNS = [r"_ch1\.nii(\.gz)?$", r"_ch01\.nii(\.gz)?$", r"ch1\.nii(\.gz)?$"]
+# --- quick visual QC PNGs (mid-Z) ---
+mid = Z // 2
+overlay = np.clip(arr_n[mid]*0.7 + mask[mid].astype(np.float32)*0.3, 0, 1)
+iio.imwrite("qc_mid_raw.png", img_as_ubyte(arr_n[mid]))
+iio.imwrite("qc_mid_mask.png", (mask[mid]*255).astype(np.uint8))
+iio.imwrite("qc_mid_overlay.png", img_as_ubyte(overlay))
 
-# If only an "allchannels" file exists, use this index for DAPI (0-based)
-ALLCHANNELS_NAME = "allchannels"
-ALLCHANNELS_CH1_INDEX = 0
-
-# Segmentation params (tweak here if needed)
-SMALL_OBJECT_VOXELS = 500    # remove specks smaller than this (3D voxels)
-SMALL_HOLE_VOXELS  = 2000    # fill holes smaller than this (3D voxels)
-GAUSS_SIGMA        = 1.0     # light denoise; set 0 to skip
-KEEP_LARGEST       = True    # nuclei per cell: keep largest CC
-CLEAR_BORDER       = True    # drop components touching volume border
-
-
-# ---------- HELPERS ----------
-
-def find_ch1_file(folder: Path) -> tuple[Path, int] | None:
-    """
-    Return (path, channel_index) to load.
-    If ch1 exists directly, channel_index is -1 (use the file as-is).
-    Else if allchannels exists, return it with channel_index = ALLCHANNELS_CH1_INDEX.
-    """
-    # direct channel-1
-    for f in folder.glob("*.nii*"):
-        name = f.name.lower()
-        if any(re.search(p, name) for p in CH1_PATTERNS):
-            return (f, -1)
-
-    # allchannels
-    for f in folder.glob("*.nii*"):
-        name = f.name.lower()
-        if ALLCHANNELS_NAME in name:
-            return (f, ALLCHANNELS_CH1_INDEX)
-
-    return None
-
-
-def load_nifti(path: Path) -> tuple[np.ndarray, nib.Nifti1Image]:
-    img = nib.load(str(path))
-    arr = img.get_fdata(dtype=np.float32)  # float32 for filtering
-    return arr, img
-
-
-def slice_or_volume_threshold(volume: np.ndarray) -> np.ndarray:
-    """
-    Robust Otsu: per-slice along Z to accommodate intensity drift.
-    Return a boolean mask.
-    volume: (Z, Y, X) or (Y, X, Z)? We’ll normalize to (Z, Y, X) below.
-    """
-    if volume.ndim != 3:
-        raise ValueError("Expected 3D volume for segmentation.")
-    Z, Y, X = volume.shape
-    mask = np.zeros_like(volume, dtype=bool)
-    for z in range(Z):
-        plane = volume[z]
-        # Handle empty planes
-        if np.allclose(plane, 0):
-            continue
-        t = threshold_otsu(plane)
-        mask[z] = plane > t
-    return mask
-
-
-def postprocess_3d(mask: np.ndarray) -> np.ndarray:
-    """3D morphological cleanup."""
-    if CLEAR_BORDER:
-        mask = clear_border(mask)
-
-    if SMALL_OBJECT_VOXELS > 0:
-        mask = remove_small_objects(mask, SMALL_OBJECT_VOXELS)
-
-    if SMALL_HOLE_VOXELS > 0:
-        mask = remove_small_holes(mask, SMALL_HOLE_VOXELS)
-
-    if KEEP_LARGEST:
-        lab = label(mask, connectivity=1)
-        if lab.max() > 0:
-            # keep largest non-zero label
-            counts = np.bincount(lab.ravel())
-            counts[0] = 0
-            k = counts.argmax()
-            mask = (lab == k)
-
-    return mask
-
-
-def ensure_zyx(data: np.ndarray) -> tuple[np.ndarray, str]:
-    """
-    Best effort to reorder axes to (Z, Y, X).
-    For NIfTI, nibabel usually gives (X, Y, Z) — we'll detect the smallest dim as Z if unclear.
-    We return (data_zyx, note).
-    """
-    note = ""
-    if data.ndim == 3:
-        # Heuristic: Z is often the smallest dimension for microscopy stacks
-        order = np.argsort(data.shape)  # ascending
-        # Put the smallest last as Z? We'll try common cases explicitly:
-        # Common NIfTI orientation from microscopy: (Z, Y, X) or (X, Y, Z).
-        # If last axis is much smaller -> assume Z last already.
-        if data.shape[2] < min(data.shape[0], data.shape[1]):
-            # probably (Y, X, Z) -> move last to first: (Z, Y, X)
-            data = np.moveaxis(data, 2, 0)
-            note = "Reordered axes to (Z,Y,X) from (*,*,Z)."
-        elif data.shape[0] < min(data.shape[1], data.shape[2]):
-            # probably (Z, Y, X) already
-            note = "Assumed (Z,Y,X)."
-        else:
-            # probably (X, Y, Z) -> swap to (Z, Y, X)
-            data = np.moveaxis(data, 2, 0)  # (X,Y,Z) -> (X,Y) is unchanged; Z goes to front -> (Z,X,Y)
-            data = np.swapaxes(data, 1, 2)  # (Z,X,Y) -> (Z,Y,X)
-            note = "Reordered axes to (Z,Y,X) from (X,Y,Z)."
-        return data, note
-
-    elif data.ndim == 4:
-        # assume last dim is channels -> handled before calling this
-        raise ValueError("Call ensure_zyx on 3D arrays only (channels must be extracted first).")
-    else:
-        raise ValueError(f"Unexpected ndim={data.ndim}")
-
-
-def save_mask_variants(mask_zyx: np.ndarray, ref_img: nib.Nifti1Image, out_dir: Path):
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # Determine voxel spacing from reference header if present
-    zooms = ref_img.header.get_zooms()
-    # nibabel returns up to 4 dims; we care about the first 3
-    spacing = tuple(float(z) for z in zooms[:3]) if len(zooms) >= 3 else (1.0, 1.0, 1.0)
-
-    # NIfTI (Z,Y,X) -> we’ll store as (Y,X,Z) data order inside NIfTI by swapping axes back to RAS-like
-    # But the safest is to keep affine and use same orientation as ref
-    # Build a NIfTI with the same affine as reference
-    mask_uint8 = (mask_zyx.astype(np.uint8))
-    mask_nifti = nib.Nifti1Image(mask_uint8, affine=ref_img.affine, header=ref_img.header.copy())
-    mask_nifti.set_data_dtype(np.uint8)
-    nib.save(mask_nifti, str(out_dir / "nucleus_mask.nii.gz"))
-
-    # TIFF stack (Fiji friendly) — expect (Z, Y, X)
-    imsave(str(out_dir / "nucleus_mask.tif"), mask_zyx.astype(np.uint8), imagej=True)
-
-    # Optional NRRD (3D Slicer native)
-    if HAS_NRRD:
-        hdr = {
-            'space': 'left-posterior-superior',
-            'kinds': ['domain', 'domain', 'domain'],
-            'space directions': np.diag(spacing + (0.0,))[:3, :3],
-            'space origin': (0.0, 0.0, 0.0),
-        }
-        nrrd.write(str(out_dir / "nucleus_mask.nrrd"), mask_zyx.astype(np.uint8), header=hdr)
-
-
-def maybe_export_surface(mask_zyx: np.ndarray, ref_img: nib.Nifti1Image, out_dir: Path, level: float = 0.5):
-    if not HAS_TRIMESH:
-        return
-    out_path = out_dir / "nucleus_surface.stl"
-    # marching cubes expects (Z,Y,X) with spacing to scale vertices
-    zooms = ref_img.header.get_zooms()
-    spacing = tuple(float(z) for z in zooms[:3]) if len(zooms) >= 3 else (1.0, 1.0, 1.0)
-    verts, faces, normals, _ = marching_cubes(mask_zyx, level=level, spacing=spacing)
-    mesh = trimesh.Trimesh(vertices=verts, faces=faces, vertex_normals=normals, process=False)
-    mesh.export(out_path)
-
-
-# ---------- MAIN BATCH ----------
-
-def process_cell_folder(cell_dir: Path):
-    found = find_ch1_file(cell_dir)
-    if not found:
-        return False
-
-    in_path, ch_idx = found
-    arr, ref = load_nifti(in_path)
-
-    # select channel if needed
-    if arr.ndim == 4 and ch_idx >= 0:
-        # assume last dim is channels
-        arr = arr[..., ch_idx]
-
-    # reorder to (Z,Y,X)
-    vol, _note = ensure_zyx(arr)
-
-    # denoise (light)
-    if GAUSS_SIGMA and GAUSS_SIGMA > 0:
-        vol = gaussian(vol, sigma=GAUSS_SIGMA, preserve_range=True)
-
-    # threshold per Z-slice, then 3D cleanup
-    mask = slice_or_volume_threshold(vol)
-    mask = postprocess_3d(mask)
-
-    # where to save (mirror tree from DATA_ROOT into OUTPUT_ROOT)
-    rel = cell_dir.relative_to(DATA_ROOT)
-    out_dir = OUTPUT_ROOT / rel
-    save_mask_variants(mask, ref, out_dir)
-
-    # optional mesh
-    maybe_export_surface(mask, ref, out_dir)
-    return True
-
-
-def main():
-    n_total = 0
-    n_done = 0
-    for root, dirs, files in os.walk(DATA_ROOT):
-        root_p = Path(root)
-        # “cell folder” heuristic: it contains any .nii*
-        if any(f.lower().endswith((".nii", ".nii.gz")) for f in files):
-            n_total += 1
-            ok = process_cell_folder(root_p)
-            if ok:
-                print(f"[OK] {root_p}")
-                n_done += 1
-            else:
-                print(f"[SKIP] No ch1/allchannels in {root_p}")
-
-    print(f"\nDone: {n_done}/{n_total} cell folders processed.")
-    print(f"Outputs in: {OUTPUT_ROOT}")
-
-
-if __name__ == "__main__":
-    main()
+# --- save NIfTI mask to compare in Slicer ---
+mask_uint8 = mask.astype(np.uint8)
+nib.save(nib.Nifti1Image(mask_uint8, img.affine, img.header), "nucleus_mask_debug.nii.gz")
+print("Wrote: nucleus_mask_debug.nii.gz + qc_mid_*.png")
