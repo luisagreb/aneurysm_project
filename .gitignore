@@ -1,16 +1,20 @@
-# Ignore large microscopy and binary data
-*.oir
-*.tif
-*.nii
-*.nrrd
-*.zip
-
-# Ignore raw/converted data folders
+# data (never in Git)
 data/raw/
 data/converted/
-data/annotations/
+data/segmented_training/
 
-# System and cache files
+# big microscopy formats
+*.nii
+*.nii.gz
+*.tif
+*.tiff
+*.nrrd
+*.oir
+*.zip
+
+# misc
 .DS_Store
+venv/
+.venv/
 __pycache__/
 *.log
