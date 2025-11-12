@@ -9,9 +9,10 @@ from skimage.morphology import remove_small_objects, remove_small_holes, ball, b
 from skimage.measure import label
 from skimage.util import img_as_ubyte
 import imageio.v2 as iio
+import nrrd
 
-# --- EDIT THIS PATH to one ch1 file (or to allchannels) ---
-p = Path("data/segmented_training/01Asc-180/+coll/01ASC-0180 +coll 60x DMSO48h-Zstack cell1/01ASC-0180 +coll 60x DMSO48h-Zstack cell1_ch1.nii.gz")
+# --- path parameters ---
+p = Path("/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/segmented_training/01Asc-180/+coll/01ASC-0180 +coll 60x DMSO48h-Zstack cell1/01ASC-0180 +coll 60x DMSO48h-Zstack cell1_ch1.nii.gz") # First cell
 ALLCHANNELS = False         # set True if p is the *allchannels* file
 CH_INDEX = 0                # if ALLCHANNELS=True, which channel index is DAPI?
 
@@ -98,3 +99,22 @@ iio.imwrite("qc_mid_overlay.png", img_as_ubyte(overlay))
 mask_uint8 = mask.astype(np.uint8)
 nib.save(nib.Nifti1Image(mask_uint8, img.affine, img.header), "nucleus_mask_debug.nii.gz")
 print("Wrote: nucleus_mask_debug.nii.gz + qc_mid_*.png")
+
+# --- Save as NRRD ---
+zooms = img.header.get_zooms()
+if len(zooms) >= 3:
+    # NIfTI may have (Z,Y,X) spacing if single-channel
+    zsp, ysp, xsp = float(zooms[-3]), float(zooms[-2]), float(zooms[-1])
+else:
+    zsp = ysp = xsp = 1.0
+
+nrrd_header = {
+    "type": "uint8",
+    "dimension": 3,
+    "space": "left-posterior-superior",
+    "space directions": [(xsp, 0.0, 0.0), (0.0, ysp, 0.0), (0.0, 0.0, zsp)],
+    "encoding": "gzip",
+}
+
+nrrd.write("nucleus_mask_debug.nrrd", mask_uint8, nrrd_header)
+print("Wrote: nucleus_mask_debug.nrrd")
