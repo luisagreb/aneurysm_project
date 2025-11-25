@@ -5,7 +5,7 @@ import os
 from aicsimageio import AICSImage
 from aicsimageio.readers import BioformatsReader
 
-INPUT_ROOT = Path("/Volumes/StudentData/Luisa/Marie's Data/SMCs_Zstacks/SMCs_Zstacks")
+INPUT_ROOT = Path("Y:\Luisa\Marie's Data\SMCs_Zstacks\SMCs_Zstacks")
 
 def convert_oir_to_nifti_channels(input_file: Path) -> None:
     """
