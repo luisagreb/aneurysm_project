@@ -34,10 +34,10 @@ RAW_EXTENSION = ".nii.gz"
 LABEL_EXTENSION = ".nrrd"
 
 # Model and Training Parameters
-IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 64, 64, 64 # Target resolution for all volumes
+IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 48, 48, 48 # Target resolution for all volumes
 NUM_CLASSES = 1                              # Binary segmentation (Nucleus vs Background)
 BATCH_SIZE = 4
-EPOCHS = 10
+EPOCHS = 100
 VAL_SPLIT = 0.15                             # 15% for validation
 MODEL_SAVE_PATH = "3d_unet_nucleus_seg.h5"   # Where to save the best model weights
 
