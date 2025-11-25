@@ -27,10 +27,11 @@ except ImportError:
 # --- Configuration Variables ---
 
 # UPDATED PATH: This is the folder that contains your component subdirectories.
-BASE_DATA_DIRECTORY = "/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/Data"
+# BASE_DATA_DIRECTORY = "/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/Data"  MACOS
+BASE_DATA_DIRECTORY = "C:\\Users\\Luisa\Documents\\aneurysm_project\\Data"  # WINDOWS
 RAW_CHANNEL_DIR = "raw_ch1_nucleus"
 LABEL_MASK_DIR = "label_nucleus"
-RAW_EXTENSION = ".nii.gz"
+RAW_EXTENSION = ".nii"  # on lab computer only .nii
 LABEL_EXTENSION = ".nrrd"
 
 # Model and Training Parameters
