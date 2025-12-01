@@ -13,7 +13,7 @@ from model import UNet3D
 from dataset import get_train_val_loaders
 
 # ---- config ----
-BASE_DATA_DIRECTORY = r"C:\Users\Luisa\Documents\aneurysm_project\Data"
+BASE_DATA_DIRECTORY = "C:\\Users\\Luisa\Documents\\aneurysm_project\\Data"
 RAW_CHANNEL_DIR = "raw_ch1_nucleus"
 LABEL_MASK_DIR = "label_nucleus"
 RAW_EXTENSION = ".nii"    # adjust if .nii.gz
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     model = UNet3D(n_channels=N_CHANNELS, n_classes=N_CLASSES).to(device)
     criterion = DiceLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
-    scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=5, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=5)
 
     # logging
     with open(LOG_FILE, "w", newline="") as f:
