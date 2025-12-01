@@ -21,12 +21,10 @@ except ImportError:
         load_and_preprocess_volume,
         prepare_data_generator,
     )
-# -------------------------------------------------------------------
 
 
-# --- Configuration Variables ---
+#  Variables
 
-# UPDATED PATH: This is the folder that contains your component subdirectories.
 # BASE_DATA_DIRECTORY = "/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/Data"  MACOS
 BASE_DATA_DIRECTORY = "C:\\Users\\Luisa\Documents\\aneurysm_project\\Data"  # WINDOWS
 RAW_CHANNEL_DIR = "raw_ch1_nucleus"
@@ -35,17 +33,15 @@ RAW_EXTENSION = ".nii"  # on lab computer only .nii
 LABEL_EXTENSION = ".nrrd"
 
 # Model and Training Parameters
-IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 48, 48, 48 # Target resolution for all volumes
-NUM_CLASSES = 1                              # Binary segmentation (Nucleus vs Background)
+IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 64, 64, 64 # Target resolution for all volumes
+NUM_CLASSES = 1                               # Binary segmentation (Nucleus vs Background)
 BATCH_SIZE = 4
 EPOCHS = 100
 VAL_SPLIT = 0.15                             # 15% for validation
 MODEL_SAVE_PATH = "3d_unet_nucleus_seg.h5"   # Where to save the best model weights
 
-# --- Set up TensorFlow Environment (omitted for brevity) ---
 
-
-# --- Main Execution ---
+# Main Execution 
 if __name__ == "__main__":
     
     # 1. Configuration Output
@@ -87,7 +83,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # 3. Split Data for Training and Validation (omitted for brevity)
-    # ... rest of the training script ...
     indices = np.arange(len(raw_paths))
     train_indices, val_indices = train_test_split(
         indices,
@@ -161,3 +156,35 @@ if __name__ == "__main__":
 
     print("\nTraining complete.")
     print(f"Best model weights saved to {MODEL_SAVE_PATH}")
+
+    import matplotlib.pyplot as plt
+
+# Convert history to a dict
+hist = history.history
+
+# --- Plot Loss ---
+plt.figure()
+plt.plot(hist["loss"], label="Train loss")
+plt.plot(hist["val_loss"], label="Val loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Training vs Validation Loss")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("loss_curve.png", dpi=150)
+# plt.show()  # uncomment if running interactively
+
+# --- Plot Accuracy (if you compiled with metrics=["accuracy"]) ---
+if "accuracy" in hist and "val_accuracy" in hist:
+    plt.figure()
+    plt.plot(hist["accuracy"], label="Train accuracy")
+    plt.plot(hist["val_accuracy"], label="Val accuracy")
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+    plt.title("Training vs Validation Accuracy")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("accuracy_curve.png", dpi=150)
+    # plt.show()
