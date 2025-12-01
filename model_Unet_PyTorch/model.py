@@ -1,78 +1,94 @@
 # model.py
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class DoubleConv(nn.Module):
-    """(Conv3D -> BN -> ReLU) x 2"""
-    def __init__(self, in_channels, out_channels):
+    """
+    Conv3D -> INorm -> ReLU -> Conv3D -> INorm -> ReLU
+    (with padding=1 so spatial size is preserved)
+    """
+    def __init__(self, in_ch, out_ch):
         super().__init__()
-        self.block = nn.Sequential(
-            nn.Conv3d(in_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm3d(out_channels),
+        self.double_conv = nn.Sequential(
+            nn.Conv3d(in_ch, out_ch, kernel_size=3, padding=1),
+            nn.InstanceNorm3d(out_ch),
             nn.ReLU(inplace=True),
-            nn.Conv3d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm3d(out_channels),
+            nn.Conv3d(out_ch, out_ch, kernel_size=3, padding=1),
+            nn.InstanceNorm3d(out_ch),
             nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
-        return self.block(x)
+        return self.double_conv(x)
 
 
 class UNet3D(nn.Module):
-    """
-    Simple 3D U-Net for binary segmentation.
-    Input:  (N, 1, D, H, W)
-    Output: (N, 1, D, H, W)  (logits; apply sigmoid for probs)
-    """
-    def __init__(self, n_channels=1, n_classes=1):
+    def __init__(self, n_channels=1, n_classes=1, base_c=32):
         super().__init__()
-        self.n_channels = n_channels
-        self.n_classes = n_classes
 
         # Encoder
-        self.inc   = DoubleConv(n_channels, 32)
-        self.down1 = nn.Sequential(nn.MaxPool3d(2), DoubleConv(32, 64))
-        self.down2 = nn.Sequential(nn.MaxPool3d(2), DoubleConv(64, 128))
-        self.down3 = nn.Sequential(nn.MaxPool3d(2), DoubleConv(128, 256))
+        self.inc   = DoubleConv(n_channels, base_c)           # 32
+        self.down1 = nn.Sequential(
+            nn.MaxPool3d(2),
+            DoubleConv(base_c, base_c * 2)                    # 64
+        )
+        self.down2 = nn.Sequential(
+            nn.MaxPool3d(2),
+            DoubleConv(base_c * 2, base_c * 4)                # 128
+        )
+        self.down3 = nn.Sequential(
+            nn.MaxPool3d(2),
+            DoubleConv(base_c * 4, base_c * 8)                # 256
+        )
 
         # Bottleneck
-        self.bottleneck = DoubleConv(256, 512)
+        self.down4 = nn.Sequential(
+            nn.MaxPool3d(2),
+            DoubleConv(base_c * 8, base_c * 16)               # 512
+        )
 
         # Decoder
-        self.up3 = nn.ConvTranspose3d(512, 256, kernel_size=2, stride=2)
-        self.dec3 = DoubleConv(512, 256)
-        self.up2 = nn.ConvTranspose3d(256, 128, kernel_size=2, stride=2)
-        self.dec2 = DoubleConv(256, 128)
-        self.up1 = nn.ConvTranspose3d(128, 64, kernel_size=2, stride=2)
-        self.dec1 = DoubleConv(128, 64)
+        self.up1 = nn.ConvTranspose3d(base_c * 16, base_c * 8, kernel_size=2, stride=2)
+        self.conv1 = DoubleConv(base_c * 16, base_c * 8)
 
-        # Output
-        self.outc = nn.Conv3d(64, n_classes, kernel_size=1)
+        self.up2 = nn.ConvTranspose3d(base_c * 8, base_c * 4, kernel_size=2, stride=2)
+        self.conv2 = DoubleConv(base_c * 8, base_c * 4)
+
+        self.up3 = nn.ConvTranspose3d(base_c * 4, base_c * 2, kernel_size=2, stride=2)
+        self.conv3 = DoubleConv(base_c * 4, base_c * 2)
+
+        self.up4 = nn.ConvTranspose3d(base_c * 2, base_c, kernel_size=2, stride=2)
+        self.conv4 = DoubleConv(base_c * 2, base_c)
+
+        self.outc = nn.Conv3d(base_c, n_classes, kernel_size=1)
 
     def forward(self, x):
-        # Encoder
-        x1 = self.inc(x)          # (N,32,D,H,W)
-        x2 = self.down1(x1)       # (N,64,D/2,H/2,W/2)
-        x3 = self.down2(x2)       # (N,128, ...)
-        x4 = self.down3(x3)       # (N,256, ...)
+        # encoder
+        x1 = self.inc(x)      # (N, 32, 64, 64, 64)
+        x2 = self.down1(x1)   # (N, 64, 32, 32, 32)
+        x3 = self.down2(x2)   # (N, 128,16, 16, 16)
+        x4 = self.down3(x3)   # (N, 256, 8,  8,  8)
+        x5 = self.down4(x4)   # (N, 512, 4,  4,  4)
 
-        # Bottleneck
-        x5 = self.bottleneck(x4)  # (N,512,...)
+        # decoder
+        x = self.up1(x5)      # (N, 256, 8, 8, 8)
+        x = torch.cat([x4, x], dim=1)  # (N, 512, 8, 8, 8)
+        x = self.conv1(x)
 
-        # Decoder
-        x = self.up3(x5)
-        x = torch.cat([x, x4], dim=1)
-        x = self.dec3(x)
+        x = self.up2(x)       # (N, 128, 16,16,16)
+        x = torch.cat([x3, x], dim=1)
+        x = self.conv2(x)
 
-        x = self.up2(x)
-        x = torch.cat([x, x3], dim=1)
-        x = self.dec2(x)
+        x = self.up3(x)       # (N, 64, 32,32,32)
+        x = torch.cat([x2, x], dim=1)
+        x = self.conv3(x)
 
-        x = self.up1(x)
-        x = torch.cat([x, x2], dim=1)
-        x = self.dec1(x)
+        x = self.up4(x)       # (N, 32, 64,64,64)
+        x = torch.cat([x1, x], dim=1)
+        x = self.conv4(x)
 
-        logits = self.outc(x)
-        return logits
+        x = self.outc(x)
+        # final sigmoid for binary segmentation
+        return torch.sigmoid(x)
