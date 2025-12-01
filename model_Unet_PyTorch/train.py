@@ -14,30 +14,14 @@ import time
 from model import UNet3D
 from dataset import get_train_val_loaders
 
-try:
-    from UNet3D import model
-    from dataset import (
-        get_train_val_loaders,
-        _load_and_preprocess_volume,
-        prepare_data_generator,
-    )
-except ImportError:
-    from modelUnet.uNet_model import unet_model
-    from modelUnet.dataProcessing import (
-        get_data_paths,
-        load_and_preprocess_volume,
-        get_data_paths,
-    )
 
 # --- Configuration Variables ---
 
-# >>> WARNING: UPDATE THIS PATH TO YOUR ACTUAL DATA LOCATION! <<<
-BASE_DATA_DIRECTORY = "C:\\Users\\Luisa\\Documents\\aneurysm_project\\Data"
+BASE_DATA_DIRECTORY = "C:\\Users\\Luisa\Documents\\aneurysm_project\\Data"  # WINDOWS
 RAW_CHANNEL_DIR = "raw_ch1_nucleus"
 LABEL_MASK_DIR = "label_nucleus"
-RAW_EXTENSION = ".nii.gz"
+RAW_EXTENSION = ".nii"  # on lab computer only .nii
 LABEL_EXTENSION = ".nrrd"
-
 # Model and Training Parameters
 IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 64, 64, 64 # Target resolution for all volumes
 N_CHANNELS = 1

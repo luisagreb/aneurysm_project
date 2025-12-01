@@ -36,7 +36,7 @@ LABEL_EXTENSION = ".nrrd"
 IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH = 64, 64, 64 # Target resolution for all volumes
 NUM_CLASSES = 1                               # Binary segmentation (Nucleus vs Background)
 BATCH_SIZE = 4
-EPOCHS = 100
+EPOCHS = 5
 VAL_SPLIT = 0.15                             # 15% for validation
 MODEL_SAVE_PATH = "3d_unet_nucleus_seg.h5"   # Where to save the best model weights
 
@@ -157,15 +157,19 @@ if __name__ == "__main__":
     print("\nTraining complete.")
     print(f"Best model weights saved to {MODEL_SAVE_PATH}")
 
-    import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-# Convert history to a dict
+
 hist = history.history
+print("History keys:", hist.keys())
 
 # --- Plot Loss ---
 plt.figure()
 plt.plot(hist["loss"], label="Train loss")
-plt.plot(hist["val_loss"], label="Val loss")
+
+if "val_loss" in hist:
+    plt.plot(hist["val_loss"], label="Val loss")
+
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.title("Training vs Validation Loss")
@@ -173,18 +177,21 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("loss_curve.png", dpi=150)
-# plt.show()  # uncomment if running interactively
 
-# --- Plot Accuracy (if you compiled with metrics=["accuracy"]) ---
-if "accuracy" in hist and "val_accuracy" in hist:
-    plt.figure()
-    plt.plot(hist["accuracy"], label="Train accuracy")
-    plt.plot(hist["val_accuracy"], label="Val accuracy")
-    plt.xlabel("Epoch")
-    plt.ylabel("Accuracy")
-    plt.title("Training vs Validation Accuracy")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig("accuracy_curve.png", dpi=150)
-    # plt.show()
+# --- Plot accuracy or other metrics if present ---
+# Common keys: 'accuracy', 'val_accuracy', 'dice_coef', 'val_dice_coef', etc.
+metric_candidates = ["accuracy", "dice_coef", "dice", "iou"]
+for m in metric_candidates:
+    val_m = "val_" + m
+    if m in hist and val_m in hist:
+        plt.figure()
+        plt.plot(hist[m], label=f"Train {m}")
+        plt.plot(hist[val_m], label=f"Val {m}")
+        plt.xlabel("Epoch")
+        plt.ylabel(m)
+        plt.title(f"Training vs Validation {m}")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.savefig(f"{m}_curve.png", dpi=150)
+        break  # stop after first matching metric
