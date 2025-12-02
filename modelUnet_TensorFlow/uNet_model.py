@@ -17,11 +17,54 @@ def dice_coefficient(y_true, y_pred, smooth=1e-7):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-def dice_loss(y_true, y_pred):
+# --- NEW: Weighted Dice Loss ---
+def weighted_dice_loss(y_true, y_pred, class_weights=None):
     """
-    Dice loss (1 - Dice Coefficient). Minimizing this maximizes the Dice Score.
+    A Dice Loss variant that weights the loss contribution of the positive (1)
+    and negative (0) classes. This is critical for highly imbalanced datasets.
+    
+    If class_weights is None, it defaults to a standard Dice Loss.
+    Example class_weights: [0.1, 0.9] -> less weight for background (0),
+    more weight for nucleus (1).
     """
-    return 1.0 - dice_coefficient(y_true, y_pred)
+    smooth = 1e-7
+    
+    # Calculate the standard Dice score
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    
+    # Denominators
+    numerator = 2. * intersection + smooth
+    denominator = K.sum(y_true_f) + K.sum(y_pred_f) + smooth
+    
+    dice_score = numerator / denominator
+    
+    # If custom weights are provided, apply them.
+    if class_weights is not None:
+        # Calculate the contribution of each class to the total Dice calculation
+        # This is a simplification of GDL, focusing on the loss gradient.
+        # We will use the standard Dice Loss (1 - Dice) but we'll modify the
+        # weights in the background to emphasize the foreground.
+        # The key is to heavily penalize missing the foreground.
+        
+        # Calculate the loss for foreground (nucleus) and background
+        # Foreground (1):
+        loss_fg = 1.0 - (2. * K.sum(y_true_f * y_pred_f) + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+        
+        # Background (0) - using IoU on the inverted mask:
+        y_true_inv = 1.0 - y_true_f
+        y_pred_inv = 1.0 - y_pred_f
+        
+        loss_bg = 1.0 - (2. * K.sum(y_true_inv * y_pred_inv) + smooth) / (K.sum(y_true_inv) + K.sum(y_pred_inv) + smooth)
+
+        # Apply weights: class_weights[0] for background, class_weights[1] for foreground
+        total_loss = class_weights[0] * loss_bg + class_weights[1] * loss_fg
+        return total_loss
+    
+    # Default to standard Dice Loss if no weights are provided
+    return 1.0 - dice_score
+
 
 # --- U-Net Helper Functions ---
 
@@ -29,27 +72,27 @@ def conv_block_3d(input_tensor, num_filters, kernel_size=(3, 3, 3), padding='sam
     """Two 3D Convolutional layers followed by Batch Normalization and ReLU activation."""
     # First convolution
     x = Conv3D(num_filters, kernel_size=kernel_size, padding=padding, kernel_initializer='he_normal')(input_tensor)
-    x = BatchNormalization(axis=-1)(x)
+    x = BatchNormalization()(x)
     x = Activation('relu')(x)
     
     # Second convolution
     x = Conv3D(num_filters, kernel_size=kernel_size, padding=padding, kernel_initializer='he_normal')(x)
-    x = BatchNormalization(axis=-1)(x)
+    x = BatchNormalization()(x)
     x = Activation('relu')(x)
     return x
 
-# --- 3D U-Net Model Definition ---
-
-def unet_model(input_shape, num_classes):
+def unet_model(input_shape, num_classes, learning_rate=1e-4, weights=[0.05, 0.95]):
     """
-    Defines the 3D U-Net architecture.
+    Builds and compiles the 3D U-Net model using a weighted loss function.
     
     Args:
-        input_shape (tuple): (depth, height, width, channels)
-        num_classes (int): Number of output classes (1 for binary segmentation).
+        input_shape (tuple): Shape of the input image (D, H, W, C).
+        num_classes (int): Number of segmentation classes (usually 1 for binary).
+        learning_rate (float): Initial learning rate for the Adam optimizer.
+        weights (list): [weight_for_background, weight_for_foreground]
         
     Returns:
-        tf.keras.Model: Compiled 3D U-Net model.
+        Model: Compiled 3D U-Net model.
     """
     
     # Encoder (Contracting Path)
@@ -86,16 +129,24 @@ def unet_model(input_shape, num_classes):
     up6 = UpSampling3D(size=(2, 2, 2))(conv5)
     up6 = concatenate([up6, conv1], axis=-1)
     conv6 = conv_block_3d(up6, 32)
-
+    
     # Output Layer
-    # Use sigmoid for binary (num_classes=1) segmentation
-    activation = 'sigmoid' if num_classes == 1 else 'softmax'
-    final_conv = Conv3D(num_classes, kernel_size=(1, 1, 1), activation=activation)(conv6)
-
+    # Use sigmoid for binary (num_classes=1)
+    # Use softmax for multi-class (num_classes > 1)
+    if num_classes == 1:
+        activation = 'sigmoid'
+        final_conv = Conv3D(num_classes, (1, 1, 1), activation=activation, padding='same')(conv6)
+    else:
+        activation = 'softmax'
+        final_conv = Conv3D(num_classes, (1, 1, 1), activation=activation, padding='same')(conv6)
+        
     model = Model(inputs=inputs, outputs=final_conv)
     
-    # Compile the model
-    # We use Adam optimizer, and Dice Loss for robust medical segmentation
-    model.compile(optimizer=Adam(learning_rate=1e-4), loss=dice_loss, metrics=[dice_coefficient, 'accuracy'])
+    # CRITICAL: Compile with the Weighted Dice Loss and a lower learning rate
+    model.compile(
+        optimizer=Adam(learning_rate=learning_rate),
+        loss=lambda y_true, y_pred: weighted_dice_loss(y_true, y_pred, weights),
+        metrics=[dice_coefficient]
+    )
     
     return model
