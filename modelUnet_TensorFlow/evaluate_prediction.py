@@ -4,6 +4,9 @@ import SimpleITK as sitk
 from glob import glob
 import pandas as pd
 from scipy.spatial.distance import directed_hausdorff
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # -------------------------------------------------------------------
 # CONFIGURE THESE PATHS
@@ -114,3 +117,113 @@ for gt_path, pr_path in pairs:
 df = pd.DataFrame(results, columns=["Name", "Dice", "Jaccard", "Precision", "Recall", "HD95", "Vol_GT", "Vol_Pred"])
 df.to_csv("prediction_stats.csv", index=False)
 print("\nSaved: prediction_stats.csv")
+
+
+# ---------------------------------------------------------
+# Load metrics
+# ---------------------------------------------------------
+CSV_PATH = "prediction_stats.csv"
+df = pd.read_csv(CSV_PATH)
+
+print("Loaded columns:", df.columns.tolist())
+
+# Style
+sns.set(style="whitegrid", context="talk")
+
+# ---------------------------------------------------------
+# 1) Dice coefficient distribution
+# ---------------------------------------------------------
+plt.figure(figsize=(10,6))
+sns.boxplot(y=df["Dice"], color="#4C72B0")
+sns.stripplot(y=df["Dice"], color="black", size=4, alpha=0.6)
+plt.title("Dice Coefficient Distribution")
+plt.ylabel("Dice")
+plt.tight_layout()
+plt.savefig("plot_dice_distribution.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 2) Dice violin plot
+# ---------------------------------------------------------
+plt.figure(figsize=(10,6))
+sns.violinplot(y=df["Dice"], color="#55A868")
+sns.stripplot(y=df["Dice"], color="black", size=4, alpha=0.5)
+plt.title("Dice Coefficient (Violin Plot)")
+plt.ylabel("Dice")
+plt.tight_layout()
+plt.savefig("plot_dice_violin.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 3) Jaccard distribution
+# ---------------------------------------------------------
+plt.figure(figsize=(10,6))
+sns.boxplot(y=df["Jaccard"], color="#C44E52")
+sns.stripplot(y=df["Jaccard"], color="black", size=4, alpha=0.6)
+plt.title("Jaccard Index Distribution")
+plt.ylabel("Jaccard")
+plt.tight_layout()
+plt.savefig("plot_jaccard_distribution.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 4) Precision & Recall
+# ---------------------------------------------------------
+plt.figure(figsize=(12,6))
+sns.boxplot(data=df[["Precision", "Recall"]])
+sns.stripplot(data=df[["Precision", "Recall"]], color="black", size=4, alpha=0.6)
+plt.title("Precision and Recall Distribution")
+plt.ylabel("Value")
+plt.tight_layout()
+plt.savefig("plot_precision_recall.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 5) HD95 distribution
+# ---------------------------------------------------------
+plt.figure(figsize=(10,6))
+sns.boxplot(y=df["HD95"], color="#8172B3")
+sns.stripplot(y=df["HD95"], color="black", size=4, alpha=0.6)
+plt.title("Hausdorff Distance 95% (HD95)")
+plt.ylabel("Distance (voxels)")
+plt.tight_layout()
+plt.savefig("plot_hd95_distribution.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 6) Volume comparison: GT vs Prediction
+# ---------------------------------------------------------
+plt.figure(figsize=(10,8))
+plt.scatter(df["Vol_GT"], df["Vol_Pred"], s=60, alpha=0.8)
+plt.plot([0, max(df["Vol_GT"])], [0, max(df["Vol_GT"])], 'r--', label="Ideal match")
+plt.xlabel("Ground Truth Volume (voxels)")
+plt.ylabel("Predicted Volume (voxels)")
+plt.title("Volume Comparison (GT vs Prediction)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("plot_volume_scatter.png", dpi=150)
+plt.close()
+
+# ---------------------------------------------------------
+# 7) Correlation table
+# ---------------------------------------------------------
+corr = df[["Dice", "Jaccard", "Precision", "Recall", "HD95", "Vol_GT", "Vol_Pred"]].corr()
+plt.figure(figsize=(10,8))
+sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Matrix")
+plt.tight_layout()
+plt.savefig("plot_correlation_matrix.png", dpi=150)
+plt.close()
+
+print("\nAll plots saved successfully!")
+print("Files generated:")
+print("""
+    plot_dice_distribution.png
+    plot_dice_violin.png
+    plot_jaccard_distribution.png
+    plot_precision_recall.png
+    plot_hd95_distribution.png
+    plot_volume_scatter.png
+    plot_correlation_matrix.png
+""")
