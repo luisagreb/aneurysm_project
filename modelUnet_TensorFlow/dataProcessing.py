@@ -11,54 +11,54 @@ import sys
 def get_data_paths(base_dir, raw_dir, label_dir, raw_ext, label_ext):
     """
     Collects and pairs raw image and label mask file paths.
-    
-    It assumes the label mask file shares the exact same base name as the raw file,
-    only differing in the file extension.
-        
-    Args:
-        base_dir (str): Root directory for the data.
-        raw_dir (str): Subdirectory for raw images.
-        label_dir (str): Subdirectory for label masks.
-        raw_ext (str): Extension for raw images (e.g., '.nii.gz').
-        label_ext (str): Extension for label masks (e.g., '.nrrd').
-        
-    Returns:
-        tuple: (list of raw paths, list of label paths)
+
+    Raw example : 01ASC-0180_nonAneurysm_coll_nucleus_cell1.nii
+    Label       : 01ASC-0180_nonAneurysm_coll_nucleusLabel_cell1.nrrd
     """
-    # Use glob to find all raw files
     raw_path_pattern = os.path.join(base_dir, raw_dir, f"*{raw_ext}")
     all_raw_paths = sorted(glob.glob(raw_path_pattern))
-    
+
     raw_paths_filtered = []
     corresponding_label_paths = []
-    
-    # Use a set of existing label file base names for faster lookup (optional optimization)
-    # all_label_filenames = set(os.listdir(os.path.join(base_dir, label_dir)))
-    
+
     for raw_path in all_raw_paths:
         raw_filename = os.path.basename(raw_path)
-        
-        # 1. Extract the base name by removing the extension using slicing
+
+        # strip extension
         if raw_filename.endswith(raw_ext):
             base_name = raw_filename[:-len(raw_ext)]
         else:
-            base_name = raw_filename.replace(raw_ext, '')
-        
-        # 2. Construct the expected label filename: BASE_NAME + LABEL_EXTENSION (NO _SEG suffix)
-        # We are removing the assumption of a '_SEG' suffix here.
-        label_filename = f"{base_name}{label_ext}"
-        label_path = os.path.join(base_dir, label_dir, label_filename)
-        
-        if os.path.exists(label_path):
+            base_name = os.path.splitext(raw_filename)[0]
+
+        # ---- build possible label names ----
+        candidates = []
+
+        # 1) same basename (generic case)
+        candidates.append(base_name + label_ext)
+
+        # 2) special case: nucleus -> nucleusLabel
+        if "nucleus_" in base_name:
+            label_base = base_name.replace("nucleus_", "nucleusLabel_")
+            candidates.append(label_base + label_ext)
+
+        label_path = None
+        for lab_fn in candidates:
+            cand_path = os.path.join(base_dir, label_dir, lab_fn)
+            if os.path.exists(cand_path):
+                label_path = cand_path
+                break
+
+        if label_path is not None:
             raw_paths_filtered.append(raw_path)
             corresponding_label_paths.append(label_path)
         else:
-            # --- DEBUG PRINT: Now includes a clear separator for visibility ---
-            print("="*60, file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
             print(f"!!! WARNING: Label mask not found for RAW file: {raw_filename}", file=sys.stderr)
-            print(f"!!! EXPECTED PATH: {label_path}", file=sys.stderr)
-            print("="*60, file=sys.stderr, flush=True)
-            
+            print("!!! Tried candidates:", file=sys.stderr)
+            for lab_fn in candidates:
+                print("   ", os.path.join(base_dir, label_dir, lab_fn), file=sys.stderr)
+            print("=" * 60, file=sys.stderr, flush=True)
+
     return raw_paths_filtered, corresponding_label_paths
 
 def load_and_preprocess_volume(file_path, target_shape, is_mask=False):
@@ -115,7 +115,7 @@ def prepare_data_generator(raw_paths, label_paths, target_shape, batch_size, num
             
         for start_idx in range(0, data_size, batch_size):
             end_idx = min(start_idx + batch_size, data_size)
-            batch_indices = indices[start_idx:end_idx]
+            batch_indices = indiceis[start_idx:end_idx]
             
             # Initialize empty arrays for the batch
             batch_raw = np.zeros((len(batch_indices),) + target_shape + (1,), dtype=np.float32)
