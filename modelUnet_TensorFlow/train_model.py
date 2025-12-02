@@ -192,12 +192,6 @@ if __name__ == "__main__":
             monitor="val_loss",
             verbose=1,
         ),
-        EarlyStopping(
-            patience=15,
-            monitor="val_loss",
-            verbose=1,
-            restore_best_weights=True,
-        ),
         ReduceLROnPlateau(
             factor=0.5,
             patience=5,
