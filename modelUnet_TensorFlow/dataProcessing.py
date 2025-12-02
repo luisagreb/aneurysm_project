@@ -1,139 +1,167 @@
 import os
 import glob
+import sys
 import numpy as np
-import SimpleITK as sitk # Required for loading .nrrd and .nii.gz files
+import SimpleITK as sitk
 from scipy.ndimage import zoom
-import tensorflow as tf
-import sys 
 
-# --- Helper Functions for Data Loading ---
 
 def get_data_paths(base_dir, raw_dir, label_dir, raw_ext, label_ext):
     """
-    Collects and pairs raw image and label mask file paths.
+    Pair raw images and label masks based on filename.
 
-    Raw example : 01ASC-0180_nonAneurysm_coll_nucleus_cell1.nii
-    Label       : 01ASC-0180_nonAneurysm_coll_nucleusLabel_cell1.nrrd
+    RAW example:
+        01ASC-0180_nonAneurysm_coll_nucleus_cell1.nii
+
+    LABEL example:
+        01ASC-0180_nonAneurysm_coll_nucleusLabel_cell1.nrrd
+
+    So we:
+      - strip `raw_ext` ('.nii')
+      - replace 'nucleus_' by 'nucleusLabel_'
     """
-    raw_path_pattern = os.path.join(base_dir, raw_dir, f"*{raw_ext}")
-    all_raw_paths = sorted(glob.glob(raw_path_pattern))
 
-    raw_paths_filtered = []
-    corresponding_label_paths = []
+    raw_pattern = os.path.join(base_dir, raw_dir, f"*{raw_ext}")
+    all_raw_paths = sorted(glob.glob(raw_pattern))
+
+    paired_raw = []
+    paired_label = []
 
     for raw_path in all_raw_paths:
-        raw_filename = os.path.basename(raw_path)
+        raw_name = os.path.basename(raw_path)
 
-        # strip extension
-        if raw_filename.endswith(raw_ext):
-            base_name = raw_filename[:-len(raw_ext)]
+        if not raw_name.endswith(raw_ext):
+            continue
+
+        base_name = raw_name[:-len(raw_ext)]  # e.g. 01ASC-..._nucleus_cell1
+        label_base = base_name.replace("nucleus_", "nucleusLabel_")
+        label_name = f"{label_base}{label_ext}"
+        label_path = os.path.join(base_dir, label_dir, label_name)
+
+        if os.path.exists(label_path):
+            paired_raw.append(raw_path)
+            paired_label.append(label_path)
         else:
-            base_name = os.path.splitext(raw_filename)[0]
+            print(
+                f"[get_data_paths] WARNING: no label for RAW '{raw_name}'\n"
+                f"    expected: {label_path}",
+                file=sys.stderr,
+                flush=True,
+            )
 
-        # ---- build possible label names ----
-        candidates = []
+    return paired_raw, paired_label
 
-        # 1) same basename (generic case)
-        candidates.append(base_name + label_ext)
-
-        # 2) special case: nucleus -> nucleusLabel
-        if "nucleus_" in base_name:
-            label_base = base_name.replace("nucleus_", "nucleusLabel_")
-            candidates.append(label_base + label_ext)
-
-        label_path = None
-        for lab_fn in candidates:
-            cand_path = os.path.join(base_dir, label_dir, lab_fn)
-            if os.path.exists(cand_path):
-                label_path = cand_path
-                break
-
-        if label_path is not None:
-            raw_paths_filtered.append(raw_path)
-            corresponding_label_paths.append(label_path)
-        else:
-            print("=" * 60, file=sys.stderr)
-            print(f"!!! WARNING: Label mask not found for RAW file: {raw_filename}", file=sys.stderr)
-            print("!!! Tried candidates:", file=sys.stderr)
-            for lab_fn in candidates:
-                print("   ", os.path.join(base_dir, label_dir, lab_fn), file=sys.stderr)
-            print("=" * 60, file=sys.stderr, flush=True)
-
-    return raw_paths_filtered, corresponding_label_paths
 
 def load_and_preprocess_volume(file_path, target_shape, is_mask=False):
     """
-    Loads a 3D volume, resizes it to the target shape, and normalizes/binarizes it.
+    Load a 3D volume with SimpleITK, resize to target_shape (D,H,W),
+    and normalize / binarize.
+
+    Returns array of shape (D, H, W, 1) with dtype float32.
     """
     try:
-        # Load the volume using SimpleITK
-        itk_image = sitk.ReadImage(file_path)
-        # GetArrayFromImage returns numpy array in ZYX order, so we need to transpose to DHW
-        volume = sitk.GetArrayFromImage(itk_image).transpose(2, 1, 0).astype(np.float32)
-
-        # Calculate zoom factor for resizing 
-        current_shape = volume.shape # (D, H, W)
-        zoom_factors = [t / c for t, c in zip(target_shape, current_shape)]
-        
-        # Resize volume (Order 0 for nearest neighbor (masks), Order 3 for cubic spline (images))
-        volume_resized = zoom(volume, zoom_factors, order=0 if is_mask else 3)
-        
-        if is_mask:
-            # Binarize mask: convert labels to 0 or 1
-            volume_processed = (volume_resized > 0).astype(np.float32)
-        else:
-            # Normalize raw data to [0, 1]
-            min_val = np.min(volume_resized)
-            max_val = np.max(volume_resized)
-            if max_val > min_val:
-                volume_processed = (volume_resized - min_val) / (max_val - min_val)
-            else:
-                volume_processed = np.zeros_like(volume_resized)
-
-
-        # Add channel dimension (D, H, W, 1)
-        return np.expand_dims(volume_processed, axis=-1)
-
+        itk_img = sitk.ReadImage(file_path)
+        vol = sitk.GetArrayFromImage(itk_img).astype(np.float32)
+        # SimpleITK gives (Z, Y, X); we want (D, H, W) but names don’t matter
+        # as long as RAW and MASK are treated the same.
     except Exception as e:
-        print(f"Error loading or preprocessing {file_path}: {e}", file=sys.stderr)
-        # Return a zero array of the target shape in case of error
+        print(f"[load_and_preprocess_volume] ERROR reading {file_path}: {e}",
+              file=sys.stderr)
         return np.zeros(target_shape + (1,), dtype=np.float32)
 
-# --- Data Generator Function (Not changed) ---
+    current_shape = np.array(vol.shape, dtype=np.float32)  # (D,H,W)
+    target_shape = np.array(target_shape, dtype=np.float32)
 
-def prepare_data_generator(raw_paths, label_paths, target_shape, batch_size, num_classes, shuffle=True):
+    zoom_factors = (target_shape / current_shape)
+    order = 0 if is_mask else 1  # nearest for masks, linear for images
+
+    try:
+        vol_resized = zoom(vol, zoom_factors, order=order)
+    except Exception as e:
+        print(f"[load_and_preprocess_volume] ERROR resizing {file_path}: {e}",
+              file=sys.stderr)
+        return np.zeros(target_shape.astype(int).tolist() + [1], dtype=np.float32)
+
+    if is_mask:
+        vol_resized = (vol_resized > 0.5).astype(np.float32)
+    else:
+        vmin = float(vol_resized.min())
+        vmax = float(vol_resized.max())
+        if vmax > vmin:
+            vol_resized = (vol_resized - vmin) / (vmax - vmin)
+        else:
+            vol_resized = np.zeros_like(vol_resized, dtype=np.float32)
+
+    vol_resized = vol_resized.astype(np.float32)
+
+    # (D,H,W,1)
+    return np.expand_dims(vol_resized, axis=-1)
+
+
+def _augment_pair(raw_vol, label_vol):
     """
-    A generator that yields batches of 3D image and mask data.
+    Simple paired augmentation: random flips along axes.
+    Both raw_vol and label_vol are (D, H, W, 1).
     """
-    
+    # flip depth
+    if np.random.rand() < 0.5:
+        raw_vol = raw_vol[::-1, :, :, :]
+        label_vol = label_vol[::-1, :, :, :]
+    # flip height
+    if np.random.rand() < 0.5:
+        raw_vol = raw_vol[:, ::-1, :, :]
+        label_vol = label_vol[:, ::-1, :, :]
+    # flip width
+    if np.random.rand() < 0.5:
+        raw_vol = raw_vol[:, :, ::-1, :]
+        label_vol = label_vol[:, :, ::-1, :]
+    return raw_vol, label_vol
+
+
+def prepare_data_generator(raw_paths,
+                           label_paths,
+                           target_shape,
+                           batch_size,
+                           num_classes,
+                           shuffle=True,
+                           augment=False):
+    """
+    Keras-style generator yielding (X, Y) batches.
+
+    X: (B, D, H, W, 1)
+    Y: (B, D, H, W, 1) for binary segmentation.
+    """
+
+    assert len(raw_paths) == len(label_paths), "raw / label mismatch"
     data_size = len(raw_paths)
     indices = np.arange(data_size)
-    
+
     while True:
         if shuffle:
             np.random.shuffle(indices)
-            
-        for start_idx in range(0, data_size, batch_size):
-            end_idx = min(start_idx + batch_size, data_size)
-            batch_indices = indiceis[start_idx:end_idx]
-            
-            # Initialize empty arrays for the batch
-            batch_raw = np.zeros((len(batch_indices),) + target_shape + (1,), dtype=np.float32)
-            batch_label = np.zeros((len(batch_indices),) + target_shape + (num_classes,), dtype=np.float32)
-            
-            for i, data_idx in enumerate(batch_indices):
-                raw_path = raw_paths[data_idx]
-                label_path = label_paths[data_idx]
-                
-                # Load and preprocess image
-                raw_volume = load_and_preprocess_volume(raw_path, target_shape, is_mask=False)
-                batch_raw[i] = raw_volume
-                
-                # Load and preprocess mask
-                label_volume = load_and_preprocess_volume(label_path, target_shape, is_mask=True)
-                
-                # NOTE: Assuming NUM_CLASSES=1 in train_model.py, we don't one-hot encode.
-                # If you change NUM_CLASSES > 1, this needs to be updated for categorical encoding.
-                batch_label[i] = label_volume 
 
-            yield (batch_raw, batch_label)
+        for start in range(0, data_size, batch_size):
+            end = min(start + batch_size, data_size)
+            batch_idx = indices[start:end]
+
+            bsz = len(batch_idx)
+            batch_x = np.zeros((bsz,) + tuple(target_shape) + (1,),
+                               dtype=np.float32)
+            batch_y = np.zeros((bsz,) + tuple(target_shape) + (1,),
+                               dtype=np.float32)
+
+            for i, idx in enumerate(batch_idx):
+                raw_vol = load_and_preprocess_volume(
+                    raw_paths[idx], target_shape, is_mask=False
+                )
+                lbl_vol = load_and_preprocess_volume(
+                    label_paths[idx], target_shape, is_mask=True
+                )
+
+                if augment:
+                    raw_vol, lbl_vol = _augment_pair(raw_vol, lbl_vol)
+
+                batch_x[i] = raw_vol
+                batch_y[i] = lbl_vol  # binary → single channel
+
+            yield batch_x, batch_y
