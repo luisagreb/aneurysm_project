@@ -5,10 +5,10 @@ from aicsimageio import AICSImage
 from aicsimageio.readers import BioformatsReader
 
 # NAS input
-INPUT_ROOT = Path(r"Y:\Luisa\Marie's Data\SMCs_Zstacks\SMCs_Zstacks")
+INPUT_ROOT = Path(r"Y:\Luisa\Marie's Data\CONVERT")
 
 # Local output (IMPORTANT: use raw string or forward slashes)
-OUTPUT_ROOT = Path(r"C:\Users\Luisa\Documents\aneurysm_project\Data")
+OUTPUT_ROOT = Path(r"Y:\Luisa\Marie's Data")
 
 
 def convert_oir_to_nifti_channels(input_file: Path) -> None:
