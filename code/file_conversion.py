@@ -5,7 +5,8 @@ import os
 from aicsimageio import AICSImage
 from aicsimageio.readers import BioformatsReader
 
-INPUT_ROOT = Path("Y:\Luisa\Marie's Data\SMCs_Zstacks\SMCs_Zstacks")
+# ---------------- CONVERT .OIR TO NIFTI ----------------  
+INPUT_ROOT = Path("/Volumes/StudentData/Luisa/Marie's Data/CONVERT")
 
 def convert_oir_to_nifti_channels(input_file: Path) -> None:
     """
@@ -14,14 +15,13 @@ def convert_oir_to_nifti_channels(input_file: Path) -> None:
       - per-channel .nii.gz (ch1 nucleus, ch2 actin, ch3 mitochondria)
     and save **in the same folder** as the original .oir file.
     """
-    print(f"📂 Converting: {input_file}")
+    print(f" Converting: {input_file}")
 
     out_dir = input_file.parent
     base_name = input_file.stem
 
     # Load with BioFormats
-    img = AICSImage(str(input_file), reader=BioformatsReader)
-
+    img = AICSImage(str(input_file))
     # Load in CZYX order
     data = img.get_image_data("CZYX")
     data = data.astype(np.float32)
@@ -58,17 +58,17 @@ def main():
     files = list(iter_oir_files(INPUT_ROOT))
 
     if not files:
-        print("❌ No .oir/.oi files found.")
+        print(" No .oir/.oi files found.")
         return
 
-    print(f"📦 Found {len(files)} files to process.")
+    print(f" Found {len(files)} files to process.")
 
     for i, f in enumerate(files, 1):
         print(f"\n[{i}/{len(files)}]")
         try:
             convert_oir_to_nifti_channels(f)
         except Exception as e:
-            print(f"💥 Error with {f}: {e}")
+            print(f" Error with {f}: {e}")
 
 if __name__ == "__main__":
     main()
