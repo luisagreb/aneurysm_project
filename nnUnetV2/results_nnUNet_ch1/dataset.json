@@ -1,0 +1,101 @@
+{
+    "name": "NucleusSeg",
+    "description": "Nucleus segmentation dataset (single-channel nuclear stain)",
+    "tensorImageSize": "3D",
+    "reference": "",
+    "licence": "",
+    "release": "0.0",
+    "modality": {
+        "0": "nucleus_channel"
+    },
+    "labels": {
+        "background": 0,
+        "nucleus": 1
+    },
+    "file_ending": ".nii.gz",
+    "numTraining": 20,
+    "numTest": 0,
+    "training": [
+        {
+            "image": "./imagesTr/case_0000_0000.nii.gz",
+            "label": "./labelsTr/case_0000.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0001_0000.nii.gz",
+            "label": "./labelsTr/case_0001.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0002_0000.nii.gz",
+            "label": "./labelsTr/case_0002.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0003_0000.nii.gz",
+            "label": "./labelsTr/case_0003.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0004_0000.nii.gz",
+            "label": "./labelsTr/case_0004.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0005_0000.nii.gz",
+            "label": "./labelsTr/case_0005.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0006_0000.nii.gz",
+            "label": "./labelsTr/case_0006.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0007_0000.nii.gz",
+            "label": "./labelsTr/case_0007.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0008_0000.nii.gz",
+            "label": "./labelsTr/case_0008.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0009_0000.nii.gz",
+            "label": "./labelsTr/case_0009.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0010_0000.nii.gz",
+            "label": "./labelsTr/case_0010.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0011_0000.nii.gz",
+            "label": "./labelsTr/case_0011.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0012_0000.nii.gz",
+            "label": "./labelsTr/case_0012.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0013_0000.nii.gz",
+            "label": "./labelsTr/case_0013.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0014_0000.nii.gz",
+            "label": "./labelsTr/case_0014.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0015_0000.nii.gz",
+            "label": "./labelsTr/case_0015.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0016_0000.nii.gz",
+            "label": "./labelsTr/case_0016.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0017_0000.nii.gz",
+            "label": "./labelsTr/case_0017.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0018_0000.nii.gz",
+            "label": "./labelsTr/case_0018.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0019_0000.nii.gz",
+            "label": "./labelsTr/case_0019.nii.gz"
+        }
+    ],
+    "test": []
+}
