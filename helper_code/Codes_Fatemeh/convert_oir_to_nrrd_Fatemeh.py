@@ -1,8 +1,8 @@
 import os
 import numpy as np
 import nrrd
-from bioio import BioImage
 from pathlib import Path
+from aicsimageio import AICSImage
 
 def convert_oir_to_nrrd(input_dir, output_dir=None):
     """
@@ -34,27 +34,30 @@ def convert_oir_to_nrrd(input_dir, output_dir=None):
 
         try:
             # Read the .oir file
-            img = BioImage(oir_file)
+            img = AICSImage(oir_file)
 
-            # Get image data
-            data = img.data  # Shape: (T, C, Z, Y, X)
+            # Get image data in (T, C, Z, Y, X) order
+            data = img.get_image_data("TCZYX")
 
-            print(f"  Image shape: {data.shape}")
-            print(f"  Dimension order: {img.dims}")
-            print(f"  Number of channels: {img.dims.C}")
-            print(f"  Z-stack size: {img.dims.Z}")
+            print(f"  Image shape (TCZYX): {data.shape}")
 
-            # Get physical pixel sizes for NRRD spacing
-            physical_pixel_sizes = img.physical_pixel_sizes
+            t, c, z, y, x = data.shape
+            print(f"  Number of timepoints: {t}")
+            print(f"  Number of channels: {c}")
+            print(f"  Z-stack size: {z}")
+
+            # Get physical pixel sizes for NRRD spacing (Z, Y, X)
+            # If any are missing, fall back to 1.0
+            pps = img.physical_pixel_sizes
             spacing = [
-                physical_pixel_sizes.Z if physical_pixel_sizes.Z else 1.0,
-                physical_pixel_sizes.Y if physical_pixel_sizes.Y else 1.0,
-                physical_pixel_sizes.X if physical_pixel_sizes.X else 1.0
+                (pps.Z or 1.0) if hasattr(pps, "Z") else 1.0,
+                (pps.Y or 1.0) if hasattr(pps, "Y") else 1.0,
+                (pps.X or 1.0) if hasattr(pps, "X") else 1.0,
             ]
 
             # Remove time dimension (take first timepoint)
-            if img.dims.T > 1:
-                print(f"  Multiple timepoints detected ({img.dims.T}), using first timepoint")
+            if t > 1:
+                print(f"  Multiple timepoints detected ({t}), using first timepoint")
             data = data[0]  # Remove T dimension, now shape is (C, Z, Y, X)
 
             # Create a folder for this .oir file
@@ -63,7 +66,7 @@ def convert_oir_to_nrrd(input_dir, output_dir=None):
             os.makedirs(file_output_dir, exist_ok=True)
 
             # Process each channel separately
-            for channel_idx in range(img.dims.C):
+            for channel_idx in range(c):
                 # Extract channel data (shape will be ZYX)
                 channel_data = data[channel_idx]
 
@@ -101,7 +104,10 @@ def convert_oir_to_nrrd(input_dir, output_dir=None):
 
 
 if __name__ == "__main__":
-    # Use current directory
-    current_dir = os.getcwd()
-    print(f"Converting .oir files from: {current_dir}\n")
-    convert_oir_to_nrrd(current_dir)
+    # Explicit input and output directories (Windows paths must escape backslashes or use raw strings)
+    input_dir = r"D:\NewData\oir_files"
+    output_dir = r"D:\NewData\nii.gz_files"
+
+    print(f"Converting .oir files from: {input_dir}")
+    print(f"Output will be saved to: {output_dir}\n")
+    convert_oir_to_nrrd(input_dir, output_dir)

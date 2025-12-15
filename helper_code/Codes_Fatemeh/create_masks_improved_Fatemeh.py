@@ -3,6 +3,58 @@ import numpy as np
 import nrrd
 from pathlib import Path
 from scipy import ndimage
+try:
+    from skimage.filters import threshold_otsu
+    HAS_SKIMAGE = True
+except ImportError:
+    HAS_SKIMAGE = False
+    print("Warning: scikit-image not found. Otsu thresholding will not be available.")
+
+def calculate_dynamic_threshold(channel_data, method='otsu', **kwargs):
+    """
+    Calculate a dynamic threshold based on the image statistics.
+    
+    Args:
+        channel_data: 3D numpy array (Z, Y, X)
+        method: Thresholding method - 'otsu', 'percentile', 'mean_std', or 'fixed'
+        **kwargs: Additional parameters for specific methods:
+            - percentile: percentile value (default: 95)
+            - mean_std_multiplier: multiplier for mean + std (default: 2.0)
+            - fixed_value: fixed threshold value (for 'fixed' method)
+    
+    Returns:
+        Calculated threshold value
+    """
+    if method == 'otsu':
+        if not HAS_SKIMAGE:
+            raise ImportError("scikit-image required for Otsu thresholding. Install with: pip install scikit-image")
+        # Flatten the 3D array for Otsu
+        flat_data = channel_data.flatten()
+        # Remove zeros to avoid bias
+        non_zero = flat_data[flat_data > 0]
+        if len(non_zero) == 0:
+            return np.max(channel_data)  # Fallback if all zeros
+        threshold = threshold_otsu(non_zero)
+        return float(threshold)
+    
+    elif method == 'percentile':
+        percentile = kwargs.get('percentile', 95)
+        threshold = np.percentile(channel_data, percentile)
+        return float(threshold)
+    
+    elif method == 'mean_std':
+        multiplier = kwargs.get('mean_std_multiplier', 2.0)
+        mean_val = np.mean(channel_data)
+        std_val = np.std(channel_data)
+        threshold = mean_val + (multiplier * std_val)
+        return float(threshold)
+    
+    elif method == 'fixed':
+        return float(kwargs.get('fixed_value', 250))
+    
+    else:
+        raise ValueError(f"Unknown threshold method: {method}. Choose from: 'otsu', 'percentile', 'mean_std', 'fixed'")
+
 
 def create_mask_with_threshold(channel_data, threshold, remove_small_objects=True, min_size=50):
     """
@@ -46,12 +98,16 @@ def create_mask_with_threshold(channel_data, threshold, remove_small_objects=Tru
 def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
                                         remove_small_objects=True, min_size=50):
     """
-    Process all NRRD files and create masks with custom thresholds per channel.
+    Process all NRRD files and create masks with custom or dynamic thresholds per channel.
 
     Args:
         input_dir: Directory containing subdirectories with NRRD files
-        channel_thresholds: Dictionary mapping channel index to threshold value
-                          e.g., {0: 250, 1: 300, 2: 400}
+        channel_thresholds: Dictionary mapping channel index to threshold config.
+                          Can be:
+                          - Fixed value: {0: 250, 1: 300}
+                          - Dynamic method: {0: {'method': 'otsu'}, 
+                                            1: {'method': 'percentile', 'percentile': 95},
+                                            2: {'method': 'mean_std', 'mean_std_multiplier': 2.0}}
         remove_small_objects: Whether to clean up small objects
         min_size: Minimum object size to keep
     """
@@ -69,7 +125,7 @@ def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
         return
 
     print(f"Found {len(subdirs)} subdirectories to process")
-    print(f"Channel thresholds: {channel_thresholds}")
+    print(f"Channel threshold configs: {channel_thresholds}")
     print(f"Remove small objects: {remove_small_objects} (min size: {min_size})")
     print()
 
@@ -105,8 +161,22 @@ def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
                 print(f"    Shape: {channel_data.shape}, dtype: {channel_data.dtype}")
                 print(f"    Intensity range: [{np.min(channel_data)}, {np.max(channel_data)}]")
 
-                # Get threshold for this channel
-                threshold = channel_thresholds[channel_num]
+                # Get threshold config for this channel
+                threshold_config = channel_thresholds[channel_num]
+                
+                # Determine if it's a fixed value or dynamic method
+                if isinstance(threshold_config, (int, float)):
+                    # Fixed threshold
+                    threshold = float(threshold_config)
+                    print(f"    Using fixed threshold: {threshold}")
+                elif isinstance(threshold_config, dict):
+                    # Dynamic threshold
+                    method = threshold_config.get('method', 'otsu')
+                    print(f"    Calculating dynamic threshold using method: {method}")
+                    threshold = calculate_dynamic_threshold(channel_data, method=method, **threshold_config)
+                    print(f"    Calculated threshold: {threshold:.2f}")
+                else:
+                    raise ValueError(f"Invalid threshold config for channel {channel_num}: {threshold_config}")
 
                 # Create mask
                 mask = create_mask_with_threshold(
@@ -149,33 +219,53 @@ def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
 
 if __name__ == "__main__":
     # Configuration
-    input_directory = "nrrd_output"
+    input_directory = r"D:\NewData\nii.gz_files"  # Parent directory containing all subdirectories
 
-    # Set custom thresholds for each channel
-    # Based on the analysis:
-    # - Channel 0: First channel - Most data 140-242, threshold 250
-    # - Channel 1 (BLUE): Most data 140-536, but bright spots up to 4095
-    #                     Use threshold ~280 to capture blue fluorescence
-    # - Channel 2 (RED): Most data 127-524, use threshold around 400
+    # OPTION 1: Fixed thresholds (same for all images)
+    # channel_thresholds = {
+    #     0: 250,   # Channel 0 (First channel) threshold
+    #     1: 280,   # Channel 1 (BLUE) - captures bright blue structures
+    #     2: 400    # Channel 2 (RED) threshold
+    # }
 
+    # OPTION 2: Dynamic thresholds (calculated per image)
+    # Channel structure:
+    # - Channel 0 (index 0): DAPI nucleus - clear foreground/background, Otsu works well
+    # - Channel 1 (index 1): F-actin filaments - fine structures, may need percentile
+    # - Channel 2 (index 2): Mitochondria (TOM20) - complex structures, may need careful tuning
+    
+    # Methods available:
+    # - 'otsu': Automatic threshold using Otsu's method (best for clear foreground/background)
+    # - 'percentile': Use Nth percentile (e.g., 95th = top 5% brightest)
+    # - 'mean_std': mean + (multiplier * std_dev)
+    
     channel_thresholds = {
-        0: 250,   # Channel 0 (First channel) threshold
-        1: 280,   # Channel 1 (BLUE) - captures bright blue structures
-        2: 400    # Channel 2 (RED) threshold
+        0: {'method': 'otsu'},  # Channel 0 (DAPI nucleus): Otsu - clear separation
+        1: {'method': 'otsu'},  # Channel 1 (F-actin): Start with Otsu, try percentile if needed
+        2: {'method': 'percentile', 'percentile': 90}  # Channel 2 (Mitochondria): Percentile for complex structures
     }
+    
+    # Alternative configurations to try:
+    # For F-actin (Channel 1) if Otsu misses fine filaments:
+    #   1: {'method': 'percentile', 'percentile': 85}  # Lower percentile captures more dim filaments
+    
+    # For Mitochondria (Channel 2) if too much noise:
+    #   2: {'method': 'percentile', 'percentile': 95}  # Higher percentile = more selective
+    # Or if missing structures:
+    #   2: {'method': 'mean_std', 'mean_std_multiplier': 1.5}  # Lower threshold
 
     # Adjust these parameters as needed
     cleanup_small_objects = True
     minimum_object_size = 50  # Reduced from 100 to keep more small structures
 
     print("=" * 70)
-    print("IMPROVED MASK CREATION WITH CUSTOM THRESHOLDS")
+    print("DYNAMIC MASK CREATION WITH ADAPTIVE THRESHOLDS")
     print("=" * 70)
-    print("\nRecommended threshold adjustments:")
-    print("  - Increase threshold: Capture only brightest structures")
-    print("  - Decrease threshold: Capture more dimmer structures")
-    print("  - Channel 1 (BLUE): Try values between 250-350")
-    print("  - Channel 2 (RED): Try values between 350-450")
+    print("\nThreshold methods:")
+    print("  - 'otsu': Automatic optimal threshold (best for most cases)")
+    print("  - 'percentile': Use Nth percentile (e.g., 95 = top 5% brightest)")
+    print("  - 'mean_std': mean + (multiplier * std_dev)")
+    print("  - Fixed value: Just use a number (e.g., 250)")
     print("\nCurrent settings will overwrite existing masks!")
     print("=" * 70)
     print()
@@ -189,9 +279,16 @@ if __name__ == "__main__":
     )
 
     print("\n" + "=" * 70)
-    print("TIPS:")
-    print("  - If masks have too much noise: INCREASE threshold values")
-    print("  - If masks miss structures: DECREASE threshold values")
-    print("  - Channel 1 (BLUE): try thresholds 250, 280, 300, 350")
-    print("  - Channel 2 (RED): try thresholds 350, 380, 400, 450")
+    print("TIPS FOR DYNAMIC THRESHOLDING:")
+    print("  - Otsu method: Best for images with clear foreground/background separation")
+    print("  - Percentile: Higher percentile (e.g., 98) = more selective (fewer voxels)")
+    print("               Lower percentile (e.g., 90) = less selective (more voxels)")
+    print("  - Mean+Std: Increase multiplier (e.g., 2.5) = more selective")
+    print("             Decrease multiplier (e.g., 1.5) = less selective")
+    print("\n  If masks have too much noise:")
+    print("    - For percentile: INCREASE percentile value (e.g., 95 -> 98)")
+    print("    - For mean_std: INCREASE multiplier (e.g., 2.0 -> 2.5)")
+    print("\n  If masks miss structures:")
+    print("    - For percentile: DECREASE percentile value (e.g., 95 -> 90)")
+    print("    - For mean_std: DECREASE multiplier (e.g., 2.0 -> 1.5)")
     print("=" * 70)

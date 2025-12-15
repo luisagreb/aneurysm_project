@@ -58,6 +58,5 @@ def copy_oir_files_recursive(source_root_folder):
 
 # --- Execution ---
 
-source_directory_path = "C:/Users/YourName/Documents/MyProjectData" 
-
+source_directory_path = r"D:\NewData\oir_files\missing_files"
 copy_oir_files_recursive(source_directory_path)
