@@ -2,7 +2,7 @@ import SimpleITK as sitk
 from pathlib import Path
 
 # INPUT folder: your nnU-Net predictions
-input_dir = Path("/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/nnUnetV2/results_nnUNet_ch1")
+input_dir = Path("/Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project/data/ch1_nnunet")
 
 # OUTPUT folder: NRRD for ParaView
 output_dir = input_dir / "nrrd"
