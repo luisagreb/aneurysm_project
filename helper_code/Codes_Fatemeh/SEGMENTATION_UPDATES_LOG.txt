@@ -1,0 +1,403 @@
+================================================================================
+ACTIN MASK SEGMENTATION - UPDATES AND CHANGES LOG
+================================================================================
+File: create_masks_improved_Fatemeh.py
+Date: December 18, 2024
+================================================================================
+
+OVERVIEW
+--------
+This script creates binary masks from NRRD channel files using thresholding and
+morphological operations. It processes multiple folders and creates masks for
+channels 0, 1, and 2, with special enhanced cleanup for channel 1 (actin).
+
+
+MAIN FEATURES
+-------------
+1. Fixed and Dynamic Thresholding Support
+   - Fixed integer thresholds (simple and fast)
+   - Dynamic methods: Otsu, percentile, mean+std (adaptive per image)
+
+2. Channel-Specific Processing
+   - Channel 0: Standard processing
+   - Channel 1 (Actin): Enhanced cleanup to remove side dots while preserving strands
+   - Channel 2: Standard processing
+
+3. Morphological Cleanup
+   - Binary opening: Removes small noise/dots
+   - Binary closing: Fills holes and connects nearby structures
+   - Small object removal: Filters out components below size threshold
+   - Distance-based filtering: Removes objects far from main structure (channel 1 only)
+
+
+================================================================================
+UPDATE HISTORY
+================================================================================
+
+[2024-12-18 - Update 12] SHAPE-BASED FILTERING - INTELLIGENT ARTIFACT DETECTION
+Problem: Still seeing horizontal scan lines and small square tiling artifacts
+Solution: Analyze bounding box of each object to identify and delete artifacts by shape
+Changes:
+  1. Shape-Based Filtering (NEW):
+     - Horizontal scan lines: Delete if width >40px AND height <4px
+     - Small squares: Delete if width <15px AND height <15px AND roughly square (|w-h| <5px)
+     - Uses bounding box analysis on each connected component
+  2. Toughened Preprocessing Parameters:
+     - Frangi beta: 1.5 → 2.0 (HEAVILY penalizes square/blobby shapes)
+     - Frangi sigma_range: (1,7) → (2,7) (starting at 2 ignores 1-pixel-high lines)
+     - Gaussian blur sigma: 1.0 → 1.2 (stronger edge softening)
+  3. Increased Border Clearing:
+     - Bottom border: 10px → 20px (scan lines often at bottom edge)
+  4. Larger Closing Operation:
+     - Closing: (2,2,2) → (3,3,3) (better connects dashed filaments)
+  5. Increased Minimum Object Size:
+     - min_size: 50 → 250 voxels (real filaments are long; kills small fragments)
+Result: Intelligent artifact removal based on shape characteristics
+
+[2024-12-18 - Update 11] ARTIFACT REMOVAL - SQUARES & LINE NOISE
+Problem: Square tiling artifacts and horizontal line noise contaminating actin masks
+Root causes:
+  1. Sharp square edges from tiling/stitching in microscopy
+  2. Horizontal line noise (1-pixel high artifacts)
+  3. Edge artifacts at image borders
+  4. Frangi beta too low - not penalizing non-filamentous shapes enough
+Changes:
+  1. Added Median Filter (3x1) - targets horizontal line noise specifically
+  2. Added Gaussian Blur (sigma=1.0) - softens square edges before Frangi
+  3. Increased Frangi beta: 0.5 → 1.5 - penalizes square/blobby shapes
+     - Higher beta = only keeps extremely long and thin structures
+  4. Added Border Zeroing (10px) - removes edge artifacts at frame boundaries
+     - Zeros out outer 10 pixels on all sides before morphological operations
+Result: Clean actin filaments without square artifacts or line noise
+
+[2024-12-18 - Update 10] ELIMINATED "DASHED LINE" EFFECT - CONTINUOUS FILAMENTS
+Problem: Filaments appeared as dashed lines or outlines instead of continuous structures
+Root causes identified:
+  1. Frangi sigma range too narrow (1,3) - only catching sharp edges
+  2. Sauvola k still too high - threshold too aggressive for dim regions
+  3. Need to thicken lines, not just preserve them
+Changes:
+  1. Frangi sigma range: (1,3) → (1,7) - detects thicker/out-of-focus filaments
+     - Broader range captures more continuous structures, not just edges
+  2. Sauvola k parameter: 0.05 → 0.01 (VERY sensitive)
+     - Captures dim pixels between bright dashes, creating continuous lines
+  3. Sauvola window_size: 25 → 51 (better background estimation)
+     - Larger window prevents over-segmentation of filaments
+  4. Morphological: Added dilation BEFORE closing
+     - Dilation thickens the filaments slightly
+     - Closing then fills gaps and connects nearby strands
+     - Still NO opening (opening breaks thin connections)
+Result: Continuous, solid filaments instead of dashed outlines
+
+[2024-12-18 - Update 9] INCREASED SENSITIVITY FOR FILAMENT DETECTION
+Problem: Advanced preprocessing was too conservative, missing many filaments
+Changes:
+  1. Sauvola k parameter: 0.2 → 0.05 (MUCH more sensitive)
+     - Lower k = more liberal thresholding = captures more dim structures
+  2. Window size: 15 → 25 (better local adaptation)
+  3. Morphological cleanup: Removed opening operation for channel 1
+     - Now only applies closing (fills gaps, preserves all filaments)
+     - Opening was removing thin filaments
+Result: Should capture significantly more actin filaments, including dim ones
+
+[2024-12-18 - Update 8] IMPLEMENTED ADVANCED PREPROCESSING PIPELINE
+Added: Rolling Ball Background Subtraction + Frangi Filter + Local Thresholding
+  1. Rolling Ball (radius=15): Removes diffuse background glow
+  2. Frangi Filter (sigma 1-3): Enhances tubular structures (actin fibers)
+  3. Sauvola Local Thresholding: Adapts to local image characteristics
+Purpose: Better fiber detection by removing background and enhancing structures
+Configuration: channel_thresholds[1] = {'method': 'local'}
+
+
+
+UPDATE 1: Initial Setup - Processing First Folder Only
+-------------------------------------------------------
+- Processed only the first folder in nrrd_files directory
+- Basic thresholding with fixed values
+- Standard morphological opening (2x2x2) for all channels
+- Minimum object size: 50 voxels
+
+Configuration:
+  - Channel 0 threshold: 250
+  - Channel 1 threshold: 180
+  - Channel 2 threshold: 400
+  - Folders processed: 1 (first folder only)
+
+
+UPDATE 2: Extended to Process 10 Folders
+-----------------------------------------
+- Changed from processing 1 folder to processing first 10 folders
+- Code change: subdirs = sorted(subdirs)[:1] → subdirs = sorted(subdirs)[:10]
+- Allows batch processing of multiple samples
+
+Configuration:
+  - Folders processed: 10 (first 10 folders alphabetically)
+
+
+UPDATE 3: Enhanced Cleanup for Channel 1 (Actin)
+-------------------------------------------------
+Problem: Small dots/noise appearing on the sides of actin masks
+
+Solution: Added channel-specific aggressive cleanup for channel 1
+- Multiple morphological opening passes:
+  * First pass: 4x4x4 opening (removes larger noise)
+  * Second pass: 3x3x3 opening (removes smaller dots)
+- Morphological closing: 2x2x2 (fills small holes)
+- Increased minimum object size: 3x base (150 voxels instead of 50)
+- Distance-based filtering: Removes objects >30% of max dimension away from main structure
+
+Code changes:
+  - Added channel_num parameter to create_mask_with_threshold()
+  - Conditional cleanup based on channel number
+  - Distance calculation between components
+
+Configuration:
+  - Channel 1 threshold: 180 → 200 → 280 → 320 (increased to reduce noise)
+  - Opening structure: 4x4x4 + 3x3x3 (double pass)
+  - Min size multiplier: 3x (150 voxels)
+  - Distance threshold: 30% of max dimension
+
+
+UPDATE 4: Balanced Cleanup - Preserve Actin Strands
+----------------------------------------------------
+Problem: Too aggressive cleanup was removing actin strands, not capturing enough
+
+Solution: Reduced cleanup aggressiveness while still removing side dots
+- Single morphological opening: 3x3x3 (instead of double pass)
+- Reduced minimum object size: 2x base (100 voxels instead of 150)
+- Increased distance threshold: 40% of max dimension (instead of 30%)
+- Lowered threshold: 300 → 250 (to capture dimmer actin strands)
+
+Code changes:
+  - Removed second opening pass (4x4x4)
+  - Changed min_size multiplier from 3x to 2x
+  - Increased max_distance from 0.3 to 0.4
+  - Updated threshold from 300 to 250
+
+Configuration:
+  - Channel 1 threshold: 250 (lowered to capture more strands)
+  - Opening structure: Single 3x3x3 pass
+  - Min size multiplier: 2x (100 voxels)
+  - Distance threshold: 40% of max dimension
+
+
+UPDATE 5: Enhanced Strand Capture - Capture More Thin Strands
+--------------------------------------------------------------
+Problem: Some actin strands still missing, need to capture more thin/dim strands
+
+Solution: Further reduced cleanup and lowered threshold to maximize strand capture
+- Reduced morphological opening: 3x3x3 → 2x2x2 (gentler, preserves thin filaments)
+- Reduced minimum object size: 2x → 1.5x base (75 voxels instead of 100)
+- Increased distance threshold: 40% → 50% of max dimension (keeps more extensions)
+- Lowered threshold: 250 → 220 (captures dimmer actin strands)
+
+Code changes:
+  - Changed opening structure from 3x3x3 to 2x2x2
+  - Changed min_size multiplier from 2x to 1.5x (75 voxels)
+  - Increased max_distance from 0.4 to 0.5
+  - Updated threshold from 250 to 220
+
+Configuration:
+  - Channel 1 threshold: 220 (further lowered to capture dimmer strands)
+  - Opening structure: 2x2x2 (gentler, preserves thin strands)
+  - Min size multiplier: 1.5x (75 voxels)
+  - Distance threshold: 50% of max dimension
+
+
+UPDATE 6: Adaptive Thresholding for Actin Channel
+---------------------------------------------------
+Problem: Fixed threshold (220) doesn't work well for all images - some images have
+         different intensity ranges, causing missed strands or too much noise
+
+Solution: Implemented dynamic/adaptive thresholding for channel 1 (actin)
+- Changed from fixed threshold to percentile-based adaptive thresholding
+- Each image gets its own optimal threshold calculated automatically
+- Uses 85th percentile (captures top 15% brightest pixels) per image
+- Adapts to each image's intensity distribution
+
+Code changes:
+  - Changed channel_thresholds[1] from fixed value (220) to dict with method
+  - Now uses: {'method': 'percentile', 'percentile': 85}
+  - Threshold calculated per image using calculate_dynamic_threshold()
+
+Configuration:
+  - Channel 1 threshold: Dynamic - 85th percentile per image
+  - Automatically adapts to each image's intensity characteristics
+  - Alternative methods available: Otsu, percentile (80-95), mean_std
+
+Benefits:
+  - Captures actin strands regardless of image brightness variations
+  - Each image gets optimal threshold for its intensity distribution
+  - More consistent results across different samples
+  - Can easily adjust percentile value (lower = more capture, higher = less noise)
+
+
+================================================================================
+CURRENT CONFIGURATION
+================================================================================
+
+Input Directory:
+  /Volumes/LuisaHD/NewData/nrrd_files
+
+Folders Processed:
+  First 10 folders (alphabetically sorted)
+
+Channel Thresholds:
+  Channel 0: 250 (fixed threshold)
+  Channel 1: Advanced preprocessing + local adaptive thresholding (OPTIMIZED FOR CONTINUOUS FILAMENTS)
+  Channel 2: 400 (fixed threshold)
+
+Channel 1 (Actin) - SHAPE-BASED ARTIFACT REMOVAL (INTELLIGENT FILTERING):
+  0a. Median Filter (3x1) - kills horizontal line noise
+  0b. Gaussian Blur (sigma=1.2) - softens tiling square edges
+  1. Rolling Ball Background Subtraction (radius=15px) - removes diffuse glow
+  2. Frangi Filter (sigma_range=(2,7), beta=2.0) - HEAVILY penalizes squares
+  3. Sauvola Local Thresholding (window=51, k=0.01) - VERY SENSITIVE
+  4. Border Zeroing (20px bottom, 10px sides) - removes scan lines
+  5. Shape-Based Filtering - removes horizontal lines & small squares by bounding box
+  6. Morphological: Dilation (2x2x2) + Closing (3x3x3) - connects dashed filaments
+  7. Minimum object size: 250 voxels - real filaments are long
+  8. Distance filtering: Removes objects >50% of max dimension away
+
+  Key Parameters:
+    - Median (3x1): Targets 1-pixel high horizontal lines
+    - Gaussian (sigma=1.2): Stronger edge softening
+    - beta=2.0: HEAVILY penalizes non-filamentous shapes
+    - sigma=(2,7): Starting at 2 ignores 1-pixel-high noise
+    - Shape filtering: Horizontal lines (>40w, <4h), Small squares (<15x15)
+    - Closing (3x3x3): Larger closing better connects dashed filaments
+    - min_size=250: Kills small square fragments, keeps long filaments
+
+Cleanup Parameters (Channels 0 & 2):
+  - Morphological opening: 2x2x2
+  - Minimum object size: 50 voxels
+  - No distance filtering
+
+
+================================================================================
+TECHNICAL DETAILS
+================================================================================
+
+Morphological Operations:
+-------------------------
+1. Binary Opening (erosion followed by dilation):
+   - Removes small noise and isolated dots
+   - Structure size determines how much is removed
+   - Larger structure = more aggressive removal
+
+2. Binary Closing (dilation followed by erosion):
+   - Fills small holes and gaps
+   - Connects nearby structures
+   - Helps preserve continuous actin strands
+
+3. Connected Component Labeling:
+   - Identifies separate objects in the mask
+   - Allows filtering by size and distance
+
+4. Distance-Based Filtering (Channel 1 only):
+   - Finds largest component (main actin structure)
+   - Calculates centroid of main structure
+   - Removes components far from main structure
+   - Preserves nearby strands and extensions
+
+
+Threshold Selection Guide:
+--------------------------
+Lower threshold (e.g., 200-250):
+  - Captures more dim actin strands
+  - May include more noise
+  - Better for thin/fine structures
+
+Higher threshold (e.g., 300-350):
+  - Captures only bright structures
+  - Less noise
+  - May miss dim strands
+
+Current setting (250):
+  - Balanced approach
+  - Captures most actin while controlling noise
+  - Works well with enhanced cleanup
+
+
+Cleanup Parameter Tuning:
+-------------------------
+If masks have too much noise:
+  - Increase threshold (250 → 280-300)
+  - Increase opening structure (3x3x3 → 4x4x4)
+  - Increase min_size multiplier (2x → 3x)
+  - Decrease distance threshold (40% → 30%)
+
+If masks miss actin strands:
+  - Decrease threshold (250 → 220-240)
+  - Decrease opening structure (3x3x3 → 2x2x2)
+  - Decrease min_size multiplier (2x → 1.5x)
+  - Increase distance threshold (40% → 50%)
+
+
+================================================================================
+OUTPUT FILES
+================================================================================
+
+File Naming Convention:
+  Input:  channel_00.nrrd, channel_01.nrrd, channel_02.nrrd
+  Output: channel_00_mask.nrrd, channel_01_mask.nrrd, channel_02_mask.nrrd
+
+File Location:
+  Masks are saved in the same folder as the input channel files
+  Example: /Volumes/LuisaHD/NewData/nrrd_files/[folder_name]/channel_01_mask.nrrd
+
+File Format:
+  - Format: NRRD
+  - Data type: uint8 (0 = background, 255 = foreground)
+  - Dimensions: Same as input channel files (typically 3D: Z, Y, X)
+
+
+================================================================================
+USAGE INSTRUCTIONS
+================================================================================
+
+1. Activate virtual environment:
+   cd /Users/luisagrebici/Documents/Nezami_Lab/aneurysm_project
+   source venv/bin/activate
+
+2. Run the script:
+   python helper_code/Codes_Fatemeh/create_masks_improved_Fatemeh.py
+
+3. Monitor output:
+   - Script prints progress for each folder and channel
+   - Shows number of objects removed during cleanup
+   - Displays foreground percentage for each mask
+
+4. Check results:
+   - Masks are saved in each folder as *_mask.nrrd files
+   - Open in visualization tool (ParaView, ImageJ, etc.)
+   - Refresh/reload files if viewing cached versions
+
+
+================================================================================
+FUTURE IMPROVEMENTS / NOTES
+================================================================================
+
+Potential Enhancements:
+- Add command-line arguments for threshold values
+- Add option to process specific folders by name/pattern
+- Add option to save masks to separate output directory
+- Add visualization/comparison tools
+- Add statistics summary (total masks created, average foreground %, etc.)
+
+Known Limitations:
+- Alphabetical sorting means cell10 comes before cell2
+- Fixed thresholds may not work well for all images
+- Distance filtering assumes single main structure
+
+Troubleshooting:
+- If masks don't update: Refresh visualization tool
+- If too much noise: Increase threshold and cleanup parameters
+- If missing strands: Decrease threshold and cleanup parameters
+- Check file modification times to verify updates
+
+
+================================================================================
+END OF LOG
+================================================================================
+
