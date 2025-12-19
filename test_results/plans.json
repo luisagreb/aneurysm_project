@@ -2,42 +2,42 @@
     "dataset_name": "Dataset001_NucleusSeg",
     "plans_name": "nnUNetPlans",
     "original_median_spacing_after_transp": [
-        0.0003699999942909926,
-        0.0001936076587298885,
-        0.0001936076587298885
+        0.3700000047683716,
+        0.19181498885154724,
+        0.19181498885154724
     ],
     "original_median_shape_after_transp": [
-        987,
-        993,
-        9
+        9,
+        1000,
+        995
     ],
     "image_reader_writer": "SimpleITKIO",
     "transpose_forward": [
+        2,
         0,
-        1,
-        2
+        1
     ],
     "transpose_backward": [
-        0,
         1,
-        2
+        2,
+        0
     ],
     "configurations": {
         "2d": {
             "data_identifier": "nnUNetPlans_2d",
             "preprocessor_name": "DefaultPreprocessor",
-            "batch_size": 182,
+            "batch_size": 4,
             "patch_size": [
                 1024,
-                10
+                896
             ],
             "median_image_size_in_voxels": [
-                956.0,
-                9.0
+                922.0,
+                872.0
             ],
             "spacing": [
-                0.0001936076587298885,
-                0.0001936076587298885
+                0.19181498885154724,
+                0.19181498885154724
             ],
             "normalization_schemes": [
                 "ZScoreNormalization"
@@ -126,27 +126,27 @@
                         ],
                         [
                             2,
-                            1
+                            2
                         ],
                         [
                             2,
-                            1
+                            2
                         ],
                         [
                             2,
-                            1
+                            2
                         ],
                         [
                             2,
-                            1
+                            2
                         ],
                         [
                             2,
-                            1
+                            2
                         ],
                         [
                             2,
-                            1
+                            2
                         ]
                     ],
                     "n_conv_per_stage": [
@@ -193,21 +193,21 @@
         "3d_lowres": {
             "data_identifier": "nnUNetPlans_3d_lowres",
             "preprocessor_name": "DefaultPreprocessor",
-            "batch_size": 4,
+            "batch_size": 5,
             "patch_size": [
-                192,
+                7,
                 320,
-                5
+                320
             ],
             "median_image_size_in_voxels": [
-                515,
-                499,
-                5
+                7,
+                666,
+                630
             ],
             "spacing": [
-                0.000708958250339441,
-                0.00037097229487389425,
-                0.00037097229487389425
+                0.5121665387685864,
+                0.2655168044809437,
+                0.2655168044809437
             ],
             "normalization_schemes": [
                 "ZScoreNormalization"
@@ -239,17 +239,23 @@
             "architecture": {
                 "network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
                 "arch_kwargs": {
-                    "n_stages": 6,
+                    "n_stages": 7,
                     "features_per_stage": [
                         32,
                         64,
                         128,
                         256,
                         320,
+                        320,
                         320
                     ],
                     "conv_op": "torch.nn.modules.conv.Conv3d",
                     "kernel_sizes": [
+                        [
+                            3,
+                            3,
+                            3
+                        ],
                         [
                             3,
                             3,
@@ -288,29 +294,34 @@
                             1
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
+                            2
+                        ],
+                        [
+                            1,
                             2,
-                            1
+                            2
                         ]
                     ],
                     "n_conv_per_stage": [
@@ -319,9 +330,11 @@
                         2,
                         2,
                         2,
+                        2,
                         2
                     ],
                     "n_conv_per_stage_decoder": [
+                        2,
                         2,
                         2,
                         2,
@@ -354,21 +367,21 @@
         "3d_fullres": {
             "data_identifier": "nnUNetPlans_3d_fullres",
             "preprocessor_name": "DefaultPreprocessor",
-            "batch_size": 8,
+            "batch_size": 5,
             "patch_size": [
-                192,
+                10,
                 320,
-                10
+                320
             ],
             "median_image_size_in_voxels": [
-                987.0,
-                956.0,
-                9.0
+                9.0,
+                922.0,
+                872.0
             ],
             "spacing": [
-                0.0003699999942909926,
-                0.0001936076587298885,
-                0.0001936076587298885
+                0.3700000047683716,
+                0.19181498885154724,
+                0.19181498885154724
             ],
             "normalization_schemes": [
                 "ZScoreNormalization"
@@ -400,17 +413,23 @@
             "architecture": {
                 "network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
                 "arch_kwargs": {
-                    "n_stages": 6,
+                    "n_stages": 7,
                     "features_per_stage": [
                         32,
                         64,
                         128,
                         256,
                         320,
+                        320,
                         320
                     ],
                     "conv_op": "torch.nn.modules.conv.Conv3d",
                     "kernel_sizes": [
+                        [
+                            3,
+                            3,
+                            3
+                        ],
                         [
                             3,
                             3,
@@ -454,24 +473,29 @@
                             2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
-                            2,
-                            1
+                            2
                         ],
                         [
+                            1,
                             2,
+                            2
+                        ],
+                        [
+                            1,
                             2,
-                            1
+                            2
                         ]
                     ],
                     "n_conv_per_stage": [
@@ -480,9 +504,11 @@
                         2,
                         2,
                         2,
+                        2,
                         2
                     ],
                     "n_conv_per_stage_decoder": [
+                        2,
                         2,
                         2,
                         2,
@@ -520,13 +546,13 @@
     "label_manager": "LabelManager",
     "foreground_intensity_properties_per_channel": {
         "0": {
-            "max": 3206.0,
-            "mean": 552.128173828125,
-            "median": 474.0,
+            "max": 4095.0,
+            "mean": 708.0204467773438,
+            "median": 542.0,
             "min": 145.0,
-            "percentile_00_5": 176.0,
-            "percentile_99_5": 1606.0,
-            "std": 270.3606872558594
+            "percentile_00_5": 180.0,
+            "percentile_99_5": 2801.0,
+            "std": 478.1463623046875
         }
     }
 }

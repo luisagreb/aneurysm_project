@@ -124,15 +124,19 @@ def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
         print(f"No subdirectories found in {input_dir}")
         return
 
-    print(f"Found {len(subdirs)} subdirectories to process")
+    # Process only the first folder
+    subdirs = sorted(subdirs)[:1]
+    
+    print(f"Found {len(subdirs)} subdirectory(ies) to process (processing first folder only)")
+    print(f"Processing folder: {subdirs[0].name}")
     print(f"Channel threshold configs: {channel_thresholds}")
     print(f"Remove small objects: {remove_small_objects} (min size: {min_size})")
     print()
 
     total_masks = 0
 
-    # Process each subdirectory
-    for subdir in sorted(subdirs):
+    # Process the first subdirectory only
+    for subdir in subdirs:
         print(f"Processing: {subdir.name}")
 
         # Find all channel NRRD files (not masks)
@@ -219,36 +223,38 @@ def process_masks_with_custom_thresholds(input_dir, channel_thresholds,
 
 if __name__ == "__main__":
     # Configuration
-    input_directory = r"D:\NewData\nii.gz_files"  # Parent directory containing all subdirectories
+    input_directory = "/Volumes/LuisaHD/NewData/nrrd_files"
 
     # OPTION 1: Fixed thresholds (same for all images)
-    # channel_thresholds = {
-    #     0: 250,   # Channel 0 (First channel) threshold
-    #     1: 280,   # Channel 1 (BLUE) - captures bright blue structures
-    #     2: 400    # Channel 2 (RED) threshold
-    # }
+    # Simple and straightforward - use fixed integer values
+    channel_thresholds = {
+        0: 250,   # Channel 0 (First channel) threshold
+        1: 180,   # Channel 1 (BLUE) - captures bright blue structures
+        2: 400    # Channel 2 (RED) threshold
+    }
 
     # OPTION 2: Dynamic thresholds (calculated per image)
+    # Uncomment below to use dynamic thresholding instead
     # Channel structure:
     # - Channel 0 (index 0): DAPI nucleus - clear foreground/background, Otsu works well
     # - Channel 1 (index 1): F-actin filaments - fine structures, may need percentile
     # - Channel 2 (index 2): Mitochondria (TOM20) - complex structures, may need careful tuning
-    
+    #
     # Methods available:
     # - 'otsu': Automatic threshold using Otsu's method (best for clear foreground/background)
     # - 'percentile': Use Nth percentile (e.g., 95th = top 5% brightest)
     # - 'mean_std': mean + (multiplier * std_dev)
-    
-    channel_thresholds = {
-        0: {'method': 'otsu'},  # Channel 0 (DAPI nucleus): Otsu - clear separation
-        1: {'method': 'otsu'},  # Channel 1 (F-actin): Start with Otsu, try percentile if needed
-        2: {'method': 'percentile', 'percentile': 90}  # Channel 2 (Mitochondria): Percentile for complex structures
-    }
-    
+    #
+    # channel_thresholds = {
+    #     0: {'method': 'otsu'},  # Channel 0 (DAPI nucleus): Otsu - clear separation
+    #     1: {'method': 'otsu'},  # Channel 1 (F-actin): Start with Otsu, try percentile if needed
+    #     2: {'method': 'percentile', 'percentile': 90}  # Channel 2 (Mitochondria): Percentile for complex structures
+    # }
+    #
     # Alternative configurations to try:
     # For F-actin (Channel 1) if Otsu misses fine filaments:
     #   1: {'method': 'percentile', 'percentile': 85}  # Lower percentile captures more dim filaments
-    
+    #
     # For Mitochondria (Channel 2) if too much noise:
     #   2: {'method': 'percentile', 'percentile': 95}  # Higher percentile = more selective
     # Or if missing structures:
@@ -259,13 +265,18 @@ if __name__ == "__main__":
     minimum_object_size = 50  # Reduced from 100 to keep more small structures
 
     print("=" * 70)
-    print("DYNAMIC MASK CREATION WITH ADAPTIVE THRESHOLDS")
+    print("IMPROVED MASK CREATION WITH CUSTOM/ADAPTIVE THRESHOLDS")
     print("=" * 70)
-    print("\nThreshold methods:")
-    print("  - 'otsu': Automatic optimal threshold (best for most cases)")
-    print("  - 'percentile': Use Nth percentile (e.g., 95 = top 5% brightest)")
-    print("  - 'mean_std': mean + (multiplier * std_dev)")
-    print("  - Fixed value: Just use a number (e.g., 250)")
+    print("\nThreshold options:")
+    print("  - Fixed value: Use integer (e.g., 250)")
+    print("  - Dynamic 'otsu': Automatic optimal threshold (best for most cases)")
+    print("  - Dynamic 'percentile': Use Nth percentile (e.g., 95 = top 5% brightest)")
+    print("  - Dynamic 'mean_std': mean + (multiplier * std_dev)")
+    print("\nRecommended threshold adjustments:")
+    print("  - Increase threshold: Capture only brightest structures")
+    print("  - Decrease threshold: Capture more dimmer structures")
+    print("  - Channel 1 (BLUE): Try values between 180-350")
+    print("  - Channel 2 (RED): Try values between 350-450")
     print("\nCurrent settings will overwrite existing masks!")
     print("=" * 70)
     print()
@@ -279,16 +290,15 @@ if __name__ == "__main__":
     )
 
     print("\n" + "=" * 70)
-    print("TIPS FOR DYNAMIC THRESHOLDING:")
+    print("TIPS:")
+    print("  - If masks have too much noise: INCREASE threshold values")
+    print("  - If masks miss structures: DECREASE threshold values")
+    print("  - Channel 1 (BLUE): try thresholds 180, 250, 280, 300, 350")
+    print("  - Channel 2 (RED): try thresholds 350, 380, 400, 450")
+    print("\nFor dynamic thresholding:")
     print("  - Otsu method: Best for images with clear foreground/background separation")
     print("  - Percentile: Higher percentile (e.g., 98) = more selective (fewer voxels)")
     print("               Lower percentile (e.g., 90) = less selective (more voxels)")
     print("  - Mean+Std: Increase multiplier (e.g., 2.5) = more selective")
     print("             Decrease multiplier (e.g., 1.5) = less selective")
-    print("\n  If masks have too much noise:")
-    print("    - For percentile: INCREASE percentile value (e.g., 95 -> 98)")
-    print("    - For mean_std: INCREASE multiplier (e.g., 2.0 -> 2.5)")
-    print("\n  If masks miss structures:")
-    print("    - For percentile: DECREASE percentile value (e.g., 95 -> 90)")
-    print("    - For mean_std: DECREASE multiplier (e.g., 2.0 -> 1.5)")
     print("=" * 70)

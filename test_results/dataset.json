@@ -1,25 +1,20 @@
 {
     "name": "NucleusSeg",
-    "description": "Nucleus segmentation dataset (single-channel nuclear stain)",
+    "description": "nucleus segmentation dataset",
     "tensorImageSize": "3D",
     "reference": "",
     "licence": "",
-    "release": "0.0",
+    "release": "1.0",
     "modality": {
-        "0": "nucleus_channel"
+        "0": "nucleus"
     },
     "labels": {
-        "background": 0,
-        "nucleus": 1
+        "background": "0",
+        "nucleus": "1"
     },
-    "file_ending": ".nii.gz",
-    "numTraining": 20,
+    "numTraining": 25,
     "numTest": 0,
     "training": [
-        {
-            "image": "./imagesTr/case_0000_0000.nii.gz",
-            "label": "./labelsTr/case_0000.nii.gz"
-        },
         {
             "image": "./imagesTr/case_0001_0000.nii.gz",
             "label": "./labelsTr/case_0001.nii.gz"
@@ -95,7 +90,35 @@
         {
             "image": "./imagesTr/case_0019_0000.nii.gz",
             "label": "./labelsTr/case_0019.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0020_0000.nii.gz",
+            "label": "./labelsTr/case_0020.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0021_0000.nii.gz",
+            "label": "./labelsTr/case_0021.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0022_0000.nii.gz",
+            "label": "./labelsTr/case_0022.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0023_0000.nii.gz",
+            "label": "./labelsTr/case_0023.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0024_0000.nii.gz",
+            "label": "./labelsTr/case_0024.nii.gz"
+        },
+        {
+            "image": "./imagesTr/case_0025_0000.nii.gz",
+            "label": "./labelsTr/case_0025.nii.gz"
         }
     ],
-    "test": []
+    "test": [],
+    "channel_names": {
+        "0": "nucleus"
+    },
+    "file_ending": ".nii.gz"
 }
