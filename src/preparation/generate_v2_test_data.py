@@ -16,33 +16,33 @@ RAW_NUCLEUS_DIR = DATA_ROOT / "raw/raw_nucleus_segmented_manual"
 NNUNET_RAW = DATA_ROOT / "nnUNet/nnUNet_raw"
 
 DATASETS = [
-    {
-        "name": "Actin",
-        "id": "Dataset001_Actin",
-        "type": "actin_mito",
-        "raw_dir": RAW_NRRD_DIR,
-        "channel": "channel_01.nrrd",
-        "channel_alt": "channel_1.nrrd",
-        "mapping_file": NNUNET_RAW / "Actin_mapping.csv",
-        "mapping_key": "OriginalCellName",
-        "prefix": "Actin_Test"
-    },
-    {
-        "name": "Mito",
-        "id": "Dataset002_Mito",
-        "type": "actin_mito",
-        "raw_dir": RAW_NRRD_DIR,
-        "channel": "channel_02.nrrd",
-        "channel_alt": "channel_2.nrrd",
-        "mapping_file": NNUNET_RAW / "Mito_mapping.csv",
-        "mapping_key": "OriginalCellName",
-        "prefix": "Mito_Test"
-    },
+#    {
+#        "name": "Actin",
+#        "id": "Dataset001_Actin",
+#        "type": "actin_mito",
+#        "raw_dir": RAW_NRRD_DIR,
+#        "channel": "channel_01.nrrd",
+#        "channel_alt": "channel_1.nrrd",
+#        "mapping_file": NNUNET_RAW / "Actin_mapping.csv",
+#        "mapping_key": "OriginalCellName",
+#        "prefix": "Actin_Test"
+#    },
+#    {
+#        "name": "Mito",
+#        "id": "Dataset002_Mito",
+#        "type": "actin_mito",
+#        "raw_dir": RAW_NRRD_DIR,
+#        "channel": "channel_02.nrrd",
+#        "channel_alt": "channel_2.nrrd",
+#        "mapping_file": NNUNET_RAW / "Mito_mapping.csv",
+#        "mapping_key": "OriginalCellName",
+#        "prefix": "Mito_Test"
+#    },
     {
         "name": "Nucleus",
         "id": "Dataset003_Nucleus",
         "type": "nucleus",
-        "raw_dir": RAW_NUCLEUS_DIR,
+        "raw_dir": RAW_NRRD_DIR,
         "channel": "channel_00.nrrd",
         "channel_alt": None,
         "mapping_file": NNUNET_RAW / "Dataset003_Nucleus/Nucleus_mapping.csv",

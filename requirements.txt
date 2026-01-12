@@ -7,3 +7,6 @@ python-dotenv
 # optional viewers/export
 pynrrd
 trimesh
+pandas
+scipy
+skan
