@@ -121,11 +121,57 @@ def analyze_mito(mask, voxel_size):
     labeled_mask, num_features = measure.label(mask, return_num=True)
     fragment_count = num_features
     
+    # --- Per-Fragment Sphericity ---
+    # Calculate sphericity for each individual mitochondrial fragment
+    fragment_sphericities = []
+    fragment_volumes = []
+    
+    if fragment_count > 0:
+        for frag_id in range(1, fragment_count + 1):
+            frag_mask = (labeled_mask == frag_id).astype(np.uint8)
+            frag_volume_pixels = np.sum(frag_mask)
+            
+            # Skip very small fragments (< 10 voxels)
+            if frag_volume_pixels < 10:
+                continue
+                
+            frag_volume = frag_volume_pixels * voxel_vol
+            fragment_volumes.append(frag_volume)
+            
+            # Calculate surface area for this fragment
+            try:
+                frag_verts, frag_faces, _, _ = measure.marching_cubes(frag_mask, spacing=voxel_size)
+                frag_surface = measure.mesh_surface_area(frag_verts, frag_faces)
+                frag_sphericity = calculate_sphericity(frag_volume, frag_surface)
+                fragment_sphericities.append(frag_sphericity)
+            except (ValueError, RuntimeError):
+                # Fragment too small for marching cubes
+                pass
+    
+    # Aggregate fragment statistics
+    if fragment_sphericities:
+        mean_frag_sphericity = np.mean(fragment_sphericities)
+        std_frag_sphericity = np.std(fragment_sphericities)
+        min_frag_sphericity = np.min(fragment_sphericities)
+        max_frag_sphericity = np.max(fragment_sphericities)
+        mean_frag_volume = np.mean(fragment_volumes)
+    else:
+        mean_frag_sphericity = 0.0
+        std_frag_sphericity = 0.0
+        min_frag_sphericity = 0.0
+        max_frag_sphericity = 0.0
+        mean_frag_volume = 0.0
+    
     return {
         'Volume': total_volume,
         'Surface_Area': surface_area,
-        'Sphericity': sphericity,
+        'Sphericity': sphericity,  # Whole mask sphericity
         'Fragment_Count': fragment_count,
+        'Mean_Fragment_Sphericity': mean_frag_sphericity,  # NEW: per-fragment
+        'Std_Fragment_Sphericity': std_frag_sphericity,    # NEW
+        'Min_Fragment_Sphericity': min_frag_sphericity,    # NEW
+        'Max_Fragment_Sphericity': max_frag_sphericity,    # NEW
+        'Mean_Fragment_Volume': mean_frag_volume,          # NEW
         'Junction_Count': junction_count,
         'Branch_Count': branch_count,
         'Mean_Branch_Length': mean_branch_length,
