@@ -443,7 +443,8 @@ def main():
     parser.add_argument('--input_dir', type=str, required=True, help='Directory containing TIF or NIfTI files')
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
     parser.add_argument('--structure', type=str, required=True, choices=['mito', 'actin', 'nucleus'], help='Structure to analyze')
-    parser.add_argument('--voxel_size', type=float, nargs=3, default=[1.0, 1.0, 1.0], help='Voxel size in Z Y X or X Y Z (consistent with image)')
+    parser.add_argument('--voxel_size', type=float, nargs=3, default=None, 
+                        help='Voxel size in Z Y X (µm). If not provided, reads from NIfTI header automatically.')
     
     args = parser.parse_args()
     
@@ -460,36 +461,57 @@ def main():
     
     for file_path in files:
         try:
-            # Load file
+            # Load file and determine voxel size
             if file_path.name.endswith('.nii.gz'):
                 nii = nib.load(file_path)
                 mask = nii.get_fdata()
+                
+                # Auto-read voxel size from NIfTI header if not provided
+                if args.voxel_size is None:
+                    # NIfTI header stores voxel size in pixdim (Z, Y, X order typically)
+                    zooms = nii.header.get_zooms()
+                    voxel_size = list(zooms[:3])  # Get first 3 dimensions
+                    print(f"  Voxel size from header: {voxel_size} µm")
+                else:
+                    voxel_size = args.voxel_size
             else:
                 mask = tifffile.imread(file_path)
+                # For TIFF files, must use provided voxel size or default
+                if args.voxel_size is None:
+                    voxel_size = [1.0, 1.0, 1.0]
+                    print(f"  Warning: No voxel size in TIFF, using default {voxel_size}")
+                else:
+                    voxel_size = args.voxel_size
             
             # Ensure binary (0 and 1)
             mask = (mask > 0).astype(np.uint8)
             
             # Analyze based on structure
             if args.structure == 'mito':
-                metrics = analyze_mito(mask, args.voxel_size)
+                metrics = analyze_mito(mask, voxel_size)
             elif args.structure == 'actin':
-                metrics = analyze_actin(mask, args.voxel_size)
+                metrics = analyze_actin(mask, voxel_size)
             elif args.structure == 'nucleus':
-                metrics = analyze_nucleus(mask, args.voxel_size)
+                metrics = analyze_nucleus(mask, voxel_size)
             
+            # Store voxel size used for reference
+            metrics['Voxel_Z'] = voxel_size[0]
+            metrics['Voxel_Y'] = voxel_size[1]
+            metrics['Voxel_X'] = voxel_size[2]
             metrics['Filename'] = file_path.name
             results.append(metrics)
             print(f"Processed {file_path.name}")
             
         except Exception as e:
             print(f"Error processing {file_path.name}: {e}")
+            import traceback
+            traceback.print_exc()
             
     # Save to CSV
     if results:
         df = pd.DataFrame(results)
-        # Reorder columns to put Filename first
-        cols = ['Filename'] + [c for c in df.columns if c != 'Filename']
+        # Reorder columns to put Filename first, then voxel info
+        cols = ['Filename', 'Voxel_Z', 'Voxel_Y', 'Voxel_X'] + [c for c in df.columns if c not in ['Filename', 'Voxel_Z', 'Voxel_Y', 'Voxel_X']]
         df = df[cols]
         df.to_csv(args.output_csv, index=False)
         print(f"Saved results to {args.output_csv}")
