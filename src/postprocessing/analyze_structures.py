@@ -56,20 +56,10 @@ def analyze_mito(mask, voxel_size):
              
              # Calculate metrics from branch_data dataframe
              junction_count = branch_data['node-id-src'].nunique() # distinct junctions approximately
-             # A more accurate way for junctions is using degrees from skan or counting nodes > 2 neighbors
-             # but skan summary gives branches.
-             
-             # Let's derive the requested list:
-             # junction_count: count of nodes with degree > 2 ??
-             # Actually, Skeleton object itself has degrees.
              
              skel_obj = Skeleton(skeleton_image)
              degrees = skel_obj.degrees
-             # Nodes are pixels. Junctions are nodes with degree > 2.
-             # skan degrees is an array of degrees for each non-zero pixel in order? 
-             # No, skel_obj.degrees is an image or sparse array matching the skeleton.
-             # Let's trust skan documentation or common usage. 
-             # skel_obj.degrees is an array of shape (N_nonzero_pixels,)
+
              
              junction_count = np.sum(skel_obj.degrees > 2)
              branch_count = branch_data.shape[0]
@@ -81,14 +71,7 @@ def analyze_mito(mask, voxel_size):
              mean_tortuosity = branch_data['tortuosity'].mean()
              
              # Cyclomatic number = E - N + P
-             # E = number of edges (branches?)
-             # N = number of nodes (junctions + endpoints)
-             # skan graph might be slighty different (multi-edges). 
-             # Let's use simple graph theory from skan graph.
-             # skel_obj.n_paths (branches?)
-             # skel_obj.n_junctions? No.
-             
-             # Simple approach: Edges - Nodes + Connected Components
+             # Edges - Nodes + Connected Components
              # E = branch_count
              # N = number of unique nodes in the graph representation
              # P = Connected components of the skeleton
@@ -167,11 +150,11 @@ def analyze_mito(mask, voxel_size):
         'Surface_Area': surface_area,
         'Sphericity': sphericity,  # Whole mask sphericity
         'Fragment_Count': fragment_count,
-        'Mean_Fragment_Sphericity': mean_frag_sphericity,  # NEW: per-fragment
-        'Std_Fragment_Sphericity': std_frag_sphericity,    # NEW
-        'Min_Fragment_Sphericity': min_frag_sphericity,    # NEW
-        'Max_Fragment_Sphericity': max_frag_sphericity,    # NEW
-        'Mean_Fragment_Volume': mean_frag_volume,          # NEW
+        'Mean_Fragment_Sphericity': mean_frag_sphericity,  
+        'Std_Fragment_Sphericity': std_frag_sphericity,    
+        'Min_Fragment_Sphericity': min_frag_sphericity,    
+        'Max_Fragment_Sphericity': max_frag_sphericity,    
+        'Mean_Fragment_Volume': mean_frag_volume,          
         'Junction_Count': junction_count,
         'Branch_Count': branch_count,
         'Mean_Branch_Length': mean_branch_length,
@@ -195,13 +178,7 @@ def analyze_actin(mask, voxel_size):
     
     # Skeleton Length
     # Skeletonize 3D
-    skeleton = morphology.skeletonize(mask)
-    # Count pixels to estimate length (simple approximation as requested)
-    # Taking average voxel size for length estimation if needed, but prompt said "count pixels"
-    # To be more physically meaningful, we might multiply by mean voxel dimension, 
-    # but sticking to "count pixels" as requested, or maybe pixels * unit length?
-    # Let's assume just count for now, but label it pixels. 
-    # Actually, for physical units, it's safer to provide both or assume 1 unit length per pixel if isometric.
+    skeleton = morphology.skeletonize(mask) # Count pixels to estimate length 
     skeleton_pixels = np.sum(skeleton > 0)
     
     
@@ -212,7 +189,6 @@ def analyze_actin(mask, voxel_size):
     # --- Advanced Shape Descriptors ---
     
     # Convex Hull Volume & Solidity
-    # Need points for ConvexHull
     points = np.argwhere(mask > 0)
     if len(points) >= 4: # Need at least 4 points for 3D hull
         try:
@@ -233,9 +209,6 @@ def analyze_actin(mask, voxel_size):
     if len(points) > 0:
         min_coords = np.min(points, axis=0) * np.array([vx, vy, vz])
         max_coords = np.max(points, axis=0) * np.array([vx, vy, vz])
-        # Add one voxel dimension? No, bounding box is usually max-min.
-        # But for pixels, we usually add 1 to width.
-        # Let's say dimensions + voxel_size
         dims = (max_coords - min_coords) + np.array([vx, vy, vz])
         bbox_volume = np.prod(dims)
         extent = total_volume / bbox_volume if bbox_volume > 0 else 0
@@ -244,68 +217,54 @@ def analyze_actin(mask, voxel_size):
         extent = 0.0
         
     # Principal Axis Lengths & Fractional Anisotropy
-    # regionprops on the whole mask (assuming one object for global shape)
-    # If fragmented, we might want to analyze the largest component or the "weighted average"?
-    # The prompt says "Global Alignment & Shape". Usually implies treating the actin network as a distribution.
-    # regionprops works on connected components. 
-    # Let's take the largest component or maybe the "convex hull" implies we treat it as one blob.
-    # Let's label and take largest for shape analysis to be consistent with Convex Hull (which used all points).
-    # Actually, `regionprops` can calculate inertia tensor for the label.
-    # If we label the whole thing as 1 (even if disconnected), regionprops will calculate moments for the cloud of pixels.
     
     mask_single_label = (mask > 0).astype(int)
     regions = measure.regionprops(mask_single_label, spacing=voxel_size)
     if regions:
         props = regions[0]
-        # Major, Minor (Intermediate?)
-        # 3D regionprops: major_axis_length, minor_axis_length... 
-        # Actually in 3D: moments_eig -> eigenvalues of inertia tensor.
-        # regionprops provides `inertia_tensor_eigvals`.
-        # Lengths are approx 4 * sqrt(eigvals) ?
-        # scikit-image regionprops documentation says:
-        # inertia_tensor_eigvals: Eigenvalues of the inertia tensor of the region, sorted in descending order.
-        # approximation of axes: 
-        # l1 = 2 * sqrt(5 * i1 / mass) ? No that's for solid.
-        # Let's rely on major_axis_length if available in user's version (usually 2D/3D supported).
-        # Newer skimage supports axis_major_length, axis_minor_length etc for 3D?
-        # Let's check safely. If not, use inertia_tensor_eigvals.
         
         try:
-             # Inertia eigenvalues are related to the ellipsoid axes a, b, c
-             # I = mass/5 * (b^2 + c^2), etc.
-             # Easier: Fractional Anisotropy from eigenvalues of inertia tensor.
-             # FA = sqrt(3/2) * sqrt(sum((lambda_i - mean)^2) / sum(lambda_i^2))
-             evals = props.inertia_tensor_eigvals
-             if np.sum(evals**2) > 0:
-                 mean_eval = np.mean(evals)
-                 numerator = np.sum((evals - mean_eval)**2)
-                 denominator = np.sum(evals**2)
-                 fractional_anisotropy = np.sqrt(3/2) * np.sqrt(numerator / denominator)
-             else:
-                 fractional_anisotropy = 0.0
-                 
-             major_axis = 0.0
-             intermediate_axis = 0.0
-             minor_axis = 0.0
-             # lengths from bounding box might be too simple.
-             # Let's assume standard regionprops has axis lengths in 3D for modern skimage.
-             if hasattr(props, 'major_axis_length'):
-                  major_axis = props.major_axis_length
-             if hasattr(props, 'minor_axis_length'):
-                  minor_axis = props.minor_axis_length
-             # Intermediate? 
-             # if 3D, we might not get intermediate directly.
-             
+            # Get inertia tensor eigenvalues (sorted descending: i1 >= i2 >= i3)
+            evals = props.inertia_tensor_eigvals
+            i1, i2, i3 = evals[0], evals[1], evals[2]
+            
+            # Calculate Fractional Anisotropy
+            if np.sum(evals**2) > 0:
+                mean_eval = np.mean(evals)
+                numerator = np.sum((evals - mean_eval)**2)
+                denominator = np.sum(evals**2)
+                fractional_anisotropy = np.sqrt(3/2) * np.sqrt(numerator / denominator)
+            else:
+                fractional_anisotropy = 0.0
+            
+            # Calculate axis lengths from inertia tensor eigenvalues
+            # For a solid ellipsoid with semi-axes a >= b >= c:
+            # I1 = (1/5) * mass * (b² + c²)  <- largest moment, around shortest axis
+            # I2 = (1/5) * mass * (a² + c²)
+            # I3 = (1/5) * mass * (a² + b²)  <- smallest moment, around longest axis
+            # Solving: a² = (5/2) * (I2 + I3 - I1), etc.
+            
+            # Note: For voxel shapes, we use a scaling factor
+            # Semi-axis lengths (a = major, b = intermediate, c = minor)
+            a_sq = 2.5 * (i2 + i3 - i1)  # Major axis squared
+            b_sq = 2.5 * (i1 + i3 - i2)  # Intermediate axis squared  
+            c_sq = 2.5 * (i1 + i2 - i3)  # Minor axis squared
+            
+            # Handle numerical issues (negative values from non-ellipsoid shapes)
+            major_axis = np.sqrt(max(0, a_sq)) * 2  # Full axis length (not semi-axis)
+            intermediate_axis = np.sqrt(max(0, b_sq)) * 2
+            minor_axis = np.sqrt(max(0, c_sq)) * 2
+            
         except Exception:
-             fractional_anisotropy = 0.0
-             major_axis = 0
-             minor_axis = 0
-             intermediate_axis = 0
+            fractional_anisotropy = 0.0
+            major_axis = 0.0
+            intermediate_axis = 0.0
+            minor_axis = 0.0
     else:
         fractional_anisotropy = 0.0
-        major_axis = 0
-        minor_axis = 0
-        intermediate_axis = 0
+        major_axis = 0.0
+        intermediate_axis = 0.0
+        minor_axis = 0.0
         
 
     return {
@@ -316,6 +275,7 @@ def analyze_actin(mask, voxel_size):
         'Extent': extent,
         'Fractional_Anisotropy': fractional_anisotropy,
         'Major_Axis': major_axis,
+        'Intermediate_Axis': intermediate_axis,
         'Minor_Axis': minor_axis
     }
 
@@ -327,11 +287,6 @@ def analyze_nucleus(mask, voxel_size):
     # Voxel dimensions
     vx, vy, vz = voxel_size
     voxel_vol = vx * vy * vz
-    
-    # We assume one main nucleus per mask for elongation, or we average?
-    # Usually "cells" imply one nucleus. We'll take the largest component if fragmented,
-    # or just calculate global volume. 
-    # For elongation, we need a single object.
     
     labeled_mask = measure.label(mask)
     regions = measure.regionprops(labeled_mask, spacing=voxel_size)
@@ -366,70 +321,13 @@ def analyze_nucleus(mask, voxel_size):
        major = main_nucleus.major_axis_length
        minor = main_nucleus.minor_axis_length
        
-       # In 3D, there is an intermediate axis?
-       # Skimage regionprops for 3D usually returns major and "minor" (smallest).
-       # The intermediate is implicit or harder to get directly without eigen decomposition.
-       # But let's check inertia_tensor_eigvals for full shape description.
-       
-       # Eigenvalues of inertia tensor: e1 >= e2 >= e3
-       # Ellipsoid semi-axes a, b, c related to e1, e2, e3.
-       # For a solid ellipsoid:
-       # I1 = m/5 * (b^2 + c^2)
-       # I2 = m/5 * (a^2 + c^2)
-       # I3 = m/5 * (a^2 + b^2)
-       # We can solve this system for a, b, c.
-       
        evals = main_nucleus.inertia_tensor_eigvals
-       # evals are sorted descending? usually.
-       # Check documentation: "sorted in descending order".
-       # So e1 corresponds to rotation around smallest axis?
-       # Wait, larger eigenvalue = larger moment of inertia = rotation around *shorter* axis.
-       # So if shape is elongated along X, Ix is small.
-       # eigvals (I1, I2, I3) -> I1 >= I2 >= I3
-       # I1 is max moment -> axis is shortest (minor).
-       # I3 is min moment -> axis is longest (major).
        
-       # Let's use equivalent_ellipsoid_diameter if available or just eigen calculations.
-       # Actually, let's keep it simple: use the major/minor provided if existing, else use bounding box?
-       
-       # Using skan/skimage approximation:
-       # elongation = major / minor
-       # flatness = intermediate / major
-       
-       # Let's estimate semi-axes r1, r2, r3 from Inertia Tensor for robustness in 3D.
-       # 5 * (I2 + I3 - I1) / 2m = a^2 ?
-       # Sum = I1+I2+I3 = 2m/5 (a^2+b^2+c^2)
-       # Let S = I1+I2+I3
-       # a^2 = 2.5 * (S/2 - I1) ? No.
-       # a = sqrt(5/2 * (I2 + I3 - I1) / mass) ?? 
-       # Assume users want standard "Principal Axis Lengths".
-       # If major/minor are not robust, calculation is risky.
-       
-       # Let's blindly use major_axis_length and minor_axis_length from regionprops if 3D supported.
        elongation = major / minor if minor > 0 else 0.0
        
        # Flatness? Needs intermediate.
        # If not available, set to 0.
        flatness = 0.0 
-       # Try to deduce intermediate from inertia if we want to be fancy, but stick to basics to avoid bugs.
-       # Actually, we can check bounding box as a rough proxy if needed?
-       # Or simply omit if we can't reliably get it.
-       # User asked for "Flatness: Intermediate/Major axis".
-       # Let's try to get it from inertia eigenvalues.
-       # r1 = sqrt(5 * (evals[1] + evals[2] - evals[0])) ... this formula is for solid.
-       # let's try strict formula:
-       # i1, i2, i3 = evals (descending)
-       # a = sqrt(2.5 * (i2 + i3 - i1))  <-- Largest radius? No.
-       # Smallest moment -> Largest axis.
-       # i_min = evals[2] -> corresponds to Major axis (a)
-       # i_mid = evals[1] -> Intermediate (b)
-       # i_max = evals[0] -> Minor (c)
-       # a = sqrt(2.5 * (evals[1] + evals[0] - evals[2]))
-       # b = sqrt(2.5 * (evals[2] + evals[0] - evals[1]))
-       # c = sqrt(2.5 * (evals[2] + evals[1] - evals[0]))
-       # Note: mass term cancels if we just want ratios? 
-       # These i values are "moments", so they include mass (volume).
-       # But for ratios, volume cancels out.
        
        try:
            i1, i2, i3 = evals # Descending: i1 >= i2 >= i3
