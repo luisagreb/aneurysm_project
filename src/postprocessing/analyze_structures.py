@@ -225,7 +225,7 @@ def analyze_actin(mask, voxel_size):
         
         try:
             # Get inertia tensor eigenvalues (sorted descending: i1 >= i2 >= i3)
-            evals = props.inertia_tensor_eigvals
+            evals = np.array(props.inertia_tensor_eigvals)  # Convert to numpy array
             i1, i2, i3 = evals[0], evals[1], evals[2]
             
             # Calculate Fractional Anisotropy
@@ -255,7 +255,10 @@ def analyze_actin(mask, voxel_size):
             intermediate_axis = np.sqrt(max(0, b_sq)) * 2
             minor_axis = np.sqrt(max(0, c_sq)) * 2
             
-        except Exception:
+        except Exception as e:
+            import traceback
+            print(f"Exception in axis calculation: {e}")
+            traceback.print_exc()
             fractional_anisotropy = 0.0
             major_axis = 0.0
             intermediate_axis = 0.0
