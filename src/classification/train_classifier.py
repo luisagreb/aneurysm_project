@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 # Configuration
-FEATURES_FILE = 'Advanced_Features_Raw.csv'
+FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
 METADATA_FILE = 'data/Book1.xlsx'
 
 def extract_numeric_id(text):
@@ -104,7 +104,7 @@ def main():
     
     # Aggregation requires grouping by ID first
     # So we first extract ID for every row
-    df_features['Numeric_ID'] = df_features['Filename'].apply(extract_numeric_id)
+    df_features['Numeric_ID'] = df_features['CellName'].apply(extract_numeric_id)
     
     # Filter out rows where ID extraction failed
     df_features = df_features.dropna(subset=['Numeric_ID'])
@@ -138,7 +138,7 @@ def main():
         s = s.replace('_segmentation', '').replace('_visible', '')
         return s.strip()
         
-    df_features['Cell_ID'] = df_features['Filename'].apply(normalize_filename)
+    df_features['Cell_ID'] = df_features['CellName'].apply(normalize_filename)
     print(f"Created Cell_IDs. Unique Cells: {df_features['Cell_ID'].nunique()}")
     
     # Feature columns + 'Label' + 'Numeric_ID'

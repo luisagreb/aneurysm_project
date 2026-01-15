@@ -62,8 +62,8 @@ def main():
     df_features = pd.read_csv(FEATURES_FILE)
     print(f"Features loaded: {df_features.shape}")
     
-    # 2. Extract Collagen Status from Filename
-    df_features['Collagen'] = df_features['Filename'].apply(extract_collagen_status)
+    # 2. Extract Collagen Status from CellName
+    df_features['Collagen'] = df_features['CellName'].apply(extract_collagen_status)
     
     # Drop rows where collagen status couldn't be determined
     initial_count = len(df_features)
@@ -75,7 +75,7 @@ def main():
         return
     
     # 3. Aggregate by Cell
-    df_features['Cell_ID'] = df_features['Filename'].apply(normalize_filename)
+    df_features['Cell_ID'] = df_features['CellName'].apply(normalize_filename)
     
     feature_cols = df_features.select_dtypes(include=[np.number]).columns.tolist()
     if 'Collagen' in feature_cols:

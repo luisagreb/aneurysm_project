@@ -15,11 +15,17 @@ import pandas as pd
 def calculate_sphericity(volume, surface_area):
     """
     Calculate sphericity using the formula:
-    (pi^(1/3) * (6 * V)^(2/3)) / A
+    Ψ = (π^(1/3) * (6V)^(2/3)) / A
+    
+    Sphericity ranges from 0 to 1, where 1 is a perfect sphere.
+    Values may exceed 1 due to surface area underestimation by marching cubes
+    algorithm when meshes are coarse, so we clamp to [0, 1].
     """
     if surface_area == 0:
         return 0.0
-    return (np.pi**(1/3) * (6 * volume)**(2/3)) / surface_area
+    raw_sphericity = (np.pi**(1/3) * (6 * volume)**(2/3)) / surface_area
+    # Clamp to valid range [0, 1] since marching cubes can underestimate surface area
+    return min(1.0, max(0.0, raw_sphericity))
 
 def analyze_mito(mask, voxel_size):
     """
@@ -67,8 +73,16 @@ def analyze_mito(mask, voxel_size):
              total_network_length = branch_data['branch-distance'].sum()
              
              # Tortuosity = branch-distance / euclidean-distance
-             branch_data['tortuosity'] = branch_data['branch-distance'] / branch_data['euclidean-distance']
-             mean_tortuosity = branch_data['tortuosity'].mean()
+             # Handle division by zero (loops have 0 euclidean distance)
+             with np.errstate(divide='ignore', invalid='ignore'):
+                tortuosity = branch_data['branch-distance'] / branch_data['euclidean-distance']
+             
+             # Replace inf with NaN for mean calculation
+             tortuosity = tortuosity.replace([np.inf, -np.inf], np.nan)
+             mean_tortuosity = tortuosity.mean()
+             
+             if pd.isna(mean_tortuosity):
+                 mean_tortuosity = 0.0
              
              # Cyclomatic number = E - N + P
              # Edges - Nodes + Connected Components
@@ -215,6 +229,7 @@ def analyze_actin(mask, voxel_size):
     else:
         bbox_volume = 0.0
         extent = 0.0
+        
         
     # Principal Axis Lengths & Fractional Anisotropy
     
