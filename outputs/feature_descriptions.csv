@@ -1,24 +1,30 @@
-Feature,Structure,Unit,Description,Biological_Significance
-Actin_Volume,Actin,μm³,Total volume of the actin cytoskeleton,Overall actin content; higher in cells with more developed stress fibers
-Actin_Skeleton_Length_Pixels,Actin,pixels,Length of the skeletonized actin network,Network extent; longer = more branched/spread cytoskeleton
-Actin_Convex_Hull_Volume,Actin,μm³,Volume of smallest convex shape enclosing actin,Cell spread area in 3D; indicates how extended the cell is
-Actin_Solidity,Actin,ratio (0-1),Volume / Convex Hull Volume,Compactness; low solidity = more filamentous/branched
-Actin_Extent,Actin,ratio (0-1),Volume / Bounding Box Volume,How much of bounding box is filled; low = irregular shape
-Actin_Fractional_Anisotropy,Actin,ratio (0-1),Directional organization from inertia tensor,High = aligned fibers (polarized cell); Low = random
-Actin_Major_Axis,Actin,μm,Length of longest principal axis,Cell elongation direction
-Actin_Minor_Axis,Actin,μm,Length of shortest principal axis,Cell width perpendicular to elongation
-Mito_Volume,Mitochondria,μm³,Total mitochondrial volume,Metabolic capacity; higher in metabolically active cells
-Mito_Surface_Area,Mitochondria,μm²,Total surface area of mitochondria,Related to cristae and ATP production capacity
-Mito_Sphericity,Mitochondria,ratio (0-1),How close to a sphere,High = fragmented/rounded; Low = elongated/tubular
-Mito_Fragment_Count,Mitochondria,count,Number of discrete mitochondrial objects,High = fragmented (fission); Low = fused network
-Mito_Junction_Count,Mitochondria,count,Network branch points (degree > 2),Network complexity; high = highly interconnected
-Mito_Branch_Count,Mitochondria,count,Number of skeleton branches,Network size and complexity
-Mito_Mean_Branch_Length,Mitochondria,μm,Average length per branch,Short = fragmented; Long = elongated tubules
-Mito_Total_Network_Length,Mitochondria,μm,Sum of all branch lengths,Total mitochondrial network extent
-Mito_Mean_Tortuosity,Mitochondria,ratio (≥1),Branch length / Euclidean distance,Curvature; 1 = straight; higher = twisted
-Mito_Cyclomatic_Number,Mitochondria,count,E - N + C (graph complexity),Number of independent loops in network
-Nucleus_Volume,Nucleus,μm³,Total nuclear volume,Cell size indicator; may change with ploidy
-Nucleus_Sphericity,Nucleus,ratio (0-1),How spherical the nucleus is,Low = deformed (mechanical stress or disease)
-Nucleus_Elongation,Nucleus,ratio (≥1),Major axis / Minor axis,1 = round; Higher = stretched nucleus
-Nucleus_Flatness,Nucleus,ratio (0-1),Intermediate / Major axis,How pancake-like the nucleus is
-Nucleus_Solidity,Nucleus,ratio (0-1),Volume / Convex Hull Volume,Nuclear shape regularity; low = irregular/lobulated
+Feature_Name,Unit,Calculation_Method,Biological_Description
+Actin_Volume_µm³,µm³,Count of non-zero voxels × Voxel Volume (X×Y×Z),Total amount of actin cytoskeleton structure in the cell.
+Actin_Skeleton_Length_voxels,voxels,Sum of pixel lengths in the skeletonized 1-pixel wide representation (skimage.skeletonize),Total length of the actin network if stretched out; proxy for network complexity.
+Actin_Convex_Hull_Volume_µm³,µm³,Volume of the smallest convex shape enclosing the actin mask (skimage.convex_hull_image),The volume of the "envelope" covering the cell; indicates the overall 3D spread.
+Actin_Solidity_ratio,ratio (0-1),Actin_Volume / Convex_Hull_Volume,Compactness. Low values indicate a sparse, highly branched, or filamentous structure. High values indicate a solid, dense object.
+Actin_Extent_ratio,ratio (0-1),Actin_Volume / Bounding_Box_Volume,How much of the bounding box is filled. Low values indicate irregular shapes.
+Actin_Fractional_Anisotropy_ratio,ratio (0-1),Derived from inertia tensor eigenvalues: sqrt(3/2)*sqrt(Σ(λ-μ)²/Σλ²),Degree of directionality. 0 = isotropic (sphere); 1 = highly anisotropic (line/fiber alignment).
+Actin_Major_Axis_µm,µm,Derived from inertia tensor eigenvalues (ellipsoid fit),Length of the longest axis of the fitted ellipsoid; indicates cell length/elongation.
+Actin_Intermediate_Axis_µm,µm,Derived from inertia tensor eigenvalues,Length of the second principal axis (width).
+Actin_Minor_Axis_µm,µm,Derived from inertia tensor eigenvalues,Length of the shortest principal axis (depth/thickness).
+Mito_Volume_µm³,µm³,Count of non-zero voxels × Voxel Volume,Total mitochondrial mass; indicator of metabolic capacity.
+Mito_Surface_Area_µm²,µm²,Calculated using Marching Cubes mesh generation,Total membrane surface area; relevant for surface-dependent metabolic exchange.
+Mito_Sphericity_ratio,ratio (0-1),Ψ = (π^(1/3) * (6V)^(2/3)) / A. Clamped to [0,1],Shape factor (1 = perfect sphere). Low values indicate elongated or complex shapes (tubular network).
+Mito_Fragment_Count_n,count,Number of connected components (skimage.label),Degree of fragmentation. High counts indicate fission or stress; 1 implies a fused reticular network.
+Mito_Mean_Fragment_Sphericity_ratio,ratio (0-1),Average sphericity of all individual mitochondrial fragments,Average shape of individual fragments. High mean = many round/swollen fragments.
+Mito_Std_Fragment_Sphericity_ratio,ratio,Standard deviation of fragment sphericity,Heterogeneity of fragment shapes.
+Mito_Min_Fragment_Sphericity_ratio,ratio (0-1),Minimum sphericity observed in fragments,Shape of the most tubular/complex fragment.
+Mito_Max_Fragment_Sphericity_ratio,ratio (0-1),Maximum sphericity observed in fragments,Shape of the most rounded fragment.
+Mito_Mean_Fragment_Volume_µm³,µm³,Average volume of individual mitochondrial fragments,Size of typical fragments. Small = fission/fragmentation.
+Mito_Junction_Count_n,count,Number of skeleton nodes with degree > 2,Branching points. High counts indicate a highly interconnected, complex network.
+Mito_Branch_Count_n,count,Total number of branches/edges in the skeleton graph,Total complexity of the network topology.
+Mito_Mean_Branch_Length_µm,µm,Average length of skeleton branches (between junctions),Length of individual tubules. Short = fragmented; Long = hyperfused threads.
+Mito_Total_Network_Length_µm,µm,Sum of all skeleton branch lengths,Total length of mitochondrial tubules in the cell.
+Mito_Mean_Tortuosity_ratio,ratio (≥1),Mean of (Branch Path Length / Euclidean Distance) for all branches,Curvature of tubules. 1.0 = straight line. High values = twisted/convoluted tubules.
+Mito_Cyclomatic_Number_n,count,Num_Edges - Num_Nodes + Num_Connected_Components,Number of closed loops in the network graph. Higher = more ring-like or mesh-like structures.
+Nucleus_Volume_µm³,µm³,Count of non-zero voxels × Voxel Volume,Nuclear size; correlates with DNA content/ploidy and cell cycle.
+Nucleus_Sphericity_ratio,ratio (0-1),Ψ = (π^(1/3) * (6V)^(2/3)) / A,Shape regularity. Lower values indicate deformation, lobulation, or stress.
+Nucleus_Elongation_ratio,ratio (≥1),Major_Axis / Minor_Axis (from inertia tensor),Stretching. 1.0 = spherical. Higher values = elongated/ellipsoidal nucleus.
+Nucleus_Flatness_ratio,ratio (0-1),Intermediate_Axis / Major_Axis (or Minor/Major depending on definition),Indicates if the nucleus is flattened (pancake-like) vs prolate (cigar-like).
+Nucleus_Solidity_ratio,ratio (0-1),Volume / Convex_Hull_Volume,Smoothness of boundary. Low values indicate deep invaginations or irregular lobes.

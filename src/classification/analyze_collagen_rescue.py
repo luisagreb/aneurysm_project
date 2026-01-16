@@ -95,8 +95,8 @@ def main():
     df = pd.read_csv(FEATURES_FILE)
     
     # Extract labels
-    df['Numeric_ID'] = df['Filename'].apply(extract_numeric_id)
-    df['Collagen'] = df['Filename'].apply(extract_collagen_status)
+    df['Numeric_ID'] = df['CellName'].apply(extract_numeric_id)
+    df['Collagen'] = df['CellName'].apply(extract_collagen_status)
     df['Disease'] = df['Numeric_ID'].apply(
         lambda x: 0 if x in healthy_ids else (1 if x in taa_ids else None)
     )
@@ -108,7 +108,7 @@ def main():
     )
     
     df = df.dropna(subset=['Label'])
-    df['Cell_ID'] = df['Filename'].apply(normalize_filename)
+    df['Cell_ID'] = df['CellName'].apply(normalize_filename)
     
     # Aggregate by cell
     feature_cols = df.select_dtypes(include=[np.number]).columns.tolist()
