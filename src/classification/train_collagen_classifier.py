@@ -31,14 +31,17 @@ def extract_collagen_status(filename):
     
     filename = str(filename).lower()
     
-    if '+coll' in filename:
+    # Positive Collagen
+    if '+coll' in filename or '+col' in filename or 'plus coll' in filename:
         return 1  # Collagen
-    elif '-coll' in filename or 'nocoll' in filename or 'no coll' in filename:
+        
+    # Negative Collagen (including DMSO control)
+    if '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename or 'dmso' in filename:
         return 0  # No Collagen
-    else:
-        # Check if there's no mention of collagen - assume no collagen
-        # But safer to return None for unclear cases
-        return None
+        
+    # Check if there's no mention of collagen - assume no collagen
+    # But safer to return None for unclear cases
+    return None
 
 def normalize_filename(f):
     """Normalize filename to get unique cell ID."""

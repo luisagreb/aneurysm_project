@@ -24,7 +24,7 @@ from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
 warnings.filterwarnings('ignore')
 
 # Configuration
-FEATURES_FILE = 'Advanced_Features_Raw.csv'
+FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
 METADATA_FILE = 'data/Book1.xlsx'
 OUTPUT_DIR = Path('classification_results')
 
@@ -80,7 +80,7 @@ def load_data():
     df = pd.read_csv(FEATURES_FILE)
     
     # Extract IDs and Labels
-    df['Numeric_ID'] = df['Filename'].apply(extract_subject_id)
+    df['Numeric_ID'] = df['CellName'].apply(extract_subject_id)
     df = df.dropna(subset=['Numeric_ID'])
     
     def get_label(nid):
@@ -94,7 +94,7 @@ def load_data():
     df = df.dropna(subset=['Label'])
     
     # Cell-level aggregation
-    df['Cell_ID'] = df['Filename'].apply(normalize_filename)
+    df['Cell_ID'] = df['CellName'].apply(normalize_filename)
     
     feature_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     feature_cols = [c for c in feature_cols if c not in ['Label', 'Numeric_ID']]

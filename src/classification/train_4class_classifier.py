@@ -53,12 +53,16 @@ def extract_collagen_status(filename):
     if pd.isna(filename):
         return None
     filename = str(filename).lower()
-    if '+coll' in filename:
-        return 1  # Collagen
-    elif '-coll' in filename or 'nocoll' in filename or 'no coll' in filename:
-        return 0  # No Collagen
-    else:
-        return None
+    
+    # Positive Collagen
+    if '+coll' in filename or '+col' in filename or 'plus coll' in filename:
+        return 1
+        
+    # Negative Collagen (including DMSO control)
+    if '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename or 'dmso' in filename:
+        return 0
+        
+    return None
 
 def load_metadata(filepath):
     """Load healthy/TAA labels from metadata file."""
@@ -116,8 +120,8 @@ def main():
     print(f"Features loaded: {df_features.shape}")
     
     # 3. Extract IDs and Labels
-    df_features['Numeric_ID'] = df_features['Filename'].apply(extract_numeric_id)
-    df_features['Collagen'] = df_features['Filename'].apply(extract_collagen_status)
+    df_features['Numeric_ID'] = df_features['CellName'].apply(extract_numeric_id)
+    df_features['Collagen'] = df_features['CellName'].apply(extract_collagen_status)
     
     # Get disease status
     def get_disease_label(nid):
@@ -150,7 +154,7 @@ def main():
         return
     
     # 4. Aggregate by Cell
-    df_features['Cell_ID'] = df_features['Filename'].apply(normalize_filename)
+    df_features['Cell_ID'] = df_features['CellName'].apply(normalize_filename)
     
     feature_cols = df_features.select_dtypes(include=[np.number]).columns.tolist()
     for col in ['Label', 'Numeric_ID', 'Disease', 'Collagen']:

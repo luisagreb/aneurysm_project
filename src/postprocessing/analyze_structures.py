@@ -4,6 +4,8 @@ import argparse
 import numpy as np
 import pandas as pd
 import tifffile
+import nibabel as nib
+import nrrd
 from skimage import measure, morphology
 from scipy.spatial import ConvexHull
 from pathlib import Path
@@ -11,6 +13,39 @@ from pathlib import Path
 from skan import Skeleton, summarize
 from skimage.measure import regionprops_table
 import pandas as pd
+
+
+def get_voxel_size_from_nrrd(nifti_path, raw_nrrd_dir):
+    """
+    Extract voxel size from original NRRD file for a given NIfTI.
+    
+    Args:
+        nifti_path: Path to NIfTI segmentation file (str or Path)
+        raw_nrrd_dir: Path to directory containing NRRD files (str or Path)
+    
+    Returns:
+        [vz, vy, vx] in microns, or None if not found
+    """
+    # Extract cell name from NIfTI filename
+    cell_name = Path(nifti_path).stem.replace('_segmentation', '')
+    nrrd_folder = Path(raw_nrrd_dir) / cell_name
+    
+    if nrrd_folder.exists():
+        # Find a non-mask NRRD file
+        nrrd_files = [f for f in nrrd_folder.glob('channel_*.nrrd') if 'mask' not in f.name]
+        if nrrd_files:
+            try:
+                header = nrrd.read_header(str(nrrd_files[0]))
+                if 'space directions' in header:
+                    dirs = header['space directions']
+                    spacing = [float(np.linalg.norm(d)) if hasattr(d, '__len__') else float(d) for d in dirs]
+                    return spacing
+                elif 'spacings' in header:
+                    return [float(s) for s in header['spacings']]
+            except Exception as e:
+                print(f"  Warning: Could not read voxel from {nrrd_folder.name}: {e}")
+    
+    return None
 
 def calculate_sphericity(volume, surface_area):
     """
@@ -58,46 +93,46 @@ def analyze_mito(mask, voxel_size):
         from skan import Skeleton, summarize
         skeleton_image = morphology.skeletonize(mask)
         if np.sum(skeleton_image) > 1: # skan needs at least 2 pixels
-             branch_data = summarize(Skeleton(skeleton_image))
+             # CRITICAL FIX: Pass voxel_size to Skeleton for correct physical spacing
+             skel_obj = Skeleton(skeleton_image, spacing=voxel_size)
+             branch_data = summarize(skel_obj)
              
-             # Calculate metrics from branch_data dataframe
-             junction_count = branch_data['node-id-src'].nunique() # distinct junctions approximately
+             # Branch pruning: filter out noise (branches < 0.5 µm)
+             MIN_BRANCH_LENGTH = 0.5  # microns
+             real_branches = branch_data[branch_data['branch-distance'] > MIN_BRANCH_LENGTH]
              
-             skel_obj = Skeleton(skeleton_image)
-             degrees = skel_obj.degrees
-
-             
+             # Calculate metrics from filtered branch_data
              junction_count = np.sum(skel_obj.degrees > 2)
-             branch_count = branch_data.shape[0]
-             mean_branch_length = branch_data['branch-distance'].mean()
-             total_network_length = branch_data['branch-distance'].sum()
+             branch_count = len(real_branches)
+             mean_branch_length = real_branches['branch-distance'].mean() if len(real_branches) > 0 else 0.0
+             total_network_length = real_branches['branch-distance'].sum()
              
              # Tortuosity = branch-distance / euclidean-distance
              # Handle division by zero (loops have 0 euclidean distance)
-             with np.errstate(divide='ignore', invalid='ignore'):
-                tortuosity = branch_data['branch-distance'] / branch_data['euclidean-distance']
-             
-             # Replace inf with NaN for mean calculation
-             tortuosity = tortuosity.replace([np.inf, -np.inf], np.nan)
-             mean_tortuosity = tortuosity.mean()
-             
-             if pd.isna(mean_tortuosity):
+             if len(real_branches) > 0:
+                 with np.errstate(divide='ignore', invalid='ignore'):
+                    tortuosity = real_branches['branch-distance'] / real_branches['euclidean-distance']
+                 
+                 # Replace inf with NaN for mean calculation
+                 tortuosity = tortuosity.replace([np.inf, -np.inf], np.nan)
+                 mean_tortuosity = tortuosity.mean()
+                 
+                 if pd.isna(mean_tortuosity):
+                     mean_tortuosity = 0.0
+             else:
                  mean_tortuosity = 0.0
              
              # Cyclomatic number = E - N + P
              # Edges - Nodes + Connected Components
-             # E = branch_count
-             # N = number of unique nodes in the graph representation
-             # P = Connected components of the skeleton
-             
-             # skan summary has 'skeleton-id' for connected components
-             num_components = branch_data['skeleton-id'].nunique()
-             # Nodes in graph:
-             unique_nodes = set(branch_data['node-id-src']).union(set(branch_data['node-id-dst']))
-             num_nodes = len(unique_nodes)
-             num_edges = branch_count
-             
-             cyclomatic_number = num_edges - num_nodes + num_components
+             # Use FILTERED branches for topology
+             if len(real_branches) > 0:
+                 num_components = real_branches['skeleton-id'].nunique()
+                 unique_nodes = set(real_branches['node-id-src']).union(set(real_branches['node-id-dst']))
+                 num_nodes = len(unique_nodes)
+                 num_edges = branch_count
+                 cyclomatic_number = num_edges - num_nodes + num_components
+             else:
+                 cyclomatic_number = 0
         else:
              junction_count = 0
              branch_count = 0
@@ -190,15 +225,17 @@ def analyze_actin(mask, voxel_size):
     volume_pixels = np.sum(mask > 0)
     total_volume = volume_pixels * voxel_vol
     
-    # Skeleton Length
-    # Skeletonize 3D
-    skeleton = morphology.skeletonize(mask) # Count pixels to estimate length 
-    skeleton_pixels = np.sum(skeleton > 0)
-    
-    
-    # Skeleton Length
+    # Skeleton Length - Use skan for accurate 3D physical length
     skeleton = morphology.skeletonize(mask)
-    skeleton_pixels = np.sum(skeleton > 0)
+    
+    if np.sum(skeleton) > 1:
+        # CRITICAL FIX: Use skan with spacing for diagonal correction
+        from skan import Skeleton, summarize
+        skel_actin = Skeleton(skeleton, spacing=voxel_size)
+        actin_branch_data = summarize(skel_actin)
+        skeleton_length = actin_branch_data['branch-distance'].sum()
+    else:
+        skeleton_length = 0.0
     
     # --- Advanced Shape Descriptors ---
     
@@ -232,47 +269,48 @@ def analyze_actin(mask, voxel_size):
         
         
     # Principal Axis Lengths & Fractional Anisotropy
+    # CRITICAL FIX: Manual PCA in PHYSICAL space (not pixel space)
     
-    mask_single_label = (mask > 0).astype(int)
-    regions = measure.regionprops(mask_single_label, spacing=voxel_size)
-    if regions:
-        props = regions[0]
-        
+    # Extract voxel coordinates
+    coords = np.array(np.where(mask > 0)).T  # Shape: (N, 3) - [z, y, x]
+    
+    if len(coords) > 3:  # Need at least 4 points for PCA
         try:
-            # Get inertia tensor eigenvalues (sorted descending: i1 >= i2 >= i3)
-            evals = np.array(props.inertia_tensor_eigvals)  # Convert to numpy array
-            i1, i2, i3 = evals[0], evals[1], evals[2]
+            # Scale coordinates to physical space (microns)
+            voxel_size_array = np.array(voxel_size)  # [vz, vy, vx]
+            coords_physical = coords * voxel_size_array
             
-            # Calculate Fractional Anisotropy
-            if np.sum(evals**2) > 0:
-                mean_eval = np.mean(evals)
-                numerator = np.sum((evals - mean_eval)**2)
-                denominator = np.sum(evals**2)
-                fractional_anisotropy = np.sqrt(3/2) * np.sqrt(numerator / denominator)
+            # Center the coordinates
+            centroid = np.mean(coords_physical, axis=0)
+            coords_centered = coords_physical - centroid
+            
+            # Compute covariance matrix in PHYSICAL space
+            cov_matrix = np.cov(coords_centered.T)
+            
+            # Eigenvalue decomposition
+            eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+            
+            # Sort eigenvalues in descending order
+            idx = eigenvalues.argsort()[::-1]
+            eigenvalues = eigenvalues[idx]
+            
+            # Axis lengths = 2 * standard deviations along principal axes
+            major_axis = 2 * np.sqrt(max(0, eigenvalues[0]))
+            intermediate_axis = 2 * np.sqrt(max(0, eigenvalues[1]))
+            minor_axis = 2 * np.sqrt(max(0, eigenvalues[2]))
+            
+            # Fractional Anisotropy
+            mean_eval = np.mean(eigenvalues)
+            if np.sum(eigenvalues**2) > 0:
+                numerator = np.sum((eigenvalues - mean_eval)**2)
+                denominator = np.sum(eigenvalues**2)
+                fractional_anisotropy = np.sqrt(1.5 * numerator / denominator)
             else:
                 fractional_anisotropy = 0.0
-            
-            # Calculate axis lengths from inertia tensor eigenvalues
-            # For a solid ellipsoid with semi-axes a >= b >= c:
-            # I1 = (1/5) * mass * (b² + c²)  <- largest moment, around shortest axis
-            # I2 = (1/5) * mass * (a² + c²)
-            # I3 = (1/5) * mass * (a² + b²)  <- smallest moment, around longest axis
-            # Solving: a² = (5/2) * (I2 + I3 - I1), etc.
-            
-            # Note: For voxel shapes, we use a scaling factor
-            # Semi-axis lengths (a = major, b = intermediate, c = minor)
-            a_sq = 2.5 * (i2 + i3 - i1)  # Major axis squared
-            b_sq = 2.5 * (i1 + i3 - i2)  # Intermediate axis squared  
-            c_sq = 2.5 * (i1 + i2 - i3)  # Minor axis squared
-            
-            # Handle numerical issues (negative values from non-ellipsoid shapes)
-            major_axis = np.sqrt(max(0, a_sq)) * 2  # Full axis length (not semi-axis)
-            intermediate_axis = np.sqrt(max(0, b_sq)) * 2
-            minor_axis = np.sqrt(max(0, c_sq)) * 2
-            
+                
         except Exception as e:
             import traceback
-            print(f"Exception in axis calculation: {e}")
+            print(f"Exception in PCA calculation: {e}")
             traceback.print_exc()
             fractional_anisotropy = 0.0
             major_axis = 0.0
@@ -287,7 +325,7 @@ def analyze_actin(mask, voxel_size):
 
     return {
         'Volume': total_volume,
-        'Skeleton_Length_Pixels': skeleton_pixels,
+        'Skeleton_Length': skeleton_length,
         'Convex_Hull_Volume': hull_volume,
         'Solidity': solidity,
         'Extent': extent,
@@ -406,7 +444,9 @@ def main():
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
     parser.add_argument('--structure', type=str, required=True, choices=['mito', 'actin', 'nucleus'], help='Structure to analyze')
     parser.add_argument('--voxel_size', type=float, nargs=3, default=None, 
-                        help='Voxel size in Z Y X (µm). If not provided, reads from NIfTI header automatically.')
+                        help='Voxel size in Z Y X (µm). Manual override.')
+    parser.add_argument('--raw_nrrd_dir', type=str, default=None,
+                        help='Path to original NRRD files directory (recommended for accurate voxel sizes)')
     
     args = parser.parse_args()
     
@@ -423,30 +463,49 @@ def main():
     
     for file_path in files:
         try:
-            # Load file and determine voxel size
+            # Initialize variables to prevent UnboundLocalError
+            voxel_size = None
+            voxel_source = None
+            
+            # Load file
             if file_path.name.endswith('.nii.gz'):
                 nii = nib.load(file_path)
                 mask = nii.get_fdata()
-                
-                # Auto-read voxel size from NIfTI header if not provided
-                if args.voxel_size is None:
-                    # NIfTI header stores voxel size in pixdim (Z, Y, X order typically)
-                    zooms = nii.header.get_zooms()
-                    voxel_size = list(zooms[:3])  # Get first 3 dimensions
-                    print(f"  Voxel size from header: {voxel_size} µm")
-                else:
-                    voxel_size = args.voxel_size
             else:
                 mask = tifffile.imread(file_path)
-                # For TIFF files, must use provided voxel size or default
-                if args.voxel_size is None:
-                    voxel_size = [1.0, 1.0, 1.0]
-                    print(f"  Warning: No voxel size in TIFF, using default {voxel_size}")
-                else:
-                    voxel_size = args.voxel_size
+            
+            # CRITICAL FIX: Determine voxel size with proper priority chain
+            
+            if args.voxel_size is not None:
+                # Priority 1: Manual override
+                voxel_size = args.voxel_size
+                voxel_source = 'Manual'
+            elif args.raw_nrrd_dir is not None:
+                # Priority 2: NRRD lookup (MOST ACCURATE)
+                voxel_size = get_voxel_size_from_nrrd(file_path, args.raw_nrrd_dir)
+                if voxel_size is not None:
+                    voxel_source = 'NRRD'
+                    print(f"  Voxel size from NRRD: {voxel_size} µm")
+            
+            # Priority 3: NIfTI header (often corrupted)
+            if voxel_size is None and file_path.name.endswith('.nii.gz'):
+                zooms = nii.header.get_zooms()
+                voxel_size = list(zooms[:3])
+                voxel_source = 'NIfTI_Header'
+                print(f"  WARNING: Using NIfTI header voxel size: {voxel_size} µm (may be inaccurate)")
+            
+            # Priority 4: Default fallback (last resort)
+            if voxel_size is None:
+                voxel_size = [1.0, 1.0, 1.0]
+                voxel_source = 'Default'
+                print(f"  ERROR: Using default voxel size {voxel_size} µm (INACCURATE!)")
             
             # Ensure binary (0 and 1)
             mask = (mask > 0).astype(np.uint8)
+            
+            # Binary closing: Fill small holes to improve surface area / sphericity
+            from scipy.ndimage import binary_closing
+            mask = binary_closing(mask, structure=np.ones((3, 3, 3))).astype(np.uint8)
             
             # Analyze based on structure
             if args.structure == 'mito':
@@ -456,10 +515,11 @@ def main():
             elif args.structure == 'nucleus':
                 metrics = analyze_nucleus(mask, voxel_size)
             
-            # Store voxel size used for reference
+            # Store voxel size and source for auditing
             metrics['Voxel_Z'] = voxel_size[0]
             metrics['Voxel_Y'] = voxel_size[1]
             metrics['Voxel_X'] = voxel_size[2]
+            metrics['Voxel_Source'] = voxel_source
             metrics['Filename'] = file_path.name
             results.append(metrics)
             print(f"Processed {file_path.name}")
@@ -473,7 +533,7 @@ def main():
     if results:
         df = pd.DataFrame(results)
         # Reorder columns to put Filename first, then voxel info
-        cols = ['Filename', 'Voxel_Z', 'Voxel_Y', 'Voxel_X'] + [c for c in df.columns if c not in ['Filename', 'Voxel_Z', 'Voxel_Y', 'Voxel_X']]
+        cols = ['Filename', 'Voxel_Source', 'Voxel_Z', 'Voxel_Y', 'Voxel_X'] + [c for c in df.columns if c not in ['Filename', 'Voxel_Source', 'Voxel_Z', 'Voxel_Y', 'Voxel_X']]
         df = df[cols]
         df.to_csv(args.output_csv, index=False)
         print(f"Saved results to {args.output_csv}")

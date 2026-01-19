@@ -68,9 +68,9 @@ def process_structure(structure_name, input_dirs, analyze_func, raw_nrrd_dir):
             voxel_size = get_voxel_size_from_nrrd(filename, raw_nrrd_dir)
             
             if voxel_size is None:
-                # Fallback to average if not found
-                voxel_size = [0.37, 0.179, 0.179]
-                fallback_voxel += 1
+                # Skip file if voxel size not found - prevents data contamination
+                print(f"    WARNING: Skipping {filename} - voxel size not found in NRRD")
+                continue
             else:
                 found_voxel += 1
             
@@ -101,7 +101,7 @@ def process_structure(structure_name, input_dirs, analyze_func, raw_nrrd_dir):
 # Define column name to unit mapping
 ACTIN_UNITS = {
     'Volume': 'Volume_µm³',
-    'Skeleton_Length_Pixels': 'Skeleton_Length_voxels',
+    'Skeleton_Length': 'Skeleton_Length_µm',
     'Convex_Hull_Volume': 'Convex_Hull_Volume_µm³',
     'Solidity': 'Solidity_ratio',
     'Extent': 'Extent_ratio',
