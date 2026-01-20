@@ -188,10 +188,10 @@ def main():
     
     # 9. Save predictions
     predictions_df = pd.DataFrame({
-        'CellName': df_rescue['CellName'],
+        'CellName': df_rescue['CellName'].values,
         'True_Disease': 'TAA',
         'Treatment': 'Collagen',
-        'AI_Prediction': pd.Series(y_pred_rescue).map({0: 'Healthy', 1: 'TAA'}),
+        'AI_Prediction': pd.Series(y_pred_rescue).map({0: 'Healthy', 1: 'TAA'}).values,
         'Probability_Healthy': y_proba_rescue[:, 0],
         'Probability_TAA': y_proba_rescue[:, 1],
         'Rescued': y_pred_rescue == 0
