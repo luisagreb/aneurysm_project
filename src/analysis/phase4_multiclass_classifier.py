@@ -80,10 +80,10 @@ def extract_collagen_status(filename):
     """Extract collagen status."""
     if pd.isna(filename):
         return None
-    filename = str(filename).lower()
-    if '+coll' in filename or '+col' in filename:
+    filename_clean = str(filename).replace(' ', '').lower()
+    if '+coll' in filename_clean or '+col' in filename_clean:
         return 'Collagen'
-    elif '-coll' in filename or '-col' in filename or 'nocoll' in filename:
+    elif '-coll' in filename_clean or '-col' in filename_clean or 'nocoll' in filename_clean:
         return 'NoCollagen'
     return None
 
