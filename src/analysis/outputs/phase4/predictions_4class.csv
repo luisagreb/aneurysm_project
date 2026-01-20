@@ -1,0 +1,61 @@
+CellName,True_Group,Predicted_Group,Correct
+03Asc-0051 +Col 60x veh-Zstack Cell1,TAA+Col,Healthy+Col,False
+01C-0096 -coll 60x vehicleZstack cell4,Healthy-NoCol,Healthy-NoCol,True
+03Rt-0045 -coll 60x veh 48h-Zstack cell3,TAA-NoCol,TAA+Col,False
+01C-222 +Col 60x veh-Zstack Cell5,Healthy+Col,TAA+Col,False
+03Asc46 +coll 60x veh 48h-Zstack cell3,TAA+Col,TAA+Col,True
+03Rt-0045 +coll 60x veh 48h-Zstack cell2,TAA+Col,TAA-NoCol,False
+03Asc-0057 +Col 60x veh-Zstack Cell5,TAA+Col,TAA+Col,True
+03Asc46 -coll 60x veh 48h-Zstack cell1,TAA-NoCol,TAA-NoCol,True
+01C-0096 -coll 60x vehicleZstack cell1,Healthy-NoCol,Healthy-NoCol,True
+01C-0083 +coll 60x vehicleZstack cell2,Healthy+Col,Healthy+Col,True
+01C-0117 -coll 60x VehicleZstack cell4,Healthy-NoCol,Healthy-NoCol,True
+03Asc-024 +coll 60x veh 48h-Zstack cell5,TAA+Col,TAA+Col,True
+03Rt-0045 +coll 60x veh 48h-Zstack cell3,TAA+Col,TAA+Col,True
+01C-202 -coll 60x Veh24h-Zstack cell2,Healthy-NoCol,Healthy+Col,False
+01ASC-0180 +coll 60x DMSO48h-Zstack cell10,Healthy+Col,Healthy-NoCol,False
+03Rt-0045 -coll 60x veh 48h-Zstack cell2,TAA-NoCol,TAA+Col,False
+03Asc-0051 -Col 60x veh-Zstack Cell3,TAA-NoCol,TAA-NoCol,True
+01C-0097 -coll 60x VehicleZstack cell4,Healthy-NoCol,Healthy-NoCol,True
+01ASC-0180 +coll 60x DMSO48h-Zstack cell3,Healthy+Col,Healthy-NoCol,False
+01ASC-0180 -coll 60x DMSO48h-Zstack cell7,Healthy-NoCol,Healthy-NoCol,True
+03Asc-024 +coll 60x veh 48h-Zstack cell2,TAA+Col,TAA-NoCol,False
+01C-0117 +coll 60x VehicleZstack cell4,Healthy+Col,Healthy+Col,True
+01Asc-230 -Col 60x veh-Zstack Cell5,Healthy-NoCol,Healthy+Col,False
+01C-0096 -coll 60x vehicleZstack cell3,Healthy-NoCol,Healthy+Col,False
+01C-0096 -coll 60x vehicleZstack cell2,Healthy-NoCol,Healthy-NoCol,True
+01C-0117 +coll 60x VehicleZstack cell1,Healthy+Col,Healthy+Col,True
+03Asc-0043 -coll 60x veh 48h-Zstack cell5,TAA-NoCol,TAA-NoCol,True
+01C-0117 -coll 60x VehicleZstack cell1,Healthy-NoCol,Healthy+Col,False
+03Asc-0051 -Col 60x veh-Zstack Cell2,TAA-NoCol,Healthy+Col,False
+01Asc-230 -Col 60x veh-Zstack Cell1,Healthy-NoCol,TAA-NoCol,False
+03Asc-0057 -Col 60x veh-Zstack Cell3,TAA-NoCol,TAA-NoCol,True
+01C-0097 +coll 60x VehicleZstack cell3,Healthy+Col,Healthy+Col,True
+01C-202 -coll 60x Veh24h-Zstack cell3,Healthy-NoCol,Healthy-NoCol,True
+03Asc-024 +coll 60x veh 48h-Zstack cell3,TAA+Col,TAA+Col,True
+01C-202 +coll 60x veh 48h-Zstack cell4,Healthy+Col,TAA-NoCol,False
+03Asc-0051 -Col 60x veh-Zstack Cell4,TAA-NoCol,TAA-NoCol,True
+03Asc24- DMSO low-cell-5,TAA-NoCol,TAA-NoCol,True
+01C-0083 +coll 60x vehicleZstack cell5,Healthy+Col,TAA-NoCol,False
+03Asc24-DMSO high cell-4,TAA-NoCol,TAA-NoCol,True
+01C-0083 -coll 60x vehicleZstack cell4,Healthy-NoCol,Healthy-NoCol,True
+03Asc-0054 -Col 60x veh-Zstack Cell2,TAA-NoCol,Healthy+Col,False
+03Asc-0056 +Col 60x veh-Zstack Cell6,TAA+Col,Healthy+Col,False
+01ASC-0180 +coll 60x DMSO48h-Zstack cell5,Healthy+Col,Healthy-NoCol,False
+01ASC-0180 +coll 60x DMSO48h-Zstack cell6,Healthy+Col,Healthy+Col,True
+03Asc-0055 +Col 60x veh-Zstack Cell3,TAA+Col,TAA-NoCol,False
+03Rt-0045 +coll 60x veh 48h-Zstack cell5,TAA+Col,TAA-NoCol,False
+01C-222 +Col 60x veh-Zstack Cell2,Healthy+Col,Healthy+Col,True
+01ASC-0180 -coll 60x DMSO48H-Zstack cell3,Healthy-NoCol,Healthy-NoCol,True
+01C-0113 +coll veh60x Zstack cell5,Healthy+Col,Healthy+Col,True
+01Asc-230 +Col 60x veh-Zstack Cell4,Healthy+Col,Healthy+Col,True
+03Rt-0045 -coll 60x veh 48h-Zstack cell1,TAA-NoCol,TAA+Col,False
+03Asc24- DMSO low-cell-4,TAA-NoCol,TAA-NoCol,True
+03Asc-0043 +coll 60x veh 48h-Zstack cell1,TAA+Col,TAA-NoCol,False
+01ASC-0180 +coll 60x DMSO48h-Zstack cell7,Healthy+Col,Healthy-NoCol,False
+03Asc-0055 -Col 60x veh-Zstack Cell2,TAA-NoCol,TAA-NoCol,True
+03Asc46 -coll 60x veh 48h-Zstack cell2,TAA-NoCol,TAA-NoCol,True
+01C-0117 -coll 60x VehicleZstack cell5,Healthy-NoCol,Healthy+Col,False
+03Asc-0055 +Col 60x veh-Zstack Cell1,TAA+Col,TAA-NoCol,False
+03Asc47 -coll 60x veh 48h-Zstack cell5,TAA-NoCol,TAA+Col,False
+03Asc24- DMSO low-cell-3,TAA-NoCol,Healthy+Col,False

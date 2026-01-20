@@ -261,6 +261,60 @@ def main():
     plt.savefig(f'{OUTPUT_DIR}/top_features_violin_plots.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/top_features_violin_plots.png")
     
+    # 10. Subject-level aggregation (average across cells per subject)
+    df_subject = df_nocol.groupby(['Numeric_ID', 'Disease'])[feature_cols].mean().reset_index()
+    print(f"\nSubject-level analysis: {len(df_subject)} subjects")
+    
+    # 11. Histogram plots with KDE for top 6 features
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    axes = axes.flatten()
+    
+    for i, feature in enumerate(top_features):
+        ax = axes[i]
+        
+        healthy = df_nocol[df_nocol['Disease'] == 'Healthy'][feature].dropna()
+        taa = df_nocol[df_nocol['Disease'] == 'TAA'][feature].dropna()
+        
+        sns.histplot(healthy, kde=True, stat='density', label='Healthy', color='#3498DB', alpha=0.6, ax=ax)
+        sns.histplot(taa, kde=True, stat='density', label='TAA', color='#E74C3C', alpha=0.6, ax=ax)
+        ax.legend()
+        ax.set_title(feature, fontsize=10, fontweight='bold')
+        ax.set_xlabel(feature, fontsize=9)
+        ax.set_ylabel('Density', fontsize=9)
+    
+    plt.suptitle('Phase 1: Distribution Histograms with KDE (Healthy vs TAA)', 
+                 fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig(f'{OUTPUT_DIR}/top_features_histograms.png', dpi=300)
+    print(f"Saved: {OUTPUT_DIR}/top_features_histograms.png")
+    
+    # 12. QQ plots for normality assessment (top 6 features)
+    from scipy import stats as scipy_stats
+    
+    for feature in top_features:
+        healthy = df_nocol[df_nocol['Disease'] == 'Healthy'][feature].dropna()
+        taa = df_nocol[df_nocol['Disease'] == 'TAA'][feature].dropna()
+        
+        fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+        
+        scipy_stats.probplot(healthy, plot=axes[0])
+        axes[0].set_title(f"{feature} – Healthy", fontsize=11, fontweight='bold')
+        axes[0].grid(alpha=0.3)
+        
+        scipy_stats.probplot(taa, plot=axes[1])
+        axes[1].set_title(f"{feature} – TAA", fontsize=11, fontweight='bold')
+        axes[1].grid(alpha=0.3)
+        
+        plt.suptitle(f'QQ Plot: {feature}', fontsize=12, fontweight='bold')
+        plt.tight_layout()
+        
+        # Clean filename
+        safe_feature = feature.replace('/', '_').replace('²', '2').replace('³', '3').replace('µ', 'u')
+        plt.savefig(f'{OUTPUT_DIR}/qq_plot_{safe_feature}.png', dpi=300)
+        plt.close()
+    
+    print(f"Saved: {OUTPUT_DIR}/qq_plot_*.png (6 QQ plots)")
+    
     print(f"\n{'='*80}")
     print("3D Morphometric Analysis Complete")
     print(f"{'='*80}")
