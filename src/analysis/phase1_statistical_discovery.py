@@ -30,27 +30,40 @@ ALPHA = 0.05
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def extract_numeric_id(text):
-    """Extract subject ID from filename (e.g., '01ASC-0180' -> 180)."""
-    import re
+    """
+    Robustly extracts Subject ID from filename.
+    Assumes standard format: "<SubjectID> <Conditions>..."
+    From train_classifier.py
+    """
     if pd.isna(text):
         return None
+        
     text = str(text).strip()
     
-    # Look for pattern like "ASC-####" or "asc-####"
-    match = re.search(r'ASC-0?(\d{2,4})', text, re.IGNORECASE)
-    if match:
-        return int(match.group(1))
+    # Step 1: Get first token (Subject ID part)
+    first_token = text.split(' ')[0]
     
-    # Fallback: split on "-" and get number after last dash
-    parts = text.split('-')
+    # Step 2: Remove trailing hyphens
+    token = first_token.strip('-')
+    
+    # Step 3: Extract number
+    # Priority A: Hyphen separator (common in 01C-XXX, 01ASC-XXX)
+    parts = token.split('-')
     if len(parts) > 1:
-        # Get the part after the last dash, before any space
-        last_part = parts[-1].split()[0]
-        # Remove leading zeros and convert
-        digits = re.findall(r'\d+', last_part)
-        if digits:
-            return int(digits[0])
-    
+        last_part = parts[-1]
+        # Check if the part after hyphen is numeric
+        if last_part.isdigit():
+            return int(last_part)
+        # If not purely digit, try extracting digits
+        sub_digits = re.findall(r'\d+', last_part)
+        if sub_digits:
+            return int(sub_digits[0])
+            
+    # Priority B: No hyphen (e.g. 03Asc46), just take the last number group
+    digits = re.findall(r'\d+', token)
+    if digits:
+        return int(digits[-1])
+        
     return None
 
 def load_metadata(filepath):
@@ -76,15 +89,25 @@ def load_metadata(filepath):
     return healthy_ids, taa_ids
 
 def extract_collagen_status(filename):
-    """Extract collagen status (+coll or no coll)."""
+    """
+    Extract collagen status from filename.
+    From train_collagen_classifier.py
+    +coll or +Coll -> 'Collagen'
+    -coll or no +coll or DMSO -> 'NoCollagen'
+    """
     if pd.isna(filename):
         return None
-    # Remove spaces and convert to lowercase for robust matching
-    filename_clean = str(filename).replace(' ', '').lower()
-    if '+coll' in filename_clean or '+col' in filename_clean:
+    
+    filename = str(filename).lower()
+    
+    # Positive Collagen
+    if '+coll' in filename or '+col' in filename or 'plus coll' in filename:
         return 'Collagen'
-    elif '-coll' in filename_clean or '-col' in filename_clean or 'nocoll' in filename_clean:
+        
+    # Negative Collagen (including DMSO control)
+    if '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename or 'dmso' in filename:
         return 'NoCollagen'
+        
     return None
 
 def main():
