@@ -273,9 +273,9 @@ def main():
     
     # Save predictions
     predictions_df = pd.DataFrame({
-        'CellName': df_nocol.iloc[X_test.index]['CellName'],
-        'True_Label': y_test.map({0: 'Healthy', 1: 'TAA'}),
-        'Predicted_Label': pd.Series(y_pred_test).map({0: 'Healthy', 1: 'TAA'}),
+        'CellName': df_nocol.loc[X_test.index, 'CellName'].values,
+        'True_Label': y_test.map({0: 'Healthy', 1: 'TAA'}).values,
+        'Predicted_Label': pd.Series(y_pred_test).map({0: 'Healthy', 1: 'TAA'}).values,
         'Probability_TAA': y_proba_test
     })
     predictions_df.to_csv(f'{OUTPUT_DIR}/predictions.csv', index=False)

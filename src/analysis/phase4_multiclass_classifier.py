@@ -298,10 +298,10 @@ def main():
     
     # Save predictions
     predictions_df = pd.DataFrame({
-        'CellName': df.iloc[X_test.index]['CellName'],
-        'True_Group': df.iloc[X_test.index]['Group'],
+        'CellName': df.loc[X_test.index, 'CellName'].values,
+        'True_Group': df.loc[X_test.index, 'Group'].values,
         'Predicted_Group': pd.Series(y_pred_test).map({0: 'Healthy-NoCol', 1: 'Healthy+Col', 
-                                                        2: 'TAA-NoCol', 3: 'TAA+Col'}),
+                                                        2: 'TAA-NoCol', 3: 'TAA+Col'}).values,
         'Correct': y_test.values == y_pred_test
     })
     predictions_df.to_csv(f'{OUTPUT_DIR}/predictions_4class.csv', index=False)
