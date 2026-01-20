@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import re
 from scipy.stats import shapiro, mannwhitneyu, ttest_ind
 from statsmodels.stats.multitest import multipletests
 import os
