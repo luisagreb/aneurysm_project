@@ -40,21 +40,25 @@ OUTPUT_DIR = 'src/analysis/outputs/phase4'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def extract_numeric_id(text):
-    """Extract subject ID from filename."""
+    """Extract subject ID from filename (e.g., '01ASC-0180' -> 180)."""
+    import re
     if pd.isna(text):
         return None
     text = str(text).strip()
+    
+    # Look for pattern like "ASC-####" or "asc-####"
+    match = re.search(r'ASC-0?(\d{2,4})', text, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+    
+    # Fallback: split on "-" and get number after last dash
     parts = text.split('-')
     if len(parts) > 1:
         last_part = parts[-1].split()[0]
-        if last_part.isdigit():
-            return int(last_part)
         digits = re.findall(r'\d+', last_part)
         if digits:
             return int(digits[0])
-    digits = re.findall(r'\d+', text)
-    if digits:
-        return int(digits[-1])
+    
     return None
 
 def load_metadata(filepath):
