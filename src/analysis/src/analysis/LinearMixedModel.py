@@ -260,24 +260,44 @@ def main():
     
     # 8. Visualizations
     
-    # 8a. Forest plot of Disease effects
-    fig, ax = plt.subplots(figsize=(12, 10))
+    # 8a. Forest plot of Disease effects (using STANDARDIZED coefficients)
+    # Standardize by dividing coefficient by feature SD for comparability
+    fig, ax = plt.subplots(figsize=(10, 6))
     
-    plot_df = results_df.head(15).copy()
-    plot_df = plot_df.sort_values('Disease_TAA_coef')
+    plot_df = results_df.copy()
+    
+    # Calculate standardized coefficients (coefficient / feature SD)
+    std_coefs = []
+    for _, row in plot_df.iterrows():
+        feat = row['Feature']
+        if feat in df.columns:
+            feat_sd = df[feat].std()
+            std_coef = row['Disease_TAA_coef'] / feat_sd if feat_sd > 0 else 0
+        else:
+            std_coef = 0
+        std_coefs.append(std_coef)
+    
+    plot_df['Std_Coef'] = std_coefs
+    plot_df = plot_df.sort_values('Std_Coef')
     
     y_pos = range(len(plot_df))
     colors = ['#E74C3C' if p < 0.05 else '#95A5A6' for p in plot_df['Disease_TAA_FDR']]
     
-    ax.barh(y_pos, plot_df['Disease_TAA_coef'], color=colors, edgecolor='black', alpha=0.8)
+    ax.barh(y_pos, plot_df['Std_Coef'], color=colors, edgecolor='black', alpha=0.8)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(plot_df['Feature'], fontsize=9)
+    ax.set_yticklabels(plot_df['Feature'], fontsize=10)
     ax.axvline(x=0, color='black', linewidth=1)
-    ax.set_xlabel('Coefficient (TAA effect)', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Standardized Coefficient (TAA effect / SD)', fontsize=12, fontweight='bold')
     ax.set_ylabel('Feature', fontsize=12, fontweight='bold')
-    ax.set_title('Linear Mixed Model: Disease Effect (TAA vs Healthy)\nRed = FDR < 0.05 | Controlling for Subject', 
+    ax.set_title('Linear Mixed Model: Disease Effect (TAA vs Healthy)\nRed = FDR < 0.05 | Standardized for comparability', 
                  fontsize=12, fontweight='bold')
     ax.grid(axis='x', alpha=0.3)
+    
+    # Add legend
+    from matplotlib.patches import Patch
+    legend_elements = [Patch(facecolor='#E74C3C', label='Significant (FDR < 0.05)'),
+                      Patch(facecolor='#95A5A6', label='Not significant')]
+    ax.legend(handles=legend_elements, loc='lower right')
     
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/lmm_disease_effect.png', dpi=300)
