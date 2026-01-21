@@ -186,10 +186,15 @@ def main():
     print(f"\nSubjects per condition:")
     print(df.groupby(['Disease', 'Collagen'])['Subject'].nunique().unstack(fill_value=0))
     
-    # 2. Define feature columns
-    feature_cols = [col for col in df.columns if 
-                    col.endswith('_µm') or col.endswith('_ratio') or col.endswith('_µm³') or 
-                    col.endswith('_µm²') or col.endswith('_n')]
+    # 2. HYPOTHESIS-DRIVEN feature selection (reduces multiple testing burden)
+    # Only test the top 5 biologically relevant features identified from exploratory analysis
+    feature_cols = [
+        'Actin_Skeleton_Length_µm',    # Top candidate from exploratory analysis
+        'Actin_Solidity_ratio',         # Cell compactness
+        'Mito_Sphericity_ratio',        # Mitochondrial shape
+        'Mito_Fragment_Count_n',        # Mitochondrial fragmentation
+        'Actin_Minor_Axis_µm'           # Cell thickness
+    ]
     
     print(f"\nFitting Linear Mixed Models for {len(feature_cols)} features...")
     print("Model: Feature ~ Disease * Collagen + (1|Subject)")
@@ -298,7 +303,84 @@ def main():
         plt.savefig(f'{OUTPUT_DIR}/lmm_icc_values.png', dpi=300)
         print(f"Saved: {OUTPUT_DIR}/lmm_icc_values.png")
     
-    # 8c. Comparison: LMM vs naive analysis
+    # 8c. Boxplots for significant features (4-group visualization)
+    df['Group'] = df['Disease'] + '\n' + df['Collagen'].map({'Collagen': '+Coll', 'NoCollagen': 'No Coll'})
+    
+    palette = {'Healthy\n+Coll': '#85C1E9', 'Healthy\nNo Coll': '#3498DB', 
+               'TAA\n+Coll': '#F1948A', 'TAA\nNo Coll': '#E74C3C'}
+    order = ['Healthy\nNo Coll', 'Healthy\n+Coll', 'TAA\nNo Coll', 'TAA\n+Coll']
+    
+    sig_features = results_df[results_df['Disease_TAA_FDR'] < 0.05]['Feature'].tolist()
+    
+    if len(sig_features) > 0:
+        n_plots = len(sig_features)
+        fig, axes = plt.subplots(1, n_plots, figsize=(5*n_plots, 5))
+        if n_plots == 1:
+            axes = [axes]
+        
+        for i, feat in enumerate(sig_features):
+            ax = axes[i]
+            sns.boxplot(data=df, x='Group', y=feat, ax=ax, order=order, palette=palette)
+            
+            # Get p-value for title
+            fdr_p = results_df[results_df['Feature'] == feat]['Disease_TAA_FDR'].values[0]
+            ax.set_title(f'{feat}\nFDR p = {fdr_p:.4f} ***', fontsize=11, fontweight='bold')
+            ax.set_xlabel('')
+            ax.set_ylabel(feat, fontsize=10)
+            ax.tick_params(axis='x', labelsize=9)
+        
+        plt.suptitle('LMM Significant Features: Disease Effect (FDR < 0.05)', fontsize=14, fontweight='bold')
+        plt.tight_layout()
+        plt.savefig(f'{OUTPUT_DIR}/lmm_significant_boxplots.png', dpi=300)
+        print(f"Saved: {OUTPUT_DIR}/lmm_significant_boxplots.png")
+    
+    # 8d. Interaction plot for Actin_Solidity (if significant)
+    if 'Interaction_sig' in results_df.columns:
+        int_sig = results_df[results_df['Interaction_sig'] == True]['Feature'].tolist()
+        if len(int_sig) > 0:
+            fig, axes = plt.subplots(1, len(int_sig), figsize=(6*len(int_sig), 5))
+            if len(int_sig) == 1:
+                axes = [axes]
+            
+            for i, feat in enumerate(int_sig):
+                ax = axes[i]
+                
+                # Create interaction plot
+                for disease in ['Healthy', 'TAA']:
+                    subset = df[df['Disease'] == disease]
+                    means = subset.groupby('Collagen')[feat].mean()
+                    sems = subset.groupby('Collagen')[feat].sem()
+                    
+                    x = [0, 1] if disease == 'Healthy' else [0.1, 1.1]
+                    color = '#3498DB' if disease == 'Healthy' else '#E74C3C'
+                    
+                    ax.errorbar(['No Coll', '+Coll'], 
+                               [means.get('NoCollagen', 0), means.get('Collagen', 0)],
+                               yerr=[sems.get('NoCollagen', 0), sems.get('Collagen', 0)],
+                               marker='o', markersize=10, capsize=5, linewidth=2,
+                               color=color, label=disease)
+                
+                fdr_p = results_df[results_df['Feature'] == feat]['Interaction_FDR'].values[0]
+                ax.set_title(f'{feat}\nInteraction FDR p = {fdr_p:.4f} *', fontsize=11, fontweight='bold')
+                ax.set_xlabel('Collagen Treatment', fontsize=11)
+                ax.set_ylabel(f'Mean {feat}', fontsize=11)
+                ax.legend(title='Disease', fontsize=10)
+                ax.grid(alpha=0.3)
+            
+            plt.suptitle('Disease × Collagen Interaction', fontsize=14, fontweight='bold')
+            plt.tight_layout()
+            plt.savefig(f'{OUTPUT_DIR}/lmm_interaction_plot.png', dpi=300)
+            print(f"Saved: {OUTPUT_DIR}/lmm_interaction_plot.png")
+    
+    # 8e. Save summary table for thesis
+    summary_table = results_df[['Feature', 'Disease_TAA_coef', 'Disease_TAA_pval', 'Disease_TAA_FDR', 'ICC']].copy()
+    summary_table.columns = ['Feature', 'Coefficient', 'p-value', 'FDR p-value', 'ICC']
+    summary_table['Significant'] = summary_table['FDR p-value'] < 0.05
+    summary_table = summary_table.round(4)
+    summary_table.to_csv(f'{OUTPUT_DIR}/lmm_summary_table.csv', index=False)
+    print(f"Saved: {OUTPUT_DIR}/lmm_summary_table.csv")
+    
+    # 8f. Comparison: LMM vs naive analysis
     print(f"\n{'='*80}")
     print("COMPARISON: LMM vs Naive Analysis")
     print(f"{'='*80}")
@@ -322,3 +404,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
