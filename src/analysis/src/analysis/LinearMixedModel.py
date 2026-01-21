@@ -289,8 +289,7 @@ def main():
     ax.axvline(x=0, color='black', linewidth=1)
     ax.set_xlabel('Standardized Coefficient (TAA effect / SD)', fontsize=12, fontweight='bold')
     ax.set_ylabel('Feature', fontsize=12, fontweight='bold')
-    ax.set_title('Linear Mixed Model: Disease Effect (TAA vs Healthy)\nRed = FDR < 0.05 | Standardized for comparability', 
-                 fontsize=12, fontweight='bold')
+    ax.set_title('Linear Mixed Model: Disease Effect (TAA vs Healthy)', fontsize=14, fontweight='bold')
     ax.grid(axis='x', alpha=0.3)
     
     # Add legend
@@ -354,43 +353,33 @@ def main():
         plt.savefig(f'{OUTPUT_DIR}/lmm_significant_boxplots.png', dpi=300)
         print(f"Saved: {OUTPUT_DIR}/lmm_significant_boxplots.png")
     
-    # 8d. Interaction plot for Actin_Solidity (if significant)
+    # 8d. Interaction plot using seaborn pointplot (cleaner visualization)
     if 'Interaction_sig' in results_df.columns:
         int_sig = results_df[results_df['Interaction_sig'] == True]['Feature'].tolist()
         if len(int_sig) > 0:
-            fig, axes = plt.subplots(1, len(int_sig), figsize=(6*len(int_sig), 5))
-            if len(int_sig) == 1:
-                axes = [axes]
-            
-            for i, feat in enumerate(int_sig):
-                ax = axes[i]
+            for feat in int_sig:
+                plt.figure(figsize=(6, 5))
                 
-                # Create interaction plot
-                for disease in ['Healthy', 'TAA']:
-                    subset = df[df['Disease'] == disease]
-                    means = subset.groupby('Collagen')[feat].mean()
-                    sems = subset.groupby('Collagen')[feat].sem()
-                    
-                    x = [0, 1] if disease == 'Healthy' else [0.1, 1.1]
-                    color = '#3498DB' if disease == 'Healthy' else '#E74C3C'
-                    
-                    ax.errorbar(['No Coll', '+Coll'], 
-                               [means.get('NoCollagen', 0), means.get('Collagen', 0)],
-                               yerr=[sems.get('NoCollagen', 0), sems.get('Collagen', 0)],
-                               marker='o', markersize=10, capsize=5, linewidth=2,
-                               color=color, label=disease)
+                # Create Treatment column for plotting
+                df['Treatment'] = df['Collagen'].map({'Collagen': '+Collagen', 'NoCollagen': 'No Collagen'})
+                
+                # Point plot with error bars
+                sns.pointplot(data=df, x='Treatment', y=feat, hue='Disease', 
+                             dodge=True, markers=['o', 's'], capsize=.1, errwidth=1.5, 
+                             palette={'Healthy': '#2ecc71', 'TAA': '#e74c3c'})
                 
                 fdr_p = results_df[results_df['Feature'] == feat]['Interaction_FDR'].values[0]
-                ax.set_title(f'{feat}\nInteraction FDR p = {fdr_p:.4f} *', fontsize=11, fontweight='bold')
-                ax.set_xlabel('Collagen Treatment', fontsize=11)
-                ax.set_ylabel(f'Mean {feat}', fontsize=11)
-                ax.legend(title='Disease', fontsize=10)
-                ax.grid(alpha=0.3)
-            
-            plt.suptitle('Disease × Collagen Interaction', fontsize=14, fontweight='bold')
-            plt.tight_layout()
-            plt.savefig(f'{OUTPUT_DIR}/lmm_interaction_plot.png', dpi=300)
-            print(f"Saved: {OUTPUT_DIR}/lmm_interaction_plot.png")
+                plt.title(f'Interaction Effect: {feat}\n(FDR p = {fdr_p:.4f})', fontsize=12, fontweight='bold')
+                plt.ylabel(feat)
+                plt.xlabel('')
+                plt.legend(title='Group')
+                plt.grid(True, axis='y', alpha=0.3)
+                
+                plt.tight_layout()
+                safe_feat = feat.replace('/', '_').replace('²', '2').replace('³', '3').replace('µ', 'u')
+                plt.savefig(f'{OUTPUT_DIR}/lmm_interaction_{safe_feat}.png', dpi=300)
+                plt.close()
+                print(f"Saved: {OUTPUT_DIR}/lmm_interaction_{safe_feat}.png")
     
     # 8e. Save summary table for thesis
     summary_table = results_df[['Feature', 'Disease_TAA_coef', 'Disease_TAA_pval', 'Disease_TAA_FDR', 'ICC']].copy()
