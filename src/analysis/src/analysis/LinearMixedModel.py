@@ -44,42 +44,55 @@ ALPHA = 0.05
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-def extract_numeric_id(text):
-    """Robustly extracts Subject ID from filename."""
+def extract_subject_id(text):
+    """
+    Extract complete subject identifier with normalized format.
+    
+    CRITICAL: Normalizes case and removes leading zeros to ensure
+    matching between metadata and features file.
+    
+    Examples:
+        '01ASC-0180' -> '01ASC-180'
+        '03Asc24' -> '03ASC-24'
+        '01C-0096' -> '01C-96'
+        '03Rt-45' -> '03RT-45'
+    """
     if pd.isna(text):
         return None
     text = str(text).strip()
-    first_token = text.split(' ')[0]
-    token = first_token.strip('-')
-    parts = token.split('-')
-    if len(parts) > 1:
-        last_part = parts[-1]
-        if last_part.isdigit():
-            return int(last_part)
-        sub_digits = re.findall(r'\d+', last_part)
-        if sub_digits:
-            return int(sub_digits[0])
-    digits = re.findall(r'\d+', token)
-    if digits:
-        return int(digits[-1])
+    first_part = text.split(' ')[0]
+    
+    # Match patterns like '01ASC-0180' or '01C-96' or '03Asc24'
+    # Pattern: prefix (letters with optional leading digits) + optional hyphen + number
+    match = re.match(r'^(\d{0,2}[A-Za-z]+)-?0*(\d+)', first_part)
+    if match:
+        prefix = match.group(1).upper()  # Normalize case (ASC, RT, C)
+        number = match.group(2)  # Number without leading zeros
+        return f"{prefix}-{number}"
+    
     return None
 
 def load_metadata(filepath):
-    """Load metadata to classify Healthy vs TAA."""
+    """Load metadata to classify Healthy vs TAA using normalized Subject IDs."""
     print(f"Loading metadata from {filepath}...")
     df = pd.read_excel(filepath, header=None, skiprows=18)
+    
+    # Use sets to store unique subject IDs
     healthy_ids = set()
     taa_ids = set()
+    
     for x in df[0].dropna():
-        nid = extract_numeric_id(x)
-        if nid is not None:
-            healthy_ids.add(nid)
+        sid = extract_subject_id(x)
+        if sid:
+            healthy_ids.add(sid)
+            
     for x in df[1].dropna():
-        nid = extract_numeric_id(x)
-        if nid is not None:
-            taa_ids.add(nid)
-    print(f"  Healthy subjects: {sorted(list(healthy_ids))}")
-    print(f"  TAA subjects: {sorted(list(taa_ids))}")
+        sid = extract_subject_id(x)
+        if sid:
+            taa_ids.add(sid)
+            
+    print(f"  Healthy subjects ({len(healthy_ids)}): {sorted(list(healthy_ids))}")
+    print(f"  TAA subjects ({len(taa_ids)}): {sorted(list(taa_ids))}")
     return healthy_ids, taa_ids
 
 def extract_collagen_status(filename):
@@ -114,7 +127,8 @@ def run_lmm(df, feature, formula="Feature ~ Disease * Collagen"):
         model = mixedlm("Feature ~ Disease * Collagen", 
                        model_df, 
                        groups=model_df["Subject"])
-        result = model.fit(method='powell', maxiter=100)
+        # Use REML=True for unbiased variance estimation (better for small N)
+        result = model.fit(reml=True, method='powell', maxiter=200)
         
         # Extract results
         params = result.params
@@ -149,7 +163,7 @@ def main():
     healthy_ids, taa_ids = load_metadata(METADATA_FILE)
     df = pd.read_csv(FEATURES_FILE)
     
-    df['Subject'] = df['CellName'].apply(extract_numeric_id)
+    df['Subject'] = df['CellName'].apply(extract_subject_id)
     df['Collagen'] = df['CellName'].apply(extract_collagen_status)
     
     def get_disease_label(nid):
