@@ -10,7 +10,6 @@ Outputs:
 - Boxplots/violin plots for top significant features
 - Summary table for Thesis Section 3.1
 
-Author: Antigravity AI
 """
 
 import pandas as pd
@@ -216,6 +215,28 @@ def main():
     
     print(f"\nMost Significant Features:")
     print(results_df[['Feature', 'Mean_Difference', 'Effect_Size_Cohens_d', 'p_value', 'p_adjusted_FDR']].head(10).to_string(index=False))
+    
+    # 8b. Create summary table for top 10 features
+    summary_table = results_df.head(10)[['Feature', 'Healthy_Mean', 'Healthy_SD', 'TAA_Mean', 'TAA_SD', 
+                                          'Mean_Difference', 'Effect_Size_Cohens_d', 'p_value', 'p_adjusted_FDR', 'Significant_FDR']].copy()
+    
+    # Format for readability
+    summary_table.columns = ['Feature', 'Healthy Mean', 'Healthy SD', 'TAA Mean', 'TAA SD', 
+                             'Difference', "Cohen's d", 'p-value', 'FDR p-value', 'Significant']
+    
+    # Round numeric columns
+    summary_table = summary_table.round(4)
+    
+    # Save as CSV
+    summary_table.to_csv(f'{OUTPUT_DIR}/top10_features_summary.csv', index=False)
+    print(f"\nSaved: {OUTPUT_DIR}/top10_features_summary.csv")
+    
+    # Print formatted table
+    print(f"\n{'='*100}")
+    print("TOP 10 MOST SIGNIFICANT FEATURES (Mann-Whitney U, FDR corrected)")
+    print(f"{'='*100}")
+    print(summary_table.to_string(index=False))
+    print(f"{'='*100}")
     
     # 9. Generate visualizations for top 6 features
     top_features = results_df.head(6)['Feature'].tolist()
