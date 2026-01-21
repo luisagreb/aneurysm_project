@@ -22,10 +22,10 @@ from scipy.stats import shapiro, mannwhitneyu, ttest_ind
 from statsmodels.stats.multitest import multipletests
 import os
 
-# Configuration
+# Configuration - paths relative to project root (run from aneurysm_project/)
 FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
 METADATA_FILE = 'data/Book1.xlsx'
-OUTPUT_DIR = 'src/analysis/outputs/phase1'
+OUTPUT_DIR = 'src/analysis/src/analysis/outputs/stats_TAAvsHealthyNoColl'
 ALPHA = 0.05
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -214,7 +214,7 @@ def main():
     print(f"Significant (p < 0.05): {sum(results_df['p_value'] < 0.05)}")
     print(f"Significant (FDR < 0.05): {sum(results_df['Significant_FDR'])}")
     
-    print(f"\nTop 10 Most Significant Features (FDR-corrected):")
+    print(f"\nMost Significant Features:")
     print(results_df[['Feature', 'Mean_Difference', 'Effect_Size_Cohens_d', 'p_value', 'p_adjusted_FDR']].head(10).to_string(index=False))
     
     # 9. Generate visualizations for top 6 features
@@ -251,17 +251,68 @@ def main():
         else:
             sig_label = 'ns'
         
-        ax.set_title(f"{feature}\np = {p_val:.4f} {sig_label}", fontsize=10, fontweight='bold')
+        # Format p-value in scientific notation for very small values
+        if p_val < 0.001:
+            p_str = f"p = {p_val:.2e}"  # Scientific notation (e.g., 4.77e-07)
+        else:
+            p_str = f"p = {p_val:.4f}"  # Standard format
+        
+        ax.set_title(f"{feature}\n{p_str} {sig_label}", fontsize=10, fontweight='bold')
         ax.set_xlabel('')
         ax.set_ylabel(feature, fontsize=9)
     
-    plt.suptitle('Phase 1: Top Significant Features (Healthy vs TAA, No Collagen)', 
+    plt.suptitle('Most Significant Features (Healthy vs TAA, No Collagen)', 
                  fontsize=14, fontweight='bold')
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/top_features_violin_plots.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/top_features_violin_plots.png")
     
-    # 10. Subject-level aggregation (average across cells per subject)
+    # 10. Cohen's d effect size bar plot (all features)
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Sort by absolute effect size
+    results_sorted = results_df.sort_values('Effect_Size_Cohens_d', key=abs, ascending=True)
+    
+    # Color by direction: positive (TAA higher) = red, negative (TAA lower) = blue
+    colors = ['#E74C3C' if d > 0 else '#3498DB' for d in results_sorted['Effect_Size_Cohens_d']]
+    
+    # Create horizontal bar plot
+    y_pos = range(len(results_sorted))
+    ax.barh(y_pos, results_sorted['Effect_Size_Cohens_d'], color=colors, edgecolor='black', alpha=0.8)
+    
+    # Add feature names
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(results_sorted['Feature'], fontsize=9)
+    
+    # Add reference lines for effect size thresholds
+    ax.axvline(x=0, color='black', linewidth=1)
+    ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axvline(x=0.5, color='gray', linestyle=':', linewidth=1, alpha=0.5)
+    ax.axvline(x=-0.5, color='gray', linestyle=':', linewidth=1, alpha=0.5)
+    
+    # Labels
+    ax.set_xlabel("Cohen's d (Effect Size)", fontsize=12, fontweight='bold')
+    ax.set_ylabel('Feature', fontsize=12, fontweight='bold')
+    ax.set_title("Effect Size (Cohen's d) for All Features", fontsize=14, fontweight='bold')
+    ax.grid(axis='x', alpha=0.3)
+    
+    # Add legend in bottom right
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+    legend_elements = [
+        Patch(facecolor='#E74C3C', edgecolor='black', label='TAA > Healthy'),
+        Patch(facecolor='#3498DB', edgecolor='black', label='TAA < Healthy'),
+        Line2D([0], [0], color='gray', linestyle='--', label='Large effect (|d|>0.8)'),
+        Line2D([0], [0], color='gray', linestyle=':', label='Medium effect (|d|>0.5)')
+    ]
+    ax.legend(handles=legend_elements, loc='lower right', fontsize=9, framealpha=0.95)
+    
+    plt.tight_layout()
+    plt.savefig(f'{OUTPUT_DIR}/cohens_d_effect_sizes.png', dpi=300)
+    print(f"Saved: {OUTPUT_DIR}/cohens_d_effect_sizes.png")
+    
+    # 11. Subject-level aggregation (average across cells per subject)
     df_subject = df_nocol.groupby(['Numeric_ID', 'Disease'])[feature_cols].mean().reset_index()
     print(f"\nSubject-level analysis: {len(df_subject)} subjects")
     
@@ -282,7 +333,7 @@ def main():
         ax.set_xlabel(feature, fontsize=9)
         ax.set_ylabel('Density', fontsize=9)
     
-    plt.suptitle('Phase 1: Distribution Histograms with KDE (Healthy vs TAA)', 
+    plt.suptitle('Distribution Histograms with KDE (Healthy vs TAA)', 
                  fontsize=14, fontweight='bold')
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/top_features_histograms.png', dpi=300)
@@ -311,7 +362,7 @@ def main():
         # Clean filename
         safe_feature = feature.replace('/', '_').replace('²', '2').replace('³', '3').replace('µ', 'u')
         plt.savefig(f'{OUTPUT_DIR}/qq_plot_{safe_feature}.png', dpi=300)
-        plt.close()
+        plt.close() 
     
     print(f"Saved: {OUTPUT_DIR}/qq_plot_*.png (6 QQ plots)")
     

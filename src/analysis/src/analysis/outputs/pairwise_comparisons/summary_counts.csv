@@ -1,0 +1,7 @@
+Comparison,Significant,Total,Percent
+Disease Effect (No Collagen),11,32,34.4%
+Disease Effect (+Collagen),3,32,9.4%
+Collagen Effect (Healthy),0,32,0.0%
+Collagen Effect (TAA),0,32,0.0%
+Healthy_NoColl vs TAA_Coll,10,32,31.2%
+Healthy_Coll vs TAA_NoColl,13,32,40.6%
