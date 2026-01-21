@@ -323,7 +323,7 @@ def main():
     for f in not_rescued_features:
         print(f"  - {f}")
     
-    # 9. Create rescue boxplot
+    # 9. Create rescue boxplot (cleaner layout: 2 rows x 3 cols)
     # Prepare group labels for plotting
     df['Group_Label'] = df['Group'].map({
         'Healthy_NoCollagen': 'Healthy\nNo Coll',
@@ -336,46 +336,41 @@ def main():
                'TAA\nNo Coll': '#E74C3C', 'TAA\n+Coll': '#F1948A'}
     order = ['Healthy\nNo Coll', 'Healthy\n+Coll', 'TAA\nNo Coll', 'TAA\n+Coll']
     
-    # Select features for plot (top 4 rescued, all 3 not rescued)
-    rescued_plot = rescued_features[:4] if len(rescued_features) >= 4 else rescued_features
+    # Select features for plot: 3 rescued + 3 not rescued = 6 plots (2x3 grid)
+    rescued_plot = rescued_features[:3] if len(rescued_features) >= 3 else rescued_features
     not_rescued_plot = not_rescued_features[:3] if len(not_rescued_features) >= 3 else not_rescued_features
     
     n_rescued = len(rescued_plot)
     n_not_rescued = len(not_rescued_plot)
     
     if n_rescued > 0 or n_not_rescued > 0:
-        fig, axes = plt.subplots(2, 4, figsize=(16, 10))
+        fig, axes = plt.subplots(2, 3, figsize=(14, 9))
         
         # Top row: Rescued features
-        for i in range(4):
+        for i in range(3):
             ax = axes[0, i]
             if i < n_rescued:
                 feat = rescued_plot[i]
                 sns.boxplot(data=df, x='Group_Label', y=feat, ax=ax, order=order, palette=palette)
-                ax.set_title(f'{feat}\nRESCUED', fontsize=9, fontweight='bold', color='green')
+                ax.set_title(f'{feat}\n(RESCUED)', fontsize=10, fontweight='bold', color='black')
                 ax.set_xlabel('')
-                ax.set_ylabel(feat.split('_')[0], fontsize=8)
-                ax.tick_params(axis='x', labelsize=7)
+                ax.set_ylabel(feat.split('_')[0], fontsize=9)
+                ax.tick_params(axis='x', labelsize=8)
             else:
                 ax.axis('off')
         
         # Bottom row: Not rescued features
-        for i in range(4):
+        for i in range(3):
             ax = axes[1, i]
             if i < n_not_rescued:
                 feat = not_rescued_plot[i]
                 sns.boxplot(data=df, x='Group_Label', y=feat, ax=ax, order=order, palette=palette)
-                ax.set_title(f'{feat}\nNOT RESCUED', fontsize=9, fontweight='bold', color='red')
+                ax.set_title(f'{feat}\n(NOT RESCUED)', fontsize=10, fontweight='bold', color='black')
                 ax.set_xlabel('')
-                ax.set_ylabel(feat.split('_')[0], fontsize=8)
-                ax.tick_params(axis='x', labelsize=7)
+                ax.set_ylabel(feat.split('_')[0], fontsize=9)
+                ax.tick_params(axis='x', labelsize=8)
             else:
                 ax.axis('off')
-                if i == n_not_rescued:
-                    ax.text(0.5, 0.5, f'Rescued: {len(rescued_features)}/{len(sig_nocoll)}\n\nCollagen reduces\ndisease effect', 
-                            ha='center', va='center', fontsize=11, fontweight='bold',
-                            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.5),
-                            transform=ax.transAxes)
         
         plt.suptitle('Collagen Rescue Effect: TAA Phenotype Recovery', fontsize=14, fontweight='bold')
         plt.tight_layout()
