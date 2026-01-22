@@ -16,7 +16,6 @@ Outputs:
 - Violin plots for top features across all 4 groups
 - Cohen's d effect size plots
 
-Author: Antigravity AI
 """
 
 import pandas as pd
@@ -260,8 +259,8 @@ def main():
         plot_data = df[df['Group'].isin(group_order)][['Group', feature]].dropna()
         plot_data['Group'] = pd.Categorical(plot_data['Group'], categories=group_order, ordered=True)
         
-        sns.violinplot(data=plot_data, x='Group', y=feature, ax=ax, 
-                      order=group_order, palette=palette)
+        sns.boxplot(data=plot_data, x='Group', y=feature, ax=ax, 
+                    order=group_order, palette=palette)
         
         # Get stats
         feature_stats = results_df[results_df['Feature'] == feature].iloc[0]
@@ -284,8 +283,8 @@ def main():
     plt.suptitle('Most Significant Features (4-Group Comparison)\nKruskal-Wallis with FDR correction', 
                  fontsize=14, fontweight='bold')
     plt.tight_layout()
-    plt.savefig(f'{OUTPUT_DIR}/top_features_violin_4groups.png', dpi=300)
-    print(f"Saved: {OUTPUT_DIR}/top_features_violin_4groups.png")
+    plt.savefig(f'{OUTPUT_DIR}/top_features_boxplots_4groups.png', dpi=300)
+    print(f"Saved: {OUTPUT_DIR}/top_features_boxplots_4groups.png")
     
     # 10. Post-hoc comparison heatmap for significant features
     if posthoc_results:
