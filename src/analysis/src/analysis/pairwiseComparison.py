@@ -274,16 +274,16 @@ def main():
             else:
                 labels.append(feat)
         
-        ax.set_yticklabels(labels, fontsize=8)
+        ax.set_yticklabels(labels, fontsize=10)
         ax.axvline(x=0, color='black', linewidth=1)
         ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
         ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-        ax.set_xlabel("Cohen's d", fontsize=10)
-        ax.set_title(name, fontsize=11, fontweight='bold')
+        ax.set_xlabel("Cohen's d", fontsize=12, fontweight='bold')
+        ax.set_title(name, fontsize=13, fontweight='bold')
         ax.grid(axis='x', alpha=0.3)
     
     plt.suptitle("Effect Sizes (Cohen's d) for All Pairwise Comparisons\nTop 10 Features per Comparison", 
-                 fontsize=14, fontweight='bold')
+                 fontsize=16, fontweight='bold')
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/pairwise_effect_sizes.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/pairwise_effect_sizes.png")
