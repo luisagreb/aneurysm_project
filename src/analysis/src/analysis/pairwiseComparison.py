@@ -264,7 +264,17 @@ def main():
         y_pos = range(len(comp_results))
         ax.barh(y_pos, comp_results['Cohens_d'], color=colors, edgecolor='black', alpha=0.8)
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(comp_results['Feature'], fontsize=8)
+        
+        # Add stars for significant features
+        labels = []
+        for _, row in comp_results.iterrows():
+            feat = row['Feature']
+            if row['Significant']:
+                labels.append(f"{feat} ***")
+            else:
+                labels.append(feat)
+        
+        ax.set_yticklabels(labels, fontsize=8)
         ax.axvline(x=0, color='black', linewidth=1)
         ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
         ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
