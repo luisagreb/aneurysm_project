@@ -250,13 +250,9 @@ def main():
         # Prepare data
         plot_data = df_nocol[['Disease', feature]].dropna()
         
-        # Violin plot
-        sns.violinplot(data=plot_data, x='Disease', y=feature, ax=ax, palette={'Healthy': '#3498DB', 'TAA': '#E74C3C'})
-        
-        # Add boxplot overlay
-        sns.boxplot(data=plot_data, x='Disease', y=feature, ax=ax, width=0.3, 
-                    palette={'Healthy': '#3498DB', 'TAA': '#E74C3C'}, 
-                    boxprops=dict(alpha=0.7))
+        # Boxplot
+        sns.boxplot(data=plot_data, x='Disease', y=feature, ax=ax, 
+                   palette={'Healthy': '#3498DB', 'TAA': '#E74C3C'})
         
         # Get stats for this feature
         feature_stats = results_df[results_df['Feature'] == feature].iloc[0]
@@ -278,15 +274,16 @@ def main():
         else:
             p_str = f"p = {p_val:.4f}"  # Standard format
         
-        ax.set_title(f"{feature}\n{p_str} {sig_label}", fontsize=10, fontweight='bold')
+        ax.set_title(f"{feature}\n{p_str} {sig_label}", fontsize=11, fontweight='bold')
         ax.set_xlabel('')
-        ax.set_ylabel(feature, fontsize=9)
+        ax.set_ylabel(feature, fontsize=10)
+        ax.tick_params(axis='x', labelsize=11)
     
     plt.suptitle('Most Significant Features (Healthy vs TAA, No Collagen)', 
-                 fontsize=14, fontweight='bold')
+                 fontsize=16, fontweight='bold')
     plt.tight_layout()
-    plt.savefig(f'{OUTPUT_DIR}/top_features_violin_plots.png', dpi=300)
-    print(f"Saved: {OUTPUT_DIR}/top_features_violin_plots.png")
+    plt.savefig(f'{OUTPUT_DIR}/top_features_boxplots.png', dpi=300)
+    print(f"Saved: {OUTPUT_DIR}/top_features_boxplots.png")
     
     # 10. Boxplot for top features showing Healthy vs TAA
     # Select top 10 features by effect size for boxplot
