@@ -243,7 +243,7 @@ def main():
     # 9. Violin plots for top 6 features
     top_features = results_df.head(6)['Feature'].tolist()
     
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
     axes = axes.flatten()
     
     palette = {
@@ -275,13 +275,14 @@ def main():
         else:
             p_str = f"p = {p_val:.4f}"
         
-        ax.set_title(f"{feature}\n{p_str}", fontsize=10, fontweight='bold')
-        ax.set_xticklabels(group_labels, fontsize=8)
+        ax.set_title(f"{feature}\n{p_str}", fontsize=14, fontweight='bold')
+        ax.set_xticklabels(group_labels, fontsize=12)
         ax.set_xlabel('')
-        ax.set_ylabel(feature, fontsize=9)
+        ax.set_ylabel(feature, fontsize=13)
+        ax.tick_params(axis='y', labelsize=11)
     
     plt.suptitle('Most Significant Features (4-Group Comparison)\nKruskal-Wallis with FDR correction', 
-                 fontsize=14, fontweight='bold')
+                 fontsize=18, fontweight='bold')
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/top_features_boxplots_4groups.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/top_features_boxplots_4groups.png")
