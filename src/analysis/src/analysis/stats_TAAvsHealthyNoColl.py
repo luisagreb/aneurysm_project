@@ -285,42 +285,48 @@ def main():
     plt.savefig(f'{OUTPUT_DIR}/top_features_boxplots.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/top_features_boxplots.png")
     
-    # 10. Boxplot for top features showing Healthy vs TAA
-    # Select top 10 features by effect size for boxplot
-    top_10_features = results_df.head(10)['Feature'].tolist()
+    # 10. Cohen's d effect size bar plot (all features)
+    fig, ax = plt.subplots(figsize=(14, 10))
     
-    fig, axes = plt.subplots(2, 5, figsize=(20, 10))
-    axes = axes.flatten()
+    # Sort by absolute effect size
+    results_sorted = results_df.sort_values('Effect_Size_Cohens_d', key=abs, ascending=True)
     
-    for i, feature in enumerate(top_10_features):
-        ax = axes[i]
-        plot_data = df_nocol[['Disease', feature]].dropna()
-        
-        sns.boxplot(data=plot_data, x='Disease', y=feature, ax=ax, 
-                   palette={'Healthy': '#3498DB', 'TAA': '#E74C3C'})
-        
-        # Get stats for this feature
-        feature_stats = results_df[results_df['Feature'] == feature].iloc[0]
-        d_val = feature_stats['Effect_Size_Cohens_d']
-        p_val = feature_stats['p_adjusted_FDR']
-        
-        if p_val < 0.001:
-            sig_label = '***'
-        elif p_val < 0.01:
-            sig_label = '**'
-        elif p_val < 0.05:
-            sig_label = '*'
-        else:
-            sig_label = ''
-        
-        ax.set_title(f"{feature}\nd={d_val:.2f} {sig_label}", fontsize=11, fontweight='bold')
-        ax.set_xlabel('')
-        ax.set_ylabel(feature, fontsize=10)
-        ax.tick_params(axis='x', labelsize=11)
-        ax.tick_params(axis='y', labelsize=10)
+    # Color by direction: positive (TAA higher) = red, negative (TAA lower) = blue
+    colors = ['#E74C3C' if d > 0 else '#3498DB' for d in results_sorted['Effect_Size_Cohens_d']]
     
-    plt.suptitle("Top 10 Features: Healthy vs TAA (No Collagen)\nCohen's d Effect Sizes", 
-                 fontsize=16, fontweight='bold')
+    # Create horizontal bar plot
+    y_pos = range(len(results_sorted))
+    ax.barh(y_pos, results_sorted['Effect_Size_Cohens_d'], color=colors, edgecolor='black', alpha=0.8)
+    
+    # Add feature names with bigger font
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(results_sorted['Feature'], fontsize=13)
+    
+    # Add reference lines for effect size thresholds
+    ax.axvline(x=0, color='black', linewidth=1)
+    ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axvline(x=0.5, color='gray', linestyle=':', linewidth=1, alpha=0.5)
+    ax.axvline(x=-0.5, color='gray', linestyle=':', linewidth=1, alpha=0.5)
+    
+    # Labels with bigger fonts
+    ax.set_xlabel("Cohen's d (Effect Size)", fontsize=14, fontweight='bold')
+    ax.set_ylabel('Feature', fontsize=14, fontweight='bold')
+    ax.set_title("Effect Size (Cohen's d) for All Features", fontsize=16, fontweight='bold')
+    ax.grid(axis='x', alpha=0.3)
+    ax.tick_params(axis='x', labelsize=12)
+    
+    # Add legend in bottom right
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+    legend_elements = [
+        Patch(facecolor='#E74C3C', edgecolor='black', label='TAA > Healthy'),
+        Patch(facecolor='#3498DB', edgecolor='black', label='TAA < Healthy'),
+        Line2D([0], [0], color='gray', linestyle='--', label='Large effect (|d|>0.8)'),
+        Line2D([0], [0], color='gray', linestyle=':', label='Medium effect (|d|>0.5)')
+    ]
+    ax.legend(handles=legend_elements, loc='lower right', fontsize=11, framealpha=0.95)
+    
     plt.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/cohens_d_effect_sizes.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/cohens_d_effect_sizes.png")

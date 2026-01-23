@@ -274,7 +274,7 @@ def main():
             else:
                 labels.append(feat)
         
-        ax.set_yticklabels(labels, fontsize=10)
+        ax.set_yticklabels(labels, fontsize=12)
         ax.axvline(x=0, color='black', linewidth=1)
         ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
         ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
