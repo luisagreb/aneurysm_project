@@ -354,7 +354,7 @@ def main():
     n_not_rescued = len(not_rescued_plot)
     
     if n_rescued > 0 or n_not_rescued > 0:
-        fig, axes = plt.subplots(2, 3, figsize=(14, 9))
+        fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         
         # Top row: Rescued features
         for i in range(3):
@@ -362,10 +362,11 @@ def main():
             if i < n_rescued:
                 feat = rescued_plot[i]
                 sns.boxplot(data=df, x='Group_Label', y=feat, ax=ax, order=order, palette=palette)
-                ax.set_title(f'{feat}\n(RESCUED)', fontsize=10, fontweight='bold', color='black')
+                ax.set_title(f'{feat}\n(RESCUED)', fontsize=14, fontweight='bold', color='black')
                 ax.set_xlabel('')
-                ax.set_ylabel(feat.split('_')[0], fontsize=9)
-                ax.tick_params(axis='x', labelsize=8)
+                ax.set_ylabel(feat.split('_')[0], fontsize=13)
+                ax.tick_params(axis='x', labelsize=12)
+                ax.tick_params(axis='y', labelsize=11)
             else:
                 ax.axis('off')
         
@@ -375,14 +376,15 @@ def main():
             if i < n_not_rescued:
                 feat = not_rescued_plot[i]
                 sns.boxplot(data=df, x='Group_Label', y=feat, ax=ax, order=order, palette=palette)
-                ax.set_title(f'{feat}\n(NOT RESCUED)', fontsize=10, fontweight='bold', color='black')
+                ax.set_title(f'{feat}\n(NOT RESCUED)', fontsize=14, fontweight='bold', color='black')
                 ax.set_xlabel('')
-                ax.set_ylabel(feat.split('_')[0], fontsize=9)
-                ax.tick_params(axis='x', labelsize=8)
+                ax.set_ylabel(feat.split('_')[0], fontsize=13)
+                ax.tick_params(axis='x', labelsize=12)
+                ax.tick_params(axis='y', labelsize=11)
             else:
                 ax.axis('off')
         
-        plt.suptitle('Collagen Rescue Effect: TAA Phenotype Recovery', fontsize=14, fontweight='bold')
+        plt.suptitle('Collagen Rescue Effect: TAA Phenotype Recovery', fontsize=18, fontweight='bold')
         plt.tight_layout()
         plt.savefig(f'{OUTPUT_DIR}/rescue_boxplots.png', dpi=300)
         print(f"\nSaved: {OUTPUT_DIR}/rescue_boxplots.png")
