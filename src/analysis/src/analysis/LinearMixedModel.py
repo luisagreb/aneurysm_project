@@ -286,6 +286,29 @@ def main():
     ax.barh(y_pos, plot_df['Std_Coef'], color=colors, edgecolor='black', alpha=0.8)
     ax.set_yticks(y_pos)
     ax.set_yticklabels(plot_df['Feature'], fontsize=10)
+    
+    # Add significance stars textual annotation
+    for i, (idx, row) in enumerate(plot_df.iterrows()):
+        p_val = row['Disease_TAA_FDR']
+        if p_val < 0.001:
+            sig = '***'
+        elif p_val < 0.01:
+            sig = '**'
+        elif p_val < 0.05:
+            sig = '*'
+        else:
+            sig = ''
+            
+        if sig:
+            # Position slightly to the right of the bar if positive, left if negative
+            # But standard coefficients can be positive or negative
+            # Let's put it at the end of the bar with some padding
+            val = row['Std_Coef']
+            if val >= 0:
+                ax.text(val + 0.01, i, sig, va='center', fontweight='bold', fontsize=12)
+            else:
+                ax.text(val - 0.01, i, sig, va='center', ha='right', fontweight='bold', fontsize=12)
+
     ax.axvline(x=0, color='black', linewidth=1)
     ax.set_xlabel('Standardized Coefficient (TAA effect / SD)', fontsize=12, fontweight='bold')
     ax.set_ylabel('Feature', fontsize=12, fontweight='bold')

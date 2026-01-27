@@ -15,7 +15,6 @@ Outputs:
 - Statistical results CSV with omnibus and post-hoc p-values
 - Violin plots for top features across all 4 groups
 - Cohen's d effect size plots
-
 """
 
 import pandas as pd

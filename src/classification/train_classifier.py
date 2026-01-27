@@ -12,6 +12,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 # Configuration
 FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
 METADATA_FILE = 'data/Book1.xlsx'
+OUTPUT_DIR = 'classification_results/binary'
 
 def extract_numeric_id(text):
     """
@@ -83,6 +84,7 @@ def load_metadata(filepath):
         return set(), set()
 
 def main():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     print("Loading data...")
     # 1. Load Metadata
     healthy_ids, taa_ids = load_metadata(METADATA_FILE)
@@ -225,8 +227,8 @@ def main():
     plt.bar(range(min(top_n, X.shape[1])), importances[indices[:top_n]], align="center", color=colors)
     plt.xticks(range(min(top_n, X.shape[1])), X.columns[indices[:top_n]], rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig('feature_importance.png')
-    print("\nSaved feature importance plot to feature_importance.png")
+    plt.savefig(f'{OUTPUT_DIR}/feature_importance.png')
+    print(f"\nSaved feature importance plot to {OUTPUT_DIR}/feature_importance.png")
     
     # ============================================================
     # 9. NEURAL NETWORK CLASSIFIER
@@ -264,8 +266,8 @@ def main():
     plt.ylabel("Loss")
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig('nn_training_loss.png')
-    print("\nSaved training loss plot to nn_training_loss.png")
+    plt.savefig(f'{OUTPUT_DIR}/nn_training_loss.png')
+    print(f"\nSaved training loss plot to {OUTPUT_DIR}/nn_training_loss.png")
     
     # ============================================================
     # 10. COMPARISON SUMMARY
@@ -284,8 +286,8 @@ def main():
         'RF_Predicted': y_pred_rf,
         'NN_Predicted': y_pred_nn
     })
-    results.to_csv('predictions.csv', index=True)
-    print("\nSaved predictions to predictions.csv")
+    results.to_csv(f'{OUTPUT_DIR}/predictions.csv', index=True)
+    print(f"\nSaved predictions to {OUTPUT_DIR}/predictions.csv")
 
 if __name__ == "__main__":
     main()

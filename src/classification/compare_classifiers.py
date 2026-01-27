@@ -26,7 +26,7 @@ warnings.filterwarnings('ignore')
 # Configuration
 FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
 METADATA_FILE = 'data/Book1.xlsx'
-OUTPUT_DIR = Path('classification_results')
+OUTPUT_DIR = Path('classification_results/comparison')
 
 
 def extract_subject_id(filename):
@@ -226,7 +226,7 @@ def main():
     print("=" * 60)
     
     # Create output directory
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     
     # Load data
     X, y = load_data()
