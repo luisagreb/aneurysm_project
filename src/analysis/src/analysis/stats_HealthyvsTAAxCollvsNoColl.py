@@ -266,13 +266,13 @@ def main():
         p_val = feature_stats['p_omnibus_FDR']
         
         if p_val < 0.001:
-            p_str = f"p = {p_val:.2e} ***"
+            p_str = "***p<0.001"
         elif p_val < 0.01:
-            p_str = f"p = {p_val:.4f} **"
+            p_str = "**p<0.01"
         elif p_val < 0.05:
-            p_str = f"p = {p_val:.4f} *"
+            p_str = "*p<0.05"
         else:
-            p_str = f"p = {p_val:.4f}"
+            p_str = f"ns (p={p_val:.3f})"
         
         ax.set_title(f"{feature}\n{p_str}", fontsize=14, fontweight='bold')
         ax.set_xticklabels(group_labels, fontsize=12)

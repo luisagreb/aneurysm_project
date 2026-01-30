@@ -445,11 +445,13 @@ def main():
     def format_pvalue(p):
         """Format p-value in scientific paper style."""
         if p < 0.001:
-            return "p < 0.001"
+            return "***p<0.001"
         elif p < 0.01:
-            return f"p = {p:.3f}"
+            return "**p<0.01"
+        elif p < 0.05:
+            return "*p<0.05"
         else:
-            return f"p = {p:.3f}"
+            return f"ns (p={p:.3f})"
     
     def get_significance_stars(p):
         """Return significance stars."""
@@ -460,7 +462,7 @@ def main():
         elif p < 0.05:
             return "*"
         else:
-            return "ns"
+            return ""
     
     for feature in feature_cols:
         try:
@@ -508,8 +510,7 @@ def main():
                         label = comp_name
                     
                     p_str = format_pvalue(p_fdr)
-                    stars = get_significance_stars(p_fdr)
-                    p_annotations.append(f"{label}: {p_str} {stars}")
+                    p_annotations.append(f"{label}: {p_str}")
             
             # Add title with feature name
             title_text = f"Interaction Effect: {feature}"

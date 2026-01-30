@@ -258,23 +258,18 @@ def main():
         feature_stats = results_df[results_df['Feature'] == feature].iloc[0]
         p_val = feature_stats['p_adjusted_FDR']
         
-        # Add significance stars
+        # Format p-value in standard scientific notation
+        
         if p_val < 0.001:
-            sig_label = '***'
+            p_str = "***p<0.001"
         elif p_val < 0.01:
-            sig_label = '**'
+            p_str = "**p<0.01"
         elif p_val < 0.05:
-            sig_label = '*'
+            p_str = "*p<0.05"
         else:
-            sig_label = 'ns'
+            p_str = f"ns (p={p_val:.3f})"
         
-        # Format p-value in scientific notation for very small values
-        if p_val < 0.001:
-            p_str = f"p = {p_val:.2e}"  # Scientific notation (e.g., 4.77e-07)
-        else:
-            p_str = f"p = {p_val:.4f}"  # Standard format
-        
-        ax.set_title(f"{feature}\n{p_str} {sig_label}", fontsize=11, fontweight='bold')
+        ax.set_title(f"{feature}\n{p_str}", fontsize=11, fontweight='bold')
         ax.set_xlabel('')
         ax.set_ylabel(feature, fontsize=10)
         ax.tick_params(axis='x', labelsize=11)
