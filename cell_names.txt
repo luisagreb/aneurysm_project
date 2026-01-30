@@ -1,0 +1,200 @@
+01ASC-0180 +coll 60x DMSO48h-Zstack cell1
+01ASC-0180 +coll 60x DMSO48h-Zstack cell10
+01ASC-0180 +coll 60x DMSO48h-Zstack cell2
+01ASC-0180 +coll 60x DMSO48h-Zstack cell3
+01ASC-0180 +coll 60x DMSO48h-Zstack cell4
+01ASC-0180 +coll 60x DMSO48h-Zstack cell5
+01ASC-0180 +coll 60x DMSO48h-Zstack cell6
+01ASC-0180 +coll 60x DMSO48h-Zstack cell7
+01ASC-0180 +coll 60x DMSO48h-Zstack cell8
+01ASC-0180 +coll 60x DMSO48h-Zstack cell9
+01ASC-0180 -coll 60x DMSO48H-Zstack cell1
+01ASC-0180 -coll 60x DMSO48H-Zstack cell2
+01ASC-0180 -coll 60x DMSO48H-Zstack cell3
+01ASC-0180 -coll 60x DMSO48H-Zstack cell4
+01ASC-0180 -coll 60x DMSO48H-Zstack cell5
+01ASC-0180 -coll 60x DMSO48h-Zstack cell10
+01ASC-0180 -coll 60x DMSO48h-Zstack cell6
+01ASC-0180 -coll 60x DMSO48h-Zstack cell7
+01ASC-0180 -coll 60x DMSO48h-Zstack cell8
+01ASC-0180 -coll 60x DMSO48h-Zstack cell9
+01Asc-230 +Col 60x veh-Zstack Cell1
+01Asc-230 +Col 60x veh-Zstack Cell2
+01Asc-230 +Col 60x veh-Zstack Cell3
+01Asc-230 +Col 60x veh-Zstack Cell4
+01Asc-230 +Col 60x veh-Zstack Cell5
+01Asc-230 -Col 60x veh-Zstack Cell1
+01Asc-230 -Col 60x veh-Zstack Cell2
+01Asc-230 -Col 60x veh-Zstack Cell3
+01Asc-230 -Col 60x veh-Zstack Cell4
+01Asc-230 -Col 60x veh-Zstack Cell5
+01C-0083 +coll 60x vehicleZstack cell1
+01C-0083 +coll 60x vehicleZstack cell2
+01C-0083 +coll 60x vehicleZstack cell3
+01C-0083 +coll 60x vehicleZstack cell4
+01C-0083 +coll 60x vehicleZstack cell5
+01C-0083 -coll 60x vehicleZstack cell1
+01C-0083 -coll 60x vehicleZstack cell2
+01C-0083 -coll 60x vehicleZstack cell3
+01C-0083 -coll 60x vehicleZstack cell4
+01C-0083 -coll 60x vehicleZstack cell5
+01C-0096 +coll 60x vehicleZstack cell1
+01C-0096 +coll 60x vehicleZstack cell2
+01C-0096 +coll 60x vehicleZstack cell3
+01C-0096 +coll 60x vehicleZstack cell4
+01C-0096 +coll 60x vehicleZstack cell5
+01C-0096 -coll 60x vehicleZstack cell1
+01C-0096 -coll 60x vehicleZstack cell2
+01C-0096 -coll 60x vehicleZstack cell3
+01C-0096 -coll 60x vehicleZstack cell4
+01C-0096 -coll 60x vehicleZstack cell5
+01C-0097 +coll 60x VehicleZstack cell1
+01C-0097 +coll 60x VehicleZstack cell2
+01C-0097 +coll 60x VehicleZstack cell3
+01C-0097 +coll 60x VehicleZstack cell4
+01C-0097 +coll 60x VehicleZstack cell5
+01C-0097 -coll 60x VehicleZstack cell1
+01C-0097 -coll 60x VehicleZstack cell2
+01C-0097 -coll 60x VehicleZstack cell3
+01C-0097 -coll 60x VehicleZstack cell4
+01C-0097 -coll 60x VehicleZstack cell5
+01C-0113 +coll veh60x Zstack cell1
+01C-0113 +coll veh60x Zstack cell2
+01C-0113 +coll veh60x Zstack cell3
+01C-0113 +coll veh60x Zstack cell4
+01C-0113 +coll veh60x Zstack cell5
+01C-0113 no coll veh60x Zstack cell1
+01C-0113 no coll veh60x Zstack cell2
+01C-0113 no coll veh60x Zstack cell3
+01C-0113 no coll veh60x Zstack cell4
+01C-0113 no coll veh60x Zstack cell5
+01C-0117 +coll 60x VehicleZstack cell1
+01C-0117 +coll 60x VehicleZstack cell2
+01C-0117 +coll 60x VehicleZstack cell3
+01C-0117 +coll 60x VehicleZstack cell4
+01C-0117 +coll 60x VehicleZstack cell5
+01C-0117 -coll 60x VehicleZstack cell1
+01C-0117 -coll 60x VehicleZstack cell2
+01C-0117 -coll 60x VehicleZstack cell3
+01C-0117 -coll 60x VehicleZstack cell4
+01C-0117 -coll 60x VehicleZstack cell5
+01C-202 +coll 60x veh 48h-Zstack cell1
+01C-202 +coll 60x veh 48h-Zstack cell2
+01C-202 +coll 60x veh 48h-Zstack cell3
+01C-202 +coll 60x veh 48h-Zstack cell4
+01C-202 +coll 60x veh 48h-Zstack cell5
+01C-202 -coll 60x Veh24h-Zstack cell1
+01C-202 -coll 60x Veh24h-Zstack cell2
+01C-202 -coll 60x Veh24h-Zstack cell3
+01C-202 -coll 60x Veh24h-Zstack cell4
+01C-202 -coll 60x Veh24h-Zstack cell5
+01ASC-222 +Col 60x veh-Zstack Cell1
+01ASC-222 +Col 60x veh-Zstack Cell2
+01ASC-222 +Col 60x veh-Zstack Cell3
+01ASC-222 +Col 60x veh-Zstack Cell4
+01ASC-222 +Col 60x veh-Zstack Cell5
+01ASC-222 -Col 60x veh-Zstack Cell1
+01ASC-222 -Col 60x veh-Zstack Cell2
+01ASC-222 -Col 60x veh-Zstack Cell3
+01ASC-222 -Col 60x veh-Zstack Cell4
+01ASC-222 -Col 60x veh-Zstack Cell5
+03Asc-0043 +coll 60x veh 48h-Zstack cell1
+03Asc-0043 +coll 60x veh 48h-Zstack cell2
+03Asc-0043 +coll 60x veh 48h-Zstack cell3
+03Asc-0043 +coll 60x veh 48h-Zstack cell4
+03Asc-0043 +coll 60x veh 48h-Zstack cell5
+03Asc-0043 -coll 60x veh 48h-Zstack cell1
+03Asc-0043 -coll 60x veh 48h-Zstack cell2
+03Asc-0043 -coll 60x veh 48h-Zstack cell3
+03Asc-0043 -coll 60x veh 48h-Zstack cell4
+03Asc-0043 -coll 60x veh 48h-Zstack cell5
+03Asc-0051 +Col 60x veh-Zstack Cell1
+03Asc-0051 +Col 60x veh-Zstack Cell2
+03Asc-0051 +Col 60x veh-Zstack Cell3
+03Asc-0051 +Col 60x veh-Zstack Cell4
+03Asc-0051 +Col 60x veh-Zstack Cell5
+03Asc-0051 -Col 60x veh-Zstack Cell1
+03Asc-0051 -Col 60x veh-Zstack Cell2
+03Asc-0051 -Col 60x veh-Zstack Cell3
+03Asc-0051 -Col 60x veh-Zstack Cell4
+03Asc-0051 -Col 60x veh-Zstack Cell5
+03Asc-0054 -Col 60x veh-Zstack Cell1
+03Asc-0054 -Col 60x veh-Zstack Cell2
+03Asc-0054 -Col 60x veh-Zstack Cell3
+03Asc-0054 -Col 60x veh-Zstack Cell4
+03Asc-0054 -Col 60x veh-Zstack Cell5
+03Asc-0055 +Col 60x veh-Zstack Cell1
+03Asc-0055 +Col 60x veh-Zstack Cell2
+03Asc-0055 +Col 60x veh-Zstack Cell3
+03Asc-0055 +Col 60x veh-Zstack Cell4
+03Asc-0055 +Col 60x veh-Zstack Cell5
+03Asc-0055 -Col 60x veh-Zstack Cell1
+03Asc-0055 -Col 60x veh-Zstack Cell2
+03Asc-0055 -Col 60x veh-Zstack Cell3
+03Asc-0055 -Col 60x veh-Zstack Cell4
+03Asc-0055 -Col 60x veh-Zstack Cell5
+03Asc-0056 +Col 60x veh-Zstack Cell2
+03Asc-0056 +Col 60x veh-Zstack Cell3
+03Asc-0056 +Col 60x veh-Zstack Cell4
+03Asc-0056 +Col 60x veh-Zstack Cell5
+03Asc-0056 +Col 60x veh-Zstack Cell6
+03Asc-0056 -Col 60x veh-Zstack Cell1
+03Asc-0056 -Col 60x veh-Zstack Cell2
+03Asc-0056 -Col 60x veh-Zstack Cell3
+03Asc-0056 -Col 60x veh-Zstack Cell4
+03Asc-0056 -Col 60x veh-Zstack Cell5
+03Asc-0057 +Col 60x veh-Zstack Cell1
+03Asc-0057 +Col 60x veh-Zstack Cell2
+03Asc-0057 +Col 60x veh-Zstack Cell3
+03Asc-0057 +Col 60x veh-Zstack Cell4
+03Asc-0057 +Col 60x veh-Zstack Cell5
+03Asc-0057 -Col 60x veh-Zstack Cell1
+03Asc-0057 -Col 60x veh-Zstack Cell2
+03Asc-0057 -Col 60x veh-Zstack Cell3
+03Asc-0057 -Col 60x veh-Zstack Cell4
+03Asc-0057 -Col 60x veh-Zstack Cell5
+03Asc-024 +coll 60x veh 48h-Zstack cell1
+03Asc-024 +coll 60x veh 48h-Zstack cell2
+03Asc-024 +coll 60x veh 48h-Zstack cell3
+03Asc-024 +coll 60x veh 48h-Zstack cell4
+03Asc-024 +coll 60x veh 48h-Zstack cell5
+03Asc24- DMSO low-cell-1
+03Asc24- DMSO low-cell-2
+03Asc24- DMSO low-cell-3
+03Asc24- DMSO low-cell-4
+03Asc24- DMSO low-cell-5
+03Asc24-DMSO high cell-1
+03Asc24-DMSO high cell-2
+03Asc24-DMSO high cell-3
+03Asc24-DMSO high cell-4
+03Asc24-DMSO high cell-5
+03Asc46 +coll 60x veh 48h-Zstack cell1
+03Asc46 +coll 60x veh 48h-Zstack cell2
+03Asc46 +coll 60x veh 48h-Zstack cell3
+03Asc46 +coll 60x veh 48h-Zstack cell4
+03Asc46 +coll 60x veh 48h-Zstack cell5
+03Asc46 -coll 60x veh 48h-Zstack cell1
+03Asc46 -coll 60x veh 48h-Zstack cell2
+03Asc46 -coll 60x veh 48h-Zstack cell3
+03Asc46 -coll 60x veh 48h-Zstack cell4
+03Asc46 -coll 60x veh 48h-Zstack cell5
+03Asc47 +coll 60x veh 48h-Zstack cell1
+03Asc47 +coll 60x veh 48h-Zstack cell2
+03Asc47 +coll 60x veh 48h-Zstack cell3
+03Asc47 +coll 60x veh 48h-Zstack cell4
+03Asc47 +coll 60x veh 48h-Zstack cell5
+03Asc47 -coll 60x veh 48h-Zstack cell1
+03Asc47 -coll 60x veh 48h-Zstack cell2
+03Asc47 -coll 60x veh 48h-Zstack cell3
+03Asc47 -coll 60x veh 48h-Zstack cell4
+03Asc47 -coll 60x veh 48h-Zstack cell5
+03Rt-0045 +coll 60x veh 48h-Zstack cell1
+03Rt-0045 +coll 60x veh 48h-Zstack cell2
+03Rt-0045 +coll 60x veh 48h-Zstack cell3
+03Rt-0045 +coll 60x veh 48h-Zstack cell4
+03Rt-0045 +coll 60x veh 48h-Zstack cell5
+03Rt-0045 -coll 60x veh 48h-Zstack cell1
+03Rt-0045 -coll 60x veh 48h-Zstack cell2
+03Rt-0045 -coll 60x veh 48h-Zstack cell3
+03Rt-0045 -coll 60x veh 48h-Zstack cell4
+03Rt-0045 -coll 60x veh 48h-Zstack cell5

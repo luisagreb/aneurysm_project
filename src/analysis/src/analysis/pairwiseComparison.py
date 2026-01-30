@@ -244,47 +244,74 @@ def main():
     print(f"\n\nSaved: {OUTPUT_DIR}/all_pairwise_comparisons.csv")
     
     # 6. Create comparison summary figure
-    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+    # Sort features to ensure consistent order across all subplots
+    # Order: Actin -> Mito -> Nucleus (displayed Top to Bottom, so plot y-order is reversed)
+    def feature_sort_key(name):
+        priorities = {'Actin': 0, 'Mito': 1, 'Nucleus': 2}
+        prefix = name.split('_')[0]
+        prio = priorities.get(prefix, 3)
+        return (prio, name)
+
+    # We want Actin at the top of the Y-axis. 
+    # In barh, y=0 is the bottom. The first item in the list is plotted at y=0.
+    # So if we want [Actin, Mito, Nucleus] from Top to Bottom:
+    # Top (y=Max) = Actin
+    # Bottom (y=0) = Nucleus
+    # So the list should be [Nucleus, Mito, Actin]
+    # Sorting with Actin=0, Mito=1, Nucleus=2 gives [Actin, Mito, Nucleus]
+    # Reversing gives [Nucleus, Mito, Actin]. Perfect.
+    unique_features = sorted(feature_cols, key=feature_sort_key, reverse=True)
+    n_features = len(unique_features)
+    
+    # Adjustable height based on number of features (approx 0.4 inch per feature per subplot row)
+    fig_height = max(15, n_features * 0.6)
+    fig, axes = plt.subplots(2, 3, figsize=(24, fig_height))
     axes = axes.flatten()
     
     for i, (group1, group2, name) in enumerate(comparisons):
         ax = axes[i]
         
         # Get results for this comparison
-        comp_results = combined_df[combined_df['Comparison'] == name].head(10)
+        comp_results = combined_df[combined_df['Comparison'] == name].set_index('Feature')
         
-        if len(comp_results) == 0:
-            ax.text(0.5, 0.5, 'No data', ha='center', va='center')
-            ax.set_title(name)
-            continue
+        # Reindex to enforce consistent order and include all features
+        plot_data = comp_results.reindex(unique_features)
         
-        # Bar plot of Cohen's d
-        colors = ['#E74C3C' if d > 0 else '#3498DB' for d in comp_results['Cohens_d']]
+        # Prepare data for plotting
+        effect_sizes = plot_data['Cohens_d'].fillna(0)
+        is_sig = plot_data['Significant'].fillna(False)
         
-        y_pos = range(len(comp_results))
-        ax.barh(y_pos, comp_results['Cohens_d'], color=colors, edgecolor='black', alpha=0.8)
+        # Colors
+        colors = ['#E74C3C' if d > 0 else '#3498DB' for d in effect_sizes]
+        
+        y_pos = range(len(unique_features))
+        ax.barh(y_pos, effect_sizes, color=colors, edgecolor='black', alpha=0.8)
         ax.set_yticks(y_pos)
         
-        # Add stars for significant features
+        # Labels with significance
         labels = []
-        for _, row in comp_results.iterrows():
-            feat = row['Feature']
-            if row['Significant']:
+        for feat, sig in zip(unique_features, is_sig):
+            if sig:
                 labels.append(f"{feat} ***")
             else:
                 labels.append(feat)
         
-        ax.set_yticklabels(labels, fontsize=12)
+        ax.set_yticklabels(labels, fontsize=11)
         ax.axvline(x=0, color='black', linewidth=1)
         ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
         ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
         ax.set_xlabel("Cohen's d", fontsize=12, fontweight='bold')
-        ax.set_title(name, fontsize=13, fontweight='bold')
+        ax.set_title(name, fontsize=14, fontweight='bold')
         ax.grid(axis='x', alpha=0.3)
+        
+        # Set symmetric x-axis limits for better comparison
+        max_val = max(effect_sizes.abs().max(), 1.0) * 1.1
+        ax.set_xlim(-max_val, max_val)
     
-    plt.suptitle("Effect Sizes (Cohen's d) for All Pairwise Comparisons\nTop 10 Features per Comparison", 
-                 fontsize=16, fontweight='bold')
+    plt.suptitle("Effect Sizes (Cohen's d) for All Pairwise Comparisons\nAll Features (Sorted by Structure)", 
+                 fontsize=20, fontweight='bold')
     plt.tight_layout()
+    plt.subplots_adjust(top=0.93) # Make room for suptitle
     plt.savefig(f'{OUTPUT_DIR}/pairwise_effect_sizes.png', dpi=300)
     print(f"Saved: {OUTPUT_DIR}/pairwise_effect_sizes.png")
     
@@ -388,10 +415,88 @@ def main():
         plt.tight_layout()
         plt.savefig(f'{OUTPUT_DIR}/rescue_boxplots.png', dpi=300)
         print(f"\nSaved: {OUTPUT_DIR}/rescue_boxplots.png")
-    
+
+    # 10. Generate detailed interaction plots for all significant features
     print(f"\n{'='*80}")
-    print("Pairwise Comparisons Complete")
+    print("GENERATING INTERACTION PLOTS")
     print(f"{'='*80}")
+    
+    # Create directory for plots
+    plots_dir = os.path.join(OUTPUT_DIR, 'interaction_plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    
+    # Get all unique significant features across all comparisons
+    all_sig_features = set()
+    for res in all_results:
+        sigs = res[res['Significant']]['Feature'].tolist()
+        all_sig_features.update(sigs)
+    
+    print(f"Generating plots for {len(all_sig_features)} unique significant features...")
+    
+    # Prepare data for interaction plotting
+    # We need a clean DataFrame with Disease and Collagen columns
+    plot_df = df.copy()
+    
+    # Ensure Collagen_Status is cleaner for plotting
+    plot_df['Collagen_Status'] = plot_df['Collagen_Status'].replace({
+        'Collagen': '+Collagen',
+        'NoCollagen': 'No Collagen'
+    })
+    
+    # Define order and palette
+    collagen_order = ['+Collagen', 'No Collagen']  
+    disease_order = ['Healthy', 'TAA']
+    palette = {'Healthy': '#2ECC71', 'TAA': '#E74C3C'}  # Green vs Red
+    
+    for feature in all_sig_features:
+        try:
+            plt.figure(figsize=(7, 6))
+            
+            # Point plot with error bars (mean +/- ci)
+            sns.pointplot(
+                data=plot_df, 
+                x='Collagen_Status', 
+                y=feature, 
+                hue='Disease', 
+                order=collagen_order,
+                hue_order=disease_order,
+                palette=palette,
+                markers=['o', 's'],
+                capsize=0.1,
+                linestyles=['-', '-'],
+                errorbar=('ci', 95), # 95% confidence interval
+                dodge=True
+            )
+            
+            # Find which comparison this feature was most significant in to add to title
+            # (Just finding the lowest p-value for context)
+            best_p = 1.0
+            best_comp = ""
+            for res in all_results:
+                if feature in res['Feature'].values:
+                    row = res[res['Feature'] == feature].iloc[0]
+                    if row['p_adjusted_FDR'] < best_p:
+                        best_p = row['p_adjusted_FDR']
+                        best_comp = res['Comparison'].iloc[0]
+            
+            title_text = f"Interaction Effect: {feature}\n(Best FDR p = {best_p:.4f})"
+            plt.title(title_text, fontsize=14, fontweight='bold')
+            plt.ylabel(feature, fontsize=12)
+            plt.xlabel('')
+            plt.legend(title='Group', fontsize=11, title_fontsize=12)
+            plt.grid(axis='y', alpha=0.3)
+            
+            # Save plot
+            fname = f"{feature}_interaction.png"
+            plt.tight_layout()
+            plt.savefig(os.path.join(plots_dir, fname), dpi=150)
+            plt.close()
+            
+        except Exception as e:
+            print(f"Could not plot {feature}: {e}")
+            plt.close()
+
+    print(f"Saved {len(all_sig_features)} interaction plots to {plots_dir}")
 
 if __name__ == '__main__':
     main()
