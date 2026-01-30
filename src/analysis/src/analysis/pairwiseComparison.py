@@ -416,25 +416,19 @@ def main():
         plt.savefig(f'{OUTPUT_DIR}/rescue_boxplots.png', dpi=300)
         print(f"\nSaved: {OUTPUT_DIR}/rescue_boxplots.png")
 
-    # 10. Generate detailed interaction plots for all significant features
+    # 10. Generate detailed interaction plots for ALL features
     print(f"\n{'='*80}")
-    print("GENERATING INTERACTION PLOTS")
+    print("GENERATING INTERACTION PLOTS FOR ALL FEATURES")
     print(f"{'='*80}")
     
     # Create directory for plots
     plots_dir = os.path.join(OUTPUT_DIR, 'interaction_plots')
     os.makedirs(plots_dir, exist_ok=True)
     
-    # Get all unique significant features across all comparisons
-    all_sig_features = set()
-    for res in all_results:
-        sigs = res[res['Significant']]['Feature'].tolist()
-        all_sig_features.update(sigs)
-    
-    print(f"Generating plots for {len(all_sig_features)} unique significant features...")
+    # Plot ALL features (not just significant ones)
+    print(f"Generating plots for all {len(feature_cols)} features...")
     
     # Prepare data for interaction plotting
-    # We need a clean DataFrame with Disease and Collagen columns
     plot_df = df.copy()
     
     # Ensure Collagen_Status is cleaner for plotting
@@ -444,13 +438,33 @@ def main():
     })
     
     # Define order and palette
-    collagen_order = ['+Collagen', 'No Collagen']  
+    collagen_order = ['No Collagen', '+Collagen']  
     disease_order = ['Healthy', 'TAA']
     palette = {'Healthy': '#2ECC71', 'TAA': '#E74C3C'}  # Green vs Red
     
-    for feature in all_sig_features:
+    def format_pvalue(p):
+        """Format p-value in scientific paper style."""
+        if p < 0.001:
+            return "p < 0.001"
+        elif p < 0.01:
+            return f"p = {p:.3f}"
+        else:
+            return f"p = {p:.3f}"
+    
+    def get_significance_stars(p):
+        """Return significance stars."""
+        if p < 0.001:
+            return "***"
+        elif p < 0.01:
+            return "**"
+        elif p < 0.05:
+            return "*"
+        else:
+            return "ns"
+    
+    for feature in feature_cols:
         try:
-            plt.figure(figsize=(7, 6))
+            fig, ax = plt.subplots(figsize=(8, 6))
             
             # Point plot with error bars (mean +/- ci)
             sns.pointplot(
@@ -465,26 +479,71 @@ def main():
                 capsize=0.1,
                 linestyles=['-', '-'],
                 errorbar=('ci', 95), # 95% confidence interval
-                dodge=True
+                dodge=True,
+                ax=ax
             )
             
-            # Find which comparison this feature was most significant in to add to title
-            # (Just finding the lowest p-value for context)
-            best_p = 1.0
-            best_comp = ""
+            # Collect p-values for all relevant comparisons for this feature
+            p_annotations = []
+            
             for res in all_results:
                 if feature in res['Feature'].values:
                     row = res[res['Feature'] == feature].iloc[0]
-                    if row['p_adjusted_FDR'] < best_p:
-                        best_p = row['p_adjusted_FDR']
-                        best_comp = res['Comparison'].iloc[0]
+                    comp_name = res['Comparison'].iloc[0]
+                    p_fdr = row['p_adjusted_FDR']
+                    is_sig = row['Significant']
+                    
+                    # Format based on comparison type
+                    if 'Disease Effect' in comp_name:
+                        if 'No Collagen' in comp_name:
+                            label = "Disease (No Coll)"
+                        else:
+                            label = "Disease (+Coll)"
+                    elif 'Collagen Effect' in comp_name:
+                        if 'Healthy' in comp_name:
+                            label = "Coll (Healthy)"
+                        else:
+                            label = "Coll (TAA)"
+                    else:
+                        label = comp_name
+                    
+                    p_str = format_pvalue(p_fdr)
+                    stars = get_significance_stars(p_fdr)
+                    p_annotations.append(f"{label}: {p_str} {stars}")
             
-            title_text = f"Interaction Effect: {feature}\n(Best FDR p = {best_p:.4f})"
-            plt.title(title_text, fontsize=14, fontweight='bold')
-            plt.ylabel(feature, fontsize=12)
-            plt.xlabel('')
-            plt.legend(title='Group', fontsize=11, title_fontsize=12)
-            plt.grid(axis='y', alpha=0.3)
+            # Add title with feature name
+            title_text = f"Interaction Effect: {feature}"
+            ax.set_title(title_text, fontsize=14, fontweight='bold', pad=15)
+            
+            # Add p-value annotations in a text box
+            if p_annotations:
+                # Join first 4 most important comparisons
+                # Priority: Disease (No Coll), Disease (+Coll), Coll (TAA), Coll (Healthy)
+                ordered_annotations = []
+                priority_order = ["Disease (No Coll)", "Disease (+Coll)", "Coll (TAA)", "Coll (Healthy)"]
+                
+                for priority in priority_order:
+                    for annot in p_annotations:
+                        if annot.startswith(priority):
+                            ordered_annotations.append(annot)
+                
+                # Add any remaining
+                for annot in p_annotations:
+                    if annot not in ordered_annotations:
+                        ordered_annotations.append(annot)
+                
+                # Show top 4
+                textstr = '\n'.join(ordered_annotations[:4])
+                
+                # Add text box
+                props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+                ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=9,
+                       verticalalignment='top', bbox=props, family='monospace')
+            
+            ax.set_ylabel(feature, fontsize=12)
+            ax.set_xlabel('')
+            ax.legend(title='Group', fontsize=11, title_fontsize=12, loc='upper right')
+            ax.grid(axis='y', alpha=0.3)
             
             # Save plot
             fname = f"{feature}_interaction.png"
@@ -496,7 +555,7 @@ def main():
             print(f"Could not plot {feature}: {e}")
             plt.close()
 
-    print(f"Saved {len(all_sig_features)} interaction plots to {plots_dir}")
+    print(f"Saved {len(feature_cols)} interaction plots to {plots_dir}")
 
 if __name__ == '__main__':
     main()
