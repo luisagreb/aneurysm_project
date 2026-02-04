@@ -62,6 +62,69 @@ def calculate_sphericity(volume, surface_area):
     # Clamp to valid range [0, 1] since marching cubes can underestimate surface area
     return min(1.0, max(0.0, raw_sphericity))
 
+def calculate_circularity(mask):
+    """
+    Calculate circularity from the maximum area slice of a 3D mask.
+    
+    Circularity = 4π × Area / Perimeter²
+    
+    This is more robust than 3D sphericity because it doesn't depend on 
+    marching cubes mesh resolution. Circularity is always bounded [0, 1]
+    where 1 is a perfect circle.
+    
+    Args:
+        mask: 3D binary array (nucleus mask)
+    
+    Returns:
+        float: Circularity value [0, 1]
+    """
+    if mask.sum() == 0:
+        return 0.0
+    
+    max_area = 0
+    max_perimeter = 0
+    
+    # Check all 3 axes and find the slice with maximum area
+    for axis in range(3):
+        for i in range(mask.shape[axis]):
+            # Extract 2D slice
+            if axis == 0:
+                slice_2d = mask[i, :, :]
+            elif axis == 1:
+                slice_2d = mask[:, i, :]
+            else:
+                slice_2d = mask[:, :, i]
+            
+            if slice_2d.sum() == 0:
+                continue
+            
+            # Get region properties
+            labeled = measure.label(slice_2d)
+            regions = measure.regionprops(labeled)
+            
+            if not regions:
+                continue
+            
+            # Use the largest region in this slice
+            main_region = max(regions, key=lambda r: r.area)
+            
+            area = main_region.area
+            perimeter = main_region.perimeter
+            
+            # Track maximum area slice
+            if area > max_area:
+                max_area = area
+                max_perimeter = perimeter
+    
+    # Calculate circularity for the maximum area slice
+    if max_perimeter > 0:
+        circularity = 4 * np.pi * max_area / (max_perimeter ** 2)
+        # Clamp to valid range (should be automatic, but just in case)
+        return min(1.0, max(0.0, circularity))
+    
+    return 0.0
+
+
 def analyze_mito(mask, voxel_size):
     """
     Analyze Mitochondria mask.
@@ -372,6 +435,9 @@ def analyze_nucleus(mask, voxel_size):
     
     sphericity = calculate_sphericity(total_volume, surface_area)
     
+    # Circularity (2D metric from maximum area slice - more robust than 3D sphericity)
+    circularity = calculate_circularity(mask)
+    
     # Elongation: Major Axis / Minor Axis
     if hasattr(main_nucleus, 'major_axis_length') and hasattr(main_nucleus, 'minor_axis_length'):
        major = main_nucleus.major_axis_length
@@ -431,6 +497,7 @@ def analyze_nucleus(mask, voxel_size):
     return {
         'Volume': total_volume,
         'Sphericity': sphericity,
+        'Circularity': circularity,
         'Elongation': elongation,
         'Flatness': flatness,
         'Solidity': solidity

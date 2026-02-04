@@ -16,6 +16,7 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
@@ -248,11 +249,37 @@ def main():
     print(classification_report(y_test, y_pred_nn, target_names=CLASS_NAMES))
     
     # ============================================================
+    # XGBOOST CLASSIFIER
+    # ============================================================
+    print("\n" + "=" * 50)
+    print("XGBOOST CLASSIFIER")
+    print("=" * 50)
+    
+    xgb = XGBClassifier(
+        n_estimators=100,
+        random_state=42,
+        max_depth=6,
+        learning_rate=0.1,
+        eval_metric='mlogloss'
+    )
+    xgb.fit(X_train, y_train)
+    
+    y_pred_xgb = xgb.predict(X_test)
+    acc_xgb = accuracy_score(y_test, y_pred_xgb)
+    cm_xgb = confusion_matrix(y_test, y_pred_xgb)
+    
+    print(f"\nAccuracy Score: {acc_xgb:.4f}")
+    print("\nConfusion Matrix:")
+    print(cm_xgb)
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred_xgb, target_names=CLASS_NAMES))
+    
+    # ============================================================
     # VISUALIZATION
     # ============================================================
     
     # Confusion Matrix Comparison
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(20, 6))
     
     sns.heatmap(cm_rf, annot=True, fmt='d', cmap='Blues', ax=axes[0],
                 xticklabels=CLASS_NAMES, yticklabels=CLASS_NAMES)
@@ -265,6 +292,12 @@ def main():
     axes[1].set_title(f'Neural Network (Acc: {acc_nn:.1%})', fontsize=12, fontweight='bold')
     axes[1].set_xlabel('Predicted')
     axes[1].set_ylabel('Actual')
+
+    sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Oranges', ax=axes[2],
+                xticklabels=CLASS_NAMES, yticklabels=CLASS_NAMES)
+    axes[2].set_title(f'XGBoost (Acc: {acc_xgb:.1%})', fontsize=12, fontweight='bold')
+    axes[2].set_xlabel('Predicted')
+    axes[2].set_ylabel('Actual')
     
     plt.suptitle('4-Class Classification: Disease Status × Collagen', fontsize=14, fontweight='bold')
     plt.tight_layout()
@@ -298,6 +331,7 @@ def main():
     print("-" * 35)
     print(f"{'Random Forest':<20} {acc_rf:.1%}")
     print(f"{'Neural Network':<20} {acc_nn:.1%}")
+    print(f"{'XGBoost':<20} {acc_xgb:.1%}")
     
     # Save results
     results = pd.DataFrame({
@@ -307,7 +341,9 @@ def main():
         'RF_Predicted': y_pred_rf,
         'RF_Name': [CLASS_NAMES[i] for i in y_pred_rf],
         'NN_Predicted': y_pred_nn,
-        'NN_Name': [CLASS_NAMES[i] for i in y_pred_nn]
+        'NN_Name': [CLASS_NAMES[i] for i in y_pred_nn],
+        'XGB_Predicted': y_pred_xgb,
+        'XGB_Name': [CLASS_NAMES[i] for i in y_pred_xgb]
     })
     results.to_csv(f'{OUTPUT_DIR}/4class_predictions.csv', index=False)
     print(f"\nSaved predictions to {OUTPUT_DIR}/4class_predictions.csv")

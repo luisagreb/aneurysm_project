@@ -243,76 +243,119 @@ def main():
     combined_df.to_csv(f'{OUTPUT_DIR}/all_pairwise_comparisons.csv', index=False)
     print(f"\n\nSaved: {OUTPUT_DIR}/all_pairwise_comparisons.csv")
     
-    # 6. Create comparison summary figure
-    # Sort features to ensure consistent order across all subplots
-    # Order: Actin -> Mito -> Nucleus (displayed Top to Bottom, so plot y-order is reversed)
-    def feature_sort_key(name):
-        priorities = {'Actin': 0, 'Mito': 1, 'Nucleus': 2}
-        prefix = name.split('_')[0]
-        prio = priorities.get(prefix, 3)
-        return (prio, name)
-
-    # We want Actin at the top of the Y-axis. 
-    # In barh, y=0 is the bottom. The first item in the list is plotted at y=0.
-    # So if we want [Actin, Mito, Nucleus] from Top to Bottom:
-    # Top (y=Max) = Actin
-    # Bottom (y=0) = Nucleus
-    # So the list should be [Nucleus, Mito, Actin]
-    # Sorting with Actin=0, Mito=1, Nucleus=2 gives [Actin, Mito, Nucleus]
-    # Reversing gives [Nucleus, Mito, Actin]. Perfect.
-    unique_features = sorted(feature_cols, key=feature_sort_key, reverse=True)
-    n_features = len(unique_features)
+    # Define helper function for significance stars (needed for boxplot summary)
+    def get_significance_stars(p):
+        """Return significance stars."""
+        if p < 0.001:
+            return "***"
+        elif p < 0.01:
+            return "**"
+        elif p < 0.05:
+            return "*"
+        else:
+            return ""
     
-    # Adjustable height based on number of features (approx 0.4 inch per feature per subplot row)
-    fig_height = max(15, n_features * 0.6)
-    fig, axes = plt.subplots(2, 3, figsize=(24, fig_height))
+    # 6. Create comparison summary figure with Effect Size BAR CHARTS
+    # Show ALL features with Cohen's d as horizontal bars
+    # Order features by "Disease Effect (No Collagen)" significance
+    
+    # Get feature order from "Disease Effect (No Collagen)" - most significant first
+    disease_no_coll_results = combined_df[combined_df['Comparison'] == 'Disease Effect (No Collagen)'].sort_values('p_adjusted_FDR')
+    feature_order = disease_no_coll_results['Feature'].tolist()
+    
+    # Reverse the order so most significant is at TOP
+    feature_order_reversed = feature_order[::-1]
+    
+    fig, axes = plt.subplots(2, 3, figsize=(48, 32))  # LANDSCAPE: Wider than tall
     axes = axes.flatten()
     
     for i, (group1, group2, name) in enumerate(comparisons):
         ax = axes[i]
         
         # Get results for this comparison
-        comp_results = combined_df[combined_df['Comparison'] == name].set_index('Feature')
+        comp_results = combined_df[combined_df['Comparison'] == name]
         
-        # Reindex to enforce consistent order and include all features
-        plot_data = comp_results.reindex(unique_features)
+        # Reorder by the pre-defined feature order (reversed for top-to-bottom)
+        comp_results_ordered = comp_results.set_index('Feature').loc[feature_order_reversed].reset_index()
         
-        # Prepare data for plotting
-        effect_sizes = plot_data['Cohens_d'].fillna(0)
-        is_sig = plot_data['Significant'].fillna(False)
+        if len(comp_results_ordered) == 0:
+            ax.text(0.5, 0.5, 'No data', ha='center', va='center', fontsize=18)
+            ax.set_title(name, fontsize=18, fontweight='bold')
+            continue
         
-        # Colors
-        colors = ['#E74C3C' if d > 0 else '#3498DB' for d in effect_sizes]
+        # Bar plot of Cohen's d with colors based on direction
+        colors = ['#E74C3C' if d > 0 else '#3498DB' for d in comp_results_ordered['Cohens_d']]
         
-        y_pos = range(len(unique_features))
-        ax.barh(y_pos, effect_sizes, color=colors, edgecolor='black', alpha=0.8)
+        y_pos = range(len(comp_results_ordered))
+        bars = ax.barh(y_pos, comp_results_ordered['Cohens_d'], color=colors, 
+                       edgecolor='black', alpha=0.7, linewidth=0.8)
+        
         ax.set_yticks(y_pos)
         
-        # Labels with significance
+        # Create labels WITHOUT stars but with color-coding
         labels = []
-        for feat, sig in zip(unique_features, is_sig):
-            if sig:
-                labels.append(f"{feat} ***")
+        label_colors = []
+        for _, row in comp_results_ordered.iterrows():
+            feat = row['Feature']
+            # Remove stars from labels - just keep feature name
+            labels.append(feat)
+            # Still color by significance
+            if row['Significant']:
+                label_colors.append('#D32F2F')  # Red for significant
             else:
-                labels.append(feat)
+                label_colors.append('#424242')  # Dark gray for non-significant
         
-        ax.set_yticklabels(labels, fontsize=11)
-        ax.axvline(x=0, color='black', linewidth=1)
-        ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-        ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-        ax.set_xlabel("Cohen's d", fontsize=12, fontweight='bold')
-        ax.set_title(name, fontsize=14, fontweight='bold')
-        ax.grid(axis='x', alpha=0.3)
+        ax.set_yticklabels(labels, fontsize=15)
         
-        # Set symmetric x-axis limits for better comparison
-        max_val = max(effect_sizes.abs().max(), 1.0) * 1.1
-        ax.set_xlim(-max_val, max_val)
+        # Color each y-tick label individually
+        for ticklabel, color in zip(ax.get_yticklabels(), label_colors):
+            ticklabel.set_color(color)
+            # Make significant features bold
+            if color == '#D32F2F':
+                ticklabel.set_weight('bold')
+        
+        # Add significance stars at the end of bars
+        for idx, (_, row) in enumerate(comp_results_ordered.iterrows()):
+            stars = get_significance_stars(row['p_adjusted_FDR'])
+            if stars:
+                d_val = row['Cohens_d']
+                # Position star at end of bar with small offset
+                if d_val > 0:
+                    star_x = d_val + 0.08
+                else:
+                    star_x = d_val - 0.08
+                
+                ax.text(star_x, idx, stars, 
+                       ha='left' if d_val > 0 else 'right',
+                       va='center', fontsize=16, fontweight='bold',
+                       color='#D32F2F', zorder=4)
+        
+        # Add reference lines
+        ax.axvline(x=0, color='black', linewidth=2)
+        ax.axvline(x=0.8, color='gray', linestyle='--', linewidth=1.5, alpha=0.6, label='Large effect')
+        ax.axvline(x=-0.8, color='gray', linestyle='--', linewidth=1.5, alpha=0.6)
+        ax.axvline(x=0.5, color='gray', linestyle=':', linewidth=1.2, alpha=0.5, label='Medium effect')
+        ax.axvline(x=-0.5, color='gray', linestyle=':', linewidth=1.2, alpha=0.5)
+        
+        ax.set_xlabel("Cohen's d (Effect Size)", fontsize=16, fontweight='bold')
+        ax.set_title(name, fontsize=18, fontweight='bold')
+        ax.tick_params(axis='x', labelsize=13)
+        ax.grid(axis='x', alpha=0.3, linewidth=0.8)
+        
+        # Add legend for first subplot
+        if i == 0:
+            ax.legend(loc='lower right', fontsize=13)
+        
+        # Adjust x-axis limits to accommodate all values
+        max_d = max(abs(comp_results_ordered['Cohens_d'].min()), 
+                    abs(comp_results_ordered['Cohens_d'].max()))
+        ax.set_xlim(-max_d * 1.15, max_d * 1.15)
     
-    plt.suptitle("Effect Sizes (Cohen's d) for All Pairwise Comparisons\nAll Features (Sorted by Structure)", 
-                 fontsize=20, fontweight='bold')
+    plt.suptitle("Effect Sizes (Cohen's d) for All Pairwise Comparisons", 
+                 fontsize=24, fontweight='bold')
     plt.tight_layout()
-    plt.subplots_adjust(top=0.93) # Make room for suptitle
-    plt.savefig(f'{OUTPUT_DIR}/pairwise_effect_sizes.png', dpi=300)
+    plt.subplots_adjust(top=0.96)
+    plt.savefig(f'{OUTPUT_DIR}/pairwise_effect_sizes.png', dpi=300, bbox_inches='tight')
     print(f"Saved: {OUTPUT_DIR}/pairwise_effect_sizes.png")
     
     # 7. Create summary count table
@@ -468,82 +511,169 @@ def main():
         try:
             fig, ax = plt.subplots(figsize=(8, 6))
             
-            # Point plot with error bars (mean +/- ci)
-            sns.pointplot(
-                data=plot_df, 
-                x='Collagen_Status', 
-                y=feature, 
-                hue='Disease', 
-                order=collagen_order,
-                hue_order=disease_order,
-                palette=palette,
-                markers=['o', 's'],
-                capsize=0.1,
-                linestyles=['-', '-'],
-                errorbar=('ci', 95), # 95% confidence interval
-                dodge=True,
-                ax=ax
-            )
+            # Calculate mean +/- SD for each group
+            grouped_stats = plot_df.groupby(['Collagen_Status', 'Disease'])[feature].agg(['mean', 'std']).reset_index()
             
-            # Collect p-values for all relevant comparisons for this feature
-            p_annotations = []
+            # Plot lines manually with SD error bars in black
+            x_positions = {'No Collagen': 0, '+Collagen': 1}
+            
+            for disease_group in disease_order:
+                group_data = grouped_stats[grouped_stats['Disease'] == disease_group]
+                
+                x_vals = [x_positions[coll] for coll in group_data['Collagen_Status']]
+                y_vals = group_data['mean'].values
+                y_err = group_data['std'].values
+                
+                # Plot line and points
+                color = palette[disease_group]
+                marker = 'o' if disease_group == 'Healthy' else 's'
+                ax.plot(x_vals, y_vals, marker=marker, color=color, label=disease_group, 
+                       linewidth=2, markersize=8, linestyle='-')
+                
+                # Add black SD error bars
+                ax.errorbar(x_vals, y_vals, yerr=y_err, fmt='none', ecolor='black', 
+                           capsize=5, capthick=1.5, elinewidth=1.5)
+            
+            # Now add significance stars for relevant comparisons
+            # We need to position stars next to the comparison group (Group2)
+            
+            # Extract comparison results for this feature
+            for res in all_results:
+                if feature in res['Feature'].values:
+                    row = res[res['Feature'] == feature].iloc[0]
+                    comp_name = res['Comparison'].iloc[0]
+                    p_fdr = row['p_adjusted_FDR']
+                    group1 = row['Group1']
+                    group2 = row['Group2']
+                    
+                    # Get significance stars
+                    stars = get_significance_stars(p_fdr)
+                    
+                    if stars:  # Only annotate if significant (p < 0.05)
+                        # Determine position for the star (next to Group2 data point)
+                        # Parse group names to get x position and disease
+                        if 'NoCollagen' in group2:
+                            x_pos = 0  # No Collagen position
+                        elif 'Collagen' in group2:
+                            x_pos = 1  # +Collagen position
+                        else:
+                            continue
+                        
+                        if 'Healthy' in group2:
+                            disease = 'Healthy'
+                        elif 'TAA' in group2:
+                            disease = 'TAA'
+                        else:
+                            continue
+                        
+                        # Get the y-value for this group (raw values)
+                        collagen_status = '+Collagen' if x_pos == 1 else 'No Collagen'
+                        y_val = grouped_stats[(grouped_stats['Disease'] == disease) & 
+                                             (grouped_stats['Collagen_Status'] == collagen_status)]['mean'].values
+                        
+                        if len(y_val) > 0:
+                            y_val = y_val[0]
+                            
+                            # Add star annotation slightly offset from the point
+                            ax.text(x_pos, y_val, f' {stars}', fontsize=14, 
+                                   verticalalignment='center', horizontalalignment='left',
+                                   color='black', fontweight='bold')
+            
+            # Add horizontal brackets for Collagen Effect comparisons
+            # These show significance between No Collagen and +Collagen within same disease group
+            y_max_for_bracket = max(grouped_stats['mean'] + grouped_stats['std']) * 1.02
+            bracket_offset = 0
             
             for res in all_results:
                 if feature in res['Feature'].values:
                     row = res[res['Feature'] == feature].iloc[0]
                     comp_name = res['Comparison'].iloc[0]
                     p_fdr = row['p_adjusted_FDR']
-                    is_sig = row['Significant']
                     
-                    # Format based on comparison type
-                    if 'Disease Effect' in comp_name:
-                        if 'No Collagen' in comp_name:
-                            label = "Disease (No Coll)"
-                        else:
-                            label = "Disease (+Coll)"
-                    elif 'Collagen Effect' in comp_name:
+                    # Get significance stars
+                    stars = get_significance_stars(p_fdr)
+                    
+                    if stars and 'Collagen Effect' in comp_name:
+                        # Determine which disease group
                         if 'Healthy' in comp_name:
-                            label = "Coll (Healthy)"
+                            disease = 'Healthy'
+                            color_bracket = palette['Healthy']
+                        elif 'TAA' in comp_name:
+                            disease = 'TAA'
+                            color_bracket = palette['TAA']
                         else:
-                            label = "Coll (TAA)"
-                    else:
-                        label = comp_name
-                    
-                    p_str = format_pvalue(p_fdr)
-                    p_annotations.append(f"{label}: {p_str}")
+                            continue
+                        
+                        # Get max y-value for this disease group to position bracket above it
+                        group_y_vals = []
+                        for coll_status in ['No Collagen', '+Collagen']:
+                            vals = grouped_stats[(grouped_stats['Disease'] == disease) & 
+                                               (grouped_stats['Collagen_Status'] == coll_status)]
+                            if len(vals) > 0:
+                                group_y_vals.append(vals['mean'].values[0] + vals['std'].values[0])
+                        
+                        if len(group_y_vals) > 0:
+                            bracket_y = max(group_y_vals) + (max(group_y_vals) * 0.05) + bracket_offset
+                            
+                            # Draw horizontal bracket
+                            x1, x2 = 0, 1  # No Collagen to +Collagen
+                            
+                            # Draw the bracket line
+                            ax.plot([x1, x1, x2, x2], 
+                                   [bracket_y, bracket_y + (bracket_y * 0.02), bracket_y + (bracket_y * 0.02), bracket_y],
+                                   color=color_bracket, linewidth=1.5)
+                            
+                            # Add stars in the middle
+                            ax.text((x1 + x2) / 2, bracket_y + (bracket_y * 0.03), stars, 
+                                   fontsize=12, ha='center', va='bottom', 
+                                   color='black', fontweight='bold')
+                            
+                            bracket_offset += max(group_y_vals) * 0.08  # Offset for multiple brackets
+            
+            # Set x-axis
+            ax.set_xticks([0, 1])
+            ax.set_xticklabels(collagen_order)
+            
+            # Set appropriate y-axis limits based on feature type and actual data range
+            all_means = grouped_stats['mean'].values
+            all_stds = grouped_stats['std'].values
+            data_min = min(all_means - all_stds)
+            data_max = max(all_means + all_stds)
+            
+            # Only use 0-1 scale for ratios that are actually normalized to [0, 1]
+            if '_ratio' in feature and data_min >= 0 and data_max <= 1:
+                # True normalized ratios: use 0 to 1 scale
+                ax.set_ylim(0, 1)
+            else:
+                # All other features (measurements and non-normalized ratios): use rounded values
+                # Round to nice values
+                # Start at 0 or a rounded value slightly below minimum
+                if data_min >= 0:
+                    y_min = 0
+                else:
+                    # Round down to nearest 10, 100, etc.
+                    magnitude = 10 ** np.floor(np.log10(abs(data_min)))
+                    y_min = np.floor(data_min / magnitude) * magnitude
+                
+                # Round up maximum to next round number
+                if data_max > 0:
+                    magnitude = 10 ** np.floor(np.log10(data_max))
+                    y_max = np.ceil(data_max / magnitude) * magnitude
+                else:
+                    y_max = 0
+                
+                # Add 10% padding to top
+                y_max = y_max * 1.1
+                
+                ax.set_ylim(y_min, y_max)
             
             # Add title with feature name
             title_text = f"Interaction Effect: {feature}"
             ax.set_title(title_text, fontsize=14, fontweight='bold', pad=15)
             
-            # Add p-value annotations in a text box
-            if p_annotations:
-                # Join first 4 most important comparisons
-                # Priority: Disease (No Coll), Disease (+Coll), Coll (TAA), Coll (Healthy)
-                ordered_annotations = []
-                priority_order = ["Disease (No Coll)", "Disease (+Coll)", "Coll (TAA)", "Coll (Healthy)"]
-                
-                for priority in priority_order:
-                    for annot in p_annotations:
-                        if annot.startswith(priority):
-                            ordered_annotations.append(annot)
-                
-                # Add any remaining
-                for annot in p_annotations:
-                    if annot not in ordered_annotations:
-                        ordered_annotations.append(annot)
-                
-                # Show top 4
-                textstr = '\n'.join(ordered_annotations[:4])
-                
-                # Add text box
-                props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-                ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=9,
-                       verticalalignment='top', bbox=props, family='monospace')
-            
             ax.set_ylabel(feature, fontsize=12)
             ax.set_xlabel('')
-            ax.legend(title='Group', fontsize=11, title_fontsize=12, loc='upper right')
+            ax.legend(title='Group', fontsize=11, title_fontsize=12, loc='best')
             ax.grid(axis='y', alpha=0.3)
             
             # Save plot
@@ -557,6 +687,170 @@ def main():
             plt.close()
 
     print(f"Saved {len(feature_cols)} interaction plots to {plots_dir}")
+
+    # 11. Generate boxplot versions for better visual understanding
+    print(f"\n{'='*80}")
+    print("GENERATING BOXPLOT VERSIONS FOR ALL FEATURES")
+    print(f"{'='*80}")
+    
+    # Create directory for boxplots
+    boxplots_dir = os.path.join(OUTPUT_DIR, 'boxplots')
+    os.makedirs(boxplots_dir, exist_ok=True)
+    
+    print(f"Generating boxplots for all {len(feature_cols)} features...")
+    
+    # Define group order and colors for boxplots
+    group_order_box = ['Healthy_NoCollagen', 'Healthy_Collagen', 'TAA_NoCollagen', 'TAA_Collagen']
+    group_labels_box = ['Healthy\nNo Coll', 'Healthy\n+Coll', 'TAA\nNo Coll', 'TAA\n+Coll']
+    box_palette = {
+        'Healthy_NoCollagen': '#2ECC71',
+        'Healthy_Collagen': '#85E1B5',
+        'TAA_NoCollagen': '#E74C3C',
+        'TAA_Collagen': '#F1948A'
+    }
+    
+    for feature in feature_cols:
+        try:
+            fig, ax = plt.subplots(figsize=(10, 6))
+            
+            # Create boxplot
+            positions = [0, 1, 2.5, 3.5]  # Space between disease groups
+            bp = ax.boxplot(
+                [df[df['Group'] == g][feature].dropna() for g in group_order_box],
+                positions=positions,
+                widths=0.6,
+                patch_artist=True,
+                showfliers=True,
+                boxprops=dict(linewidth=1.5),
+                medianprops=dict(color='black', linewidth=2),
+                whiskerprops=dict(linewidth=1.5),
+                capprops=dict(linewidth=1.5)
+            )
+            
+            # Color the boxes
+            for patch, group in zip(bp['boxes'], group_order_box):
+                patch.set_facecolor(box_palette[group])
+                patch.set_alpha(0.7)
+            
+            # Add mean and SD markers
+            for i, group in enumerate(group_order_box):
+                data = df[df['Group'] == group][feature].dropna()
+                if len(data) > 0:
+                    mean_val = data.mean()
+                    std_val = data.std()
+                    
+                    # Plot mean as diamond
+                    ax.plot(positions[i], mean_val, marker='D', color='black', 
+                           markersize=8, zorder=3)
+                    
+                    # Plot SD as error bar
+                    ax.errorbar(positions[i], mean_val, yerr=std_val, 
+                               fmt='none', ecolor='black', capsize=8, 
+                               capthick=2, elinewidth=2, zorder=2)
+            
+            # Add significance annotations
+            # We'll add stars for the main comparisons
+            
+            # Get max y value for positioning stars
+            all_data = [df[df['Group'] == g][feature].dropna() for g in group_order_box]
+            y_max = max([d.max() for d in all_data if len(d) > 0])
+            y_min = min([d.min() for d in all_data if len(d) > 0])
+            y_range = y_max - y_min
+            
+            # Function to add significance bracket
+            def add_significance_bracket(x1, x2, y, p_val, ax):
+                stars = get_significance_stars(p_val)
+                if stars:
+                    # Draw bracket
+                    bracket_h = y_range * 0.02
+                    ax.plot([x1, x1, x2, x2], [y, y + bracket_h, y + bracket_h, y], 
+                           'k-', linewidth=1.5)
+                    # Add stars
+                    ax.text((x1 + x2) / 2, y + bracket_h * 1.5, stars, 
+                           ha='center', va='bottom', fontsize=14, fontweight='bold')
+                    return True
+                return False
+            
+            # Add significance annotations based on comparisons
+            bracket_y = y_max + y_range * 0.05
+            bracket_increment = y_range * 0.08
+            
+            for res in all_results:
+                if feature in res['Feature'].values:
+                    row = res[res['Feature'] == feature].iloc[0]
+                    comp_name = res['Comparison'].iloc[0]
+                    p_fdr = row['p_adjusted_FDR']
+                    group1 = row['Group1']
+                    group2 = row['Group2']
+                    
+                    # Map groups to positions
+                    group_to_pos = {
+                        'Healthy_NoCollagen': 0,
+                        'Healthy_Collagen': 1,
+                        'TAA_NoCollagen': 2.5,
+                        'TAA_Collagen': 3.5
+                    }
+                    
+                    # Only show main disease effect comparisons
+                    if 'Disease Effect' in comp_name:
+                        if group1 in group_to_pos and group2 in group_to_pos:
+                            x1 = group_to_pos[group1]
+                            x2 = group_to_pos[group2]
+                            if add_significance_bracket(x1, x2, bracket_y, p_fdr, ax):
+                                bracket_y += bracket_increment
+            
+            # Set x-axis
+            ax.set_xticks(positions)
+            ax.set_xticklabels(group_labels_box, fontsize=11)
+            
+            # Set appropriate y-axis limits based on feature type and actual data range
+            # Only use 0-1 scale for ratios that are actually normalized to [0, 1]
+            if '_ratio' in feature and y_min >= 0 and y_max <= 1:
+                ax.set_ylim(0, 1)
+            else:
+                # Use same logic as before for measurements
+                data_min = y_min
+                data_max = bracket_y + bracket_increment  # Include space for brackets
+                
+                if data_min >= 0:
+                    y_min_plot = 0
+                else:
+                    magnitude = 10 ** np.floor(np.log10(abs(data_min)))
+                    y_min_plot = np.floor(data_min / magnitude) * magnitude
+                
+                if data_max > 0:
+                    magnitude = 10 ** np.floor(np.log10(data_max))
+                    y_max_plot = np.ceil(data_max / magnitude) * magnitude
+                else:
+                    y_max_plot = 0
+                
+                y_max_plot = y_max_plot * 1.05
+                ax.set_ylim(y_min_plot, y_max_plot)
+            
+            # Labels and title
+            ax.set_ylabel(feature, fontsize=12, fontweight='bold')
+            ax.set_title(f'{feature}', fontsize=14, fontweight='bold')
+            ax.grid(axis='y', alpha=0.3)
+            
+            # Add legend for mean marker
+            from matplotlib.lines import Line2D
+            legend_elements = [Line2D([0], [0], marker='D', color='w', 
+                                     markerfacecolor='black', markersize=8, 
+                                     label='Mean ± SD')]
+            ax.legend(handles=legend_elements, loc='upper right', fontsize=10)
+            
+            # Save plot
+            fname = f"{feature}_boxplot.png"
+            plt.tight_layout()
+            plt.savefig(os.path.join(boxplots_dir, fname), dpi=150)
+            plt.close()
+            
+        except Exception as e:
+            print(f"Could not create boxplot for {feature}: {e}")
+            plt.close()
+    
+    print(f"Saved {len(feature_cols)} boxplots to {boxplots_dir}")
+
 
 if __name__ == '__main__':
     main()
