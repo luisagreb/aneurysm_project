@@ -54,22 +54,31 @@ OUTPUT_DIR = Path('classification_results/comprehensive_comparison')
 
 
 def extract_subject_id(filename):
-    """Extract numeric subject ID from filename."""
+    """
+    Extract numeric subject ID from filename using robust regex.
+    Handles formats like:
+    - '01Asc-180' -> 180
+    - '01C-83' -> 83
+    - '01ASC-0180 -coll...' -> 180 (ignores 'cell1' at end)
+    """
     if pd.isna(filename):
         return None
+        
     text = str(filename).strip()
-    first_token = text.split(' ')[0].strip('-')
-    parts = first_token.split('-')
-    if len(parts) > 1:
-        last_part = parts[-1]
-        if last_part.isdigit():
-            return int(last_part)
-        sub_digits = re.findall(r'\d+', last_part)
-        if sub_digits:
-            return int(sub_digits[0])
-    digits = re.findall(r'\d+', first_token)
-    if digits:
-        return int(digits[-1])
+    
+    # Regex to find standard prefixes: 01Asc-180, 03Rt-45, 01C-83, 01ASC-0180
+    # Matches: (Prefix)(Separator)(Optional Zeros)(ID Number)
+    # Prefix: 01 or 03 followed by letters (Asc, Rt, C, etc)
+    match = re.search(r'(0[13][A-Za-z]+)[-\s]?0*(\d+)', text, re.IGNORECASE)
+    
+    if match:
+        return int(match.group(2)) # Extract the number part
+    
+    # Fallback: parsing simple numbers if standard format fails
+    # But only if it looks like a clean ID (e.g. just "180")
+    if text.isdigit():
+        return int(text)
+        
     return None
 
 
