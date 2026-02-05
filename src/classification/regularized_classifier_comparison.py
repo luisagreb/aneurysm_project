@@ -47,6 +47,9 @@ except ImportError:
 OUTPUT_DIR = Path('classification_results/regularized')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# Explicitly override in case import failing to propogate
+FEATURES_FILE = 'outputs/Advanced_Features_Restored.csv'
+
 def get_regularized_classifiers():
     """Return dictionary of STRICTLY REGULARIZED classifiers."""
     classifiers = {

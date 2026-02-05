@@ -48,9 +48,9 @@ except ImportError:
 warnings.filterwarnings('ignore')
 
 # Configuration
-FEATURES_FILE = 'outputs/Advanced_Features_Raw.csv'
+FEATURES_FILE = 'outputs/Advanced_Features_Restored.csv'
 METADATA_FILE = 'data/Book1.xlsx'
-OUTPUT_DIR = Path('classification_results/comprehensive_comparison')
+OUTPUT_DIR = Path('classification_results/comparison')
 
 
 def extract_subject_id(filename):
