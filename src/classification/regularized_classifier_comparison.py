@@ -50,34 +50,58 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # Explicitly override in case import failing to propogate
 FEATURES_FILE = 'outputs/Advanced_Features_Raw_Final.csv'
 
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.svm import SVC
+
 def get_regularized_classifiers():
-    """Return dictionary of STRICTLY REGULARIZED classifiers."""
+    """Return dictionary of STRICTLY REGULARIZED classifiers with FEATURE SELECTION."""
+    
+    # We use SelectKBest(k=10) to select the top 10 features.
+    # This prevents the model from getting confused by noisy, irrelevant features.
+    
     classifiers = {
-        # Random Forest: Constrained depth and leaf size
-        'Random Forest (Reg)': RandomForestClassifier(
-            n_estimators=100, 
-            max_depth=3,           # LIMIT: Can't grow deep trees
-            min_samples_leaf=4,    # LIMIT: Leaves must have >=4 samples
-            max_features='sqrt',
-            random_state=42
-        ),
+        # Random Forest: Constrained depth + Feature Selection
+        'Random Forest (Reg)': Pipeline([
+            ('selector', SelectKBest(f_classif, k=10)),
+            ('rf', RandomForestClassifier(
+                n_estimators=100, 
+                max_depth=3,           
+                min_samples_leaf=4,    
+                max_features='sqrt',
+                random_state=42
+            ))
+        ]),
         
-        # Logistic Regression: High L2 regularization (C is small)
+        # Logistic Regression: High L2 regularization + Feature Selection
         'Logistic Regression (Reg)': Pipeline([
             ('scaler', StandardScaler()),
+            ('selector', SelectKBest(f_classif, k=10)),
             ('lr', LogisticRegression(
-                C=0.1,             # LIMIT: Strong Regularization
+                C=0.1,             
                 max_iter=1000, 
                 random_state=42
             ))
         ]),
         
-        # MLP: Very simple network ("Small Brain")
+        # SVM: New addition, great for small datasets
+        'SVM (Reg)': Pipeline([
+            ('scaler', StandardScaler()),
+            ('selector', SelectKBest(f_classif, k=10)),
+            ('svm', SVC(
+                kernel='rbf',
+                C=1.0,           # Regularization parameter
+                probability=True,
+                random_state=42
+            ))
+        ]),
+        
+        # MLP: Very simple network + Feature Selection
         'MLP Classifier (Reg)': Pipeline([
             ('scaler', StandardScaler()),
+            ('selector', SelectKBest(f_classif, k=10)),
             ('mlp', MLPClassifier(
-                hidden_layer_sizes=(10,), # LIMIT: Only 10 neurons (was 50,25)
-                alpha=2.0,                # LIMIT: Very high weight penalty
+                hidden_layer_sizes=(10,), 
+                alpha=2.0,                
                 max_iter=1000,
                 random_state=42
             ))
@@ -85,18 +109,21 @@ def get_regularized_classifiers():
     }
     
     if XGBOOST_AVAILABLE:
-        # XGBoost: Shallow trees + L1/L2 Regularization
-        classifiers['XGBoost (Reg)'] = XGBClassifier(
-            n_estimators=50,       # LIMIT: Fewer trees
-            max_depth=2,           # LIMIT: Very shallow trees
-            learning_rate=0.05,    # LIMIT: Slow learning
-            reg_alpha=1.0,         # LIMIT: L1 Regularization (Lasso)
-            reg_lambda=1.0,        # LIMIT: L2 Regularization (Ridge)
-            subsample=0.7,         # LIMIT: Use only 70% of data per tree
-            eval_metric='logloss',
-            random_state=42,
-            use_label_encoder=False
-        )
+        # XGBoost: Shallow trees + Feature Selection
+        classifiers['XGBoost (Reg)'] = Pipeline([
+            ('selector', SelectKBest(f_classif, k=10)),
+            ('xgb', XGBClassifier(
+                n_estimators=50,       
+                max_depth=2,           
+                learning_rate=0.05,    
+                reg_alpha=1.0,         
+                reg_lambda=1.0,        
+                subsample=0.7,         
+                eval_metric='logloss',
+                random_state=42,
+                use_label_encoder=False
+            ))
+        ])
     
     return classifiers
 
