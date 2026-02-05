@@ -89,7 +89,7 @@ def extract_collagen_status(filename):
     filename = str(filename).lower()
     if '+coll' in filename or '+col' in filename:
         return 1  # Collagen
-    elif '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename:
+    elif '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename or 'dmso' in filename:
         return 0  # No Collagen
     return None
 
