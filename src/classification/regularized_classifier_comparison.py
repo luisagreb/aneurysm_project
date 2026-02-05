@@ -148,9 +148,13 @@ def print_top_features(X, y, task_name, k=10):
             colors.append('#BDBDBD')  # Muted Gray
             
     # Plotting
+    display_name = task_name
+    if task_name == 'Diseased or Not':
+        display_name = 'Healthy vs TAA'
+        
     plt.figure(figsize=(10, 6))
     sns.barplot(data=top_feats, x='Score', y='Feature', palette=colors)
-    plt.title(f'Top {k} Features: {task_name}', fontsize=14, fontweight='bold')
+    plt.title(f'Top {k} Features: {display_name}', fontsize=14, fontweight='bold')
     plt.xlabel('ANOVA F-Value Score')
     plt.tight_layout()
     
