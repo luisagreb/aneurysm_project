@@ -53,79 +53,115 @@ FEATURES_FILE = 'outputs/Advanced_Features_Raw_Final.csv'
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.svm import SVC
 
-def get_regularized_classifiers():
-    """Return dictionary of STRICTLY REGULARIZED classifiers with FEATURE SELECTION."""
+from sklearn.ensemble import VotingClassifier
+
+def get_classifiers_for_task(task_name):
+    """Return tuned classifiers based on the specific task difficulty."""
     
-    # We use SelectKBest(k=10) to select the top 10 features.
-    # This prevents the model from getting confused by noisy, irrelevant features.
+    # OPTIMIZED HYBRID CONFIGURATION
+    # Diseased/Rescued need more features (k=15) to capture the broad signal.
+    base_k = 15
     
+    # Treated: User requested k=15 (Uniform)
+    if task_name == 'Treated' or task_name == 'Treated or Not':
+        base_k = 15
+        print(f"  [Task: {task_name}] Using Feature Selection (k={base_k})")
+    
+    k_feats = base_k
+    
+    # Define pipelines with dynamic k
+    rf_pipe = Pipeline([
+        ('selector', SelectKBest(f_classif, k=k_feats)),
+        ('rf', RandomForestClassifier(n_estimators=100, max_depth=3, min_samples_leaf=4, max_features='sqrt', random_state=42))
+    ])
+    
+    lr_pipe = Pipeline([
+        ('scaler', StandardScaler()),
+        ('selector', SelectKBest(f_classif, k=k_feats)),
+        ('lr', LogisticRegression(C=0.1, max_iter=1000, random_state=42))
+    ])
+    
+    # SVM: For Treated, usage stronger C if needed, but k=5 is the main change
+    svm_pipe = Pipeline([
+        ('scaler', StandardScaler()),
+        ('selector', SelectKBest(f_classif, k=k_feats)),
+        ('svm', SVC(kernel='rbf', C=1.0, probability=True, random_state=42))
+    ])
+    
+    mlp_pipe = Pipeline([
+        ('scaler', StandardScaler()),
+        ('selector', SelectKBest(f_classif, k=k_feats)),
+        ('mlp', MLPClassifier(hidden_layer_sizes=(10,), alpha=2.0, max_iter=1000, random_state=42))
+    ])
+
     classifiers = {
-        # Random Forest: Constrained depth + Feature Selection
-        'Random Forest (Reg)': Pipeline([
-            ('selector', SelectKBest(f_classif, k=10)),
-            ('rf', RandomForestClassifier(
-                n_estimators=100, 
-                max_depth=3,           
-                min_samples_leaf=4,    
-                max_features='sqrt',
-                random_state=42
-            ))
-        ]),
-        
-        # Logistic Regression: High L2 regularization + Feature Selection
-        'Logistic Regression (Reg)': Pipeline([
-            ('scaler', StandardScaler()),
-            ('selector', SelectKBest(f_classif, k=10)),
-            ('lr', LogisticRegression(
-                C=0.1,             
-                max_iter=1000, 
-                random_state=42
-            ))
-        ]),
-        
-        # SVM: New addition, great for small datasets
-        'SVM (Reg)': Pipeline([
-            ('scaler', StandardScaler()),
-            ('selector', SelectKBest(f_classif, k=10)),
-            ('svm', SVC(
-                kernel='rbf',
-                C=1.0,           # Regularization parameter
-                probability=True,
-                random_state=42
-            ))
-        ]),
-        
-        # MLP: Very simple network + Feature Selection
-        'MLP Classifier (Reg)': Pipeline([
-            ('scaler', StandardScaler()),
-            ('selector', SelectKBest(f_classif, k=10)),
-            ('mlp', MLPClassifier(
-                hidden_layer_sizes=(10,), 
-                alpha=2.0,                
-                max_iter=1000,
-                random_state=42
-            ))
-        ]),
+        'Random Forest (Reg)': rf_pipe,
+        'Logistic Regression (Reg)': lr_pipe,
+        'SVM (Reg)': svm_pipe,
+        'MLP Classifier (Reg)': mlp_pipe,
+        'Ensemble Voting (Reg)': VotingClassifier(
+            estimators=[('rf', rf_pipe), ('lr', lr_pipe), ('svm', svm_pipe)],
+            voting='soft'
+        )
     }
     
     if XGBOOST_AVAILABLE:
-        # XGBoost: Shallow trees + Feature Selection
         classifiers['XGBoost (Reg)'] = Pipeline([
-            ('selector', SelectKBest(f_classif, k=10)),
-            ('xgb', XGBClassifier(
-                n_estimators=50,       
-                max_depth=2,           
-                learning_rate=0.05,    
-                reg_alpha=1.0,         
-                reg_lambda=1.0,        
-                subsample=0.7,         
-                eval_metric='logloss',
-                random_state=42,
-                use_label_encoder=False
-            ))
+            ('selector', SelectKBest(f_classif, k=k_feats)),
+            ('xgb', XGBClassifier(n_estimators=50, max_depth=2, learning_rate=0.05, reg_alpha=1.0, reg_lambda=1.0, subsample=0.7, eval_metric='logloss', random_state=42, use_label_encoder=False))
         ])
     
     return classifiers
+
+def print_top_features(X, y, task_name, k=10):
+    """Identify and print the top k features for this task."""
+    print(f"\n[{task_name}] Top {k} Features Selected:")
+    
+    # Simple imputation if needed
+    X = X.fillna(0)
+    
+    selector = SelectKBest(f_classif, k=k)
+    selector.fit(X, y)
+    
+    feat_scores = pd.DataFrame({
+        'Feature': X.columns,
+        'Score': selector.scores_
+    })
+    
+    # Sort by score
+    top_feats = feat_scores.nlargest(k, 'Score')
+    
+    for i, row in top_feats.reset_index(drop=True).iterrows():
+        print(f"  {i+1}. {row['Feature']} (Score: {row['Score']:.1f})")
+    print("-" * 40)
+    # Define Colors based on Structure Name
+    colors = []
+    for feat in top_feats['Feature']:
+        feat_lower = feat.lower()
+        if 'actin' in feat_lower:
+            colors.append('#E57373')  # Muted Red
+        elif 'mito' in feat_lower:
+            colors.append('#81C784')  # Muted Green
+        elif 'nucleus' in feat_lower:
+            colors.append('#64B5F6')  # Muted Blue
+        else:
+            colors.append('#BDBDBD')  # Muted Gray
+            
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=top_feats, x='Score', y='Feature', palette=colors)
+    plt.title(f'Top {k} Features: {task_name}', fontsize=14, fontweight='bold')
+    plt.xlabel('ANOVA F-Value Score')
+    plt.tight_layout()
+    
+    # Save
+    feat_dir = OUTPUT_DIR / 'features'
+    feat_dir.mkdir(parents=True, exist_ok=True)
+    safe_name = task_name.replace(' ', '_').lower()
+    save_path = feat_dir / f'features_{safe_name}.png'
+    plt.savefig(save_path, dpi=300)
+    print(f"  Saved Feature Plot: {save_path}")
+    plt.close()
 
 def evaluate_regularized_task(X, y, task_name):
     """Evaluate regularized classifiers and check for overfitting."""
@@ -133,7 +169,16 @@ def evaluate_regularized_task(X, y, task_name):
     print(f"EVALUATING (REGULARIZED): {task_name}")
     print('='*60)
     
-    classifiers = get_regularized_classifiers()
+    # Determine k for this task (match logic in get_classifiers_for_task)
+    k_print = 15
+
+    # Analyze Feature Importance First
+    try:
+        print_top_features(X, y, task_name, k=k_print)
+    except Exception as e:
+        print(f"Could not print top features: {e}")
+    
+    classifiers = get_classifiers_for_task(task_name)
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     results = []
     
