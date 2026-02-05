@@ -48,7 +48,7 @@ except ImportError:
 warnings.filterwarnings('ignore')
 
 # Configuration
-FEATURES_FILE = 'outputs/Advanced_Features_Restored.csv'
+FEATURES_FILE = 'outputs/Advanced_Features_Raw_Final.csv'
 METADATA_FILE = 'data/Book1.xlsx'
 OUTPUT_DIR = Path('classification_results/comparison')
 
@@ -89,7 +89,7 @@ def extract_collagen_status(filename):
     filename = str(filename).lower()
     if '+coll' in filename or '+col' in filename:
         return 1  # Collagen
-    elif '-coll' in filename or 'nocoll' in filename or 'no coll' in filename:
+    elif '-coll' in filename or '-col' in filename or 'nocoll' in filename or 'no coll' in filename:
         return 0  # No Collagen
     return None
 
@@ -140,6 +140,10 @@ def load_and_aggregate_features(healthy_ids, taa_ids):
     
     # Load features
     df = pd.read_csv(FEATURES_FILE)
+    
+    # Compatibility: "Filename" (new) vs "CellName" (old)
+    if 'CellName' not in df.columns and 'Filename' in df.columns:
+        df.rename(columns={'Filename': 'CellName'}, inplace=True)
     
     # Extract IDs and collagen status
     df['Numeric_ID'] = df['CellName'].apply(extract_subject_id)
