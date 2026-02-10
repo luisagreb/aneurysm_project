@@ -17,7 +17,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, cross_val_predict
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
@@ -224,7 +225,49 @@ def evaluate_regularized_task(X, y, task_name):
             print(f"    Error: {e}")
             continue
             
-    return pd.DataFrame(results)
+    # Create DataFrame
+    res_df = pd.DataFrame(results)
+    
+    # ---------------------------------------------------------
+    # Generate Confusion Matrix for the BEST Model
+    # ---------------------------------------------------------
+    if not res_df.empty:
+        best_model_name = res_df.loc[res_df['Accuracy'].idxmax()]['Classifier']
+        print(f"  Generating Confusion Matrix for Best Model: {best_model_name}")
+        
+        best_clf = classifiers[best_model_name]
+        
+        # Get honest cross-validated predictions
+        y_pred = cross_val_predict(best_clf, X, y, cv=cv)
+        
+        # Determine labels based on task
+        if 'Diseased' in task_name or 'Healthy' in task_name:
+            labels = ['Healthy', 'TAA']
+        elif 'Treated' in task_name:
+            labels = ['No Treat', 'Treated']
+        elif 'Rescued' in task_name:
+            labels = ['Rescued', 'Not Rescued']
+        else:
+            labels = ['Class 0', 'Class 1']
+
+        # Plot
+        cm = confusion_matrix(y, y_pred)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+        
+        fig, ax = plt.subplots(figsize=(6, 5))
+        disp.plot(cmap='Blues', ax=ax, values_format='d')
+        plt.title(f'Confusion Matrix: {task_name}\n({best_model_name})', fontsize=12, fontweight='bold')
+        
+        # Save
+        mat_dir = OUTPUT_DIR / 'matrices'
+        mat_dir.mkdir(parents=True, exist_ok=True)
+        safe_name = task_name.replace(' ', '_').lower()
+        save_path = mat_dir / f'matrix_{safe_name}.png'
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+        print(f"  Saved Confusion Matrix: {save_path}")
+
+    return res_df
 
 def main():
     print("="*60)
