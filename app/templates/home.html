@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OIR Lab Home</title>
+    <!-- CSS: This controls the look (Colors, Layout, Fonts) -->
+    <style>
+        /* 1. Body: Sets the font and centers everything on the screen */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff5f8;
+            /* Your pink background */
+            margin: 0;
+            display: flex;
+            /* Use Flexbox for layout */
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            height: 100vh;
+            /* Take up full screen height */
+        }
+
+        /* 2. Menu Container: Holds your buttons */
+        .menu {
+            display: flex;
+            /* Arrange buttons in a row */
+            gap: 30px;
+            /* Space between buttons */
+            text-align: center;
+        }
+
+        /* 3. The Cards (Buttons): Styles the links to look like big buttons */
+        .card {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(214, 93, 177, 0.2);
+            /* Soft shadow */
+            text-decoration: none;
+            /* Remove underline from link */
+            color: #5e4b56;
+            /* Text color */
+            transition: transform 0.2s;
+            /* Smooth hover animation */
+            width: 200px;
+            display: block;
+        }
+
+        /* Hover Effect: Moves the card up slightly when you mouse over it */
+        .card:hover {
+            transform: translateY(-5px);
+            background-color: #fff0f5;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #d65db1;
+        }
+
+        /* Pink Titles */
+        p {
+            margin: 10px 0 0 0;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- This is the visible content -->
+    <div class="menu">
+
+        <!-- Link 1: Goes to the Viewer Page */ -->
+        <a href="/viewer" class="card">
+            <h2>3D Viewer</h2>
+            <p>Visualize OIR files</p>
+        </a>
+
+        <!-- Link 2: Goes to the Segmentation Page */ -->
+        <a href="/segmentation" class="card">
+            <h2>Segmentation</h2>
+            <p>Nucleus, Actin, Mitochondria</p>
+        </a>
+
+    </div>
+
+</body>
+
+</html>

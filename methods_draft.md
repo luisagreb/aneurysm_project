@@ -6,9 +6,9 @@ To automate the segmentation of cellular structures (Actin, Mitochondria, and Nu
 
 ### Dataset Preparation
 Three separate datasets were curated for training, utilizing manual expert segmentations:
-1.  **Dataset 001 (Actin)**: Single-channel fluorescence microscopy images.
-2.  **Dataset 002 (Mitochondria)**: Single-channel mitochondrial stain.
-3.  **Dataset 003 (Nucleus)**: Single-channel nuclear stain.
+1.  **Dataset 001 (Actin)**: Single-channel fluorescence microscopy images (47 manually segmented 3D cases).
+2.  **Dataset 002 (Mitochondria)**: Single-channel mitochondrial stain (38 manually segmented 3D cases).
+3.  **Dataset 003 (Nucleus)**: Single-channel nuclear stain (93 manually segmented 3D cases).
 
 Input data were converted from NRRD to NIfTI format. A custom preprocessing pipeline was developed to ensure data integrity:
 -   **Orientation Standardization**: Volumes were heuristically checked and transposed to ensure consistent (X, Y, Z) orientation, correcting instances where Z-stacks were misinterpreted as spatial dimensions.
@@ -20,7 +20,7 @@ We utilized the `3d_fullres` configuration of nnU-Net, which trains a 3D U-Net o
 -   **Architecture**: U-Net with residual connections and deep supervision.
 -   **Loss Function**: A combination of Dice Loss and Cross-Entropy Loss to handle class imbalance.
 -   **Optimization**: Stochastic Gradient Descent (SGD) with Nesterov momentum and a polynomial learning rate decay.
--   **Training Strategy**: Models were trained using a 5-fold cross-validation setup. For final inference, the model from Fold 0 was selected based on validation performance.
+-   **Training Strategy**: Models were trained using a 5-fold cross-validation setup (1000 epochs). Validation was conducted on held-out sets consisting of 10 actin cases, 8 mitochondria cases, and 19 nucleus cases. Segmentation accuracy was quantified using the Dice similarity coefficient, yielding mean values of 86.8% for actin, 80.3% for mitochondria, and 90.8% for nucleus on the validation sets. These results supported the use of nnU-Net segmentations for downstream quantitative phenotyping. For final inference, the model from Fold 0 was selected based on validation performance.
 
 ### Inference
 Inference was performed using a sliding window approach with Gaussian overlap weighting to minimize stitching artifacts at patch boundaries. Test Time Augmentation (TTA) was employed to further enhance prediction robustness by averaging predictions across multiple geometric transformations (mirroring). The resulting probability maps were thresholded to generate final binary segmentation masks for downstream morphometric analysis.

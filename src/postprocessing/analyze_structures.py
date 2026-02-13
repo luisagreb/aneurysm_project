@@ -139,70 +139,81 @@ def analyze_mito(mask, voxel_size):
     total_volume = volume_pixels * voxel_vol
     
     # Surface Area (Marching Cubes)
-    # Use spacing to account for voxel size
     try:
         verts, faces, normals, values = measure.marching_cubes(mask, spacing=voxel_size)
         surface_area = measure.mesh_surface_area(verts, faces)
     except (ValueError, RuntimeError):
-        # Handle cases where mask is empty or too small
         surface_area = 0.0
         
     # Sphericity
     sphericity = calculate_sphericity(total_volume, surface_area)
 
     # --- Advanced Network Topology (skan) ---
-    # Skeletonize first
     try:
         from skan import Skeleton, summarize
+        import networkx as nx
+        
         skeleton_image = morphology.skeletonize(mask)
         if np.sum(skeleton_image) > 1: # skan needs at least 2 pixels
-             # CRITICAL FIX: Pass voxel_size to Skeleton for correct physical spacing
+             # Pass voxel_size to Skeleton for correct physical spacing
              skel_obj = Skeleton(skeleton_image, spacing=voxel_size)
              branch_data = summarize(skel_obj)
              
-             # Branch pruning: filter out noise (branches < 0.5 µm)
-             MIN_BRANCH_LENGTH = 0.5  # microns
+             # Branch pruning: filter out noise
+             # User feedback suggests current mean (1.26 um) is low, implying noise.
+             # Increasing threshold to 1.0 microns (approx 3-5 voxels).
+             MIN_BRANCH_LENGTH = 1.0  
              real_branches = branch_data[branch_data['branch-distance'] > MIN_BRANCH_LENGTH]
              
-             # Calculate metrics from filtered branch_data
-             junction_count = np.sum(skel_obj.degrees > 2)
              branch_count = len(real_branches)
-             mean_branch_length = real_branches['branch-distance'].mean() if len(real_branches) > 0 else 0.0
+             mean_branch_length = real_branches['branch-distance'].mean() if branch_count > 0 else 0.0
              total_network_length = real_branches['branch-distance'].sum()
              
-             # Tortuosity = branch-distance / euclidean-distance
-             # Handle division by zero (loops have 0 euclidean distance)
-             if len(real_branches) > 0:
+             # Tortuosity
+             if branch_count > 0:
                  with np.errstate(divide='ignore', invalid='ignore'):
                     tortuosity = real_branches['branch-distance'] / real_branches['euclidean-distance']
                  
-                 # Replace inf with NaN for mean calculation
                  tortuosity = tortuosity.replace([np.inf, -np.inf], np.nan)
                  mean_tortuosity = tortuosity.mean()
-                 
-                 if pd.isna(mean_tortuosity):
-                     mean_tortuosity = 0.0
+                 if pd.isna(mean_tortuosity): mean_tortuosity = 0.0
              else:
                  mean_tortuosity = 0.0
              
-             # Cyclomatic number = E - N + P
-             # Edges - Nodes + Connected Components
-             # Use FILTERED branches for topology
-             if len(real_branches) > 0:
-                 num_components = real_branches['skeleton-id'].nunique()
-                 unique_nodes = set(real_branches['node-id-src']).union(set(real_branches['node-id-dst']))
-                 num_nodes = len(unique_nodes)
-                 num_edges = branch_count
-                 cyclomatic_number = num_edges - num_nodes + num_components
+             # CALCULATE TOPOLOGY FROM PRUNED GRAPH
+             if branch_count > 0:
+                 # Build new graph from filtered branches to correctly count components/nodes/edges
+                 # Use MultiGraph to preserve parallel edges (cycles of length 2)
+                 G = nx.from_pandas_edgelist(
+                     real_branches, 
+                     source='node-id-src', 
+                     target='node-id-dst', 
+                     create_using=nx.MultiGraph()
+                 )
+                 
+                 # Recalculate metrics on the cleaned graph
+                 num_edges = G.number_of_edges() # Should match branch_count
+                 num_nodes = G.number_of_nodes()
+                 num_components = nx.number_connected_components(G)
+                 
+                 # Cyclomatic number: E - N + C (Guaranteed >= 0)
+                 cyclomatic_number = max(0, num_edges - num_nodes + num_components)
+                 
+                 # Junction count: Nodes with degree > 2
+                 junction_count = sum(1 for n, d in G.degree() if d > 2)
+                 
              else:
                  cyclomatic_number = 0
+                 junction_count = 0
+                 
         else:
              junction_count = 0
              branch_count = 0
              mean_branch_length = 0.0
              total_network_length = 0.0
-             mean_tortuosity = 1.0 # Line
+             mean_tortuosity = 1.0
              cyclomatic_number = 0
+             
     except Exception as e:
         print(f"Skan error: {e}")
         junction_count = 0
@@ -217,50 +228,60 @@ def analyze_mito(mask, voxel_size):
     fragment_count = num_features
     
     # --- Per-Fragment Sphericity ---
-    # Calculate sphericity for each individual mitochondrial fragment
     fragment_sphericities = []
     fragment_volumes = []
     
     if fragment_count > 0:
-        for frag_id in range(1, fragment_count + 1):
-            frag_mask = (labeled_mask == frag_id).astype(np.uint8)
-            frag_volume_pixels = np.sum(frag_mask)
-            
-            # Skip very small fragments (< 10 voxels)
-            if frag_volume_pixels < 10:
+        # Optimization: Only compute for a subset if too many? No, do all.
+        # But skip very small ones.
+        regions = measure.regionprops(labeled_mask)
+        for region in regions:
+            if region.area < 10: # Skip tiny voxel fragments
                 continue
                 
-            frag_volume = frag_volume_pixels * voxel_vol
+            frag_volume = region.area * voxel_vol
             fragment_volumes.append(frag_volume)
             
-            # Calculate surface area for this fragment
-            try:
-                frag_verts, frag_faces, _, _ = measure.marching_cubes(frag_mask, spacing=voxel_size)
-                frag_surface = measure.mesh_surface_area(frag_verts, frag_faces)
-                frag_sphericity = calculate_sphericity(frag_volume, frag_surface)
-                fragment_sphericities.append(frag_sphericity)
-            except (ValueError, RuntimeError):
-                # Fragment too small for marching cubes
-                pass
+            # Sphericity needs mesh, which is expensive for 1000s of frags
+            # We can use an approximation for tiny ones or skip.
+            # Only do full mesh for decent size fragments?
+            # Existing code did masking.
+            # Optimized approach:
+            if region.area > 20: 
+               try:
+                   # Crop to region bbox to save memory/speed
+                   min_z, min_y, min_x, max_z, max_y, max_x = region.bbox
+                   frag_crop = mask[min_z:max_z, min_y:max_y, min_x:max_x]
+                   # Only keep this label
+                   frag_mask = (labeled_mask[min_z:max_z, min_y:max_y, min_x:max_x] == region.label).astype(np.uint8)
+                   
+                   # Add padding for marching cubes
+                   frag_mask = np.pad(frag_mask, 1, mode='constant')
+                   
+                   verts, faces, _, _ = measure.marching_cubes(frag_mask, spacing=voxel_size)
+                   frag_surface = measure.mesh_surface_area(verts, faces)
+                   frag_sphericity = calculate_sphericity(frag_volume, frag_surface)
+                   fragment_sphericities.append(frag_sphericity)
+               except:
+                   pass
     
-    # Aggregate fragment statistics
     if fragment_sphericities:
         mean_frag_sphericity = np.mean(fragment_sphericities)
         std_frag_sphericity = np.std(fragment_sphericities)
         min_frag_sphericity = np.min(fragment_sphericities)
         max_frag_sphericity = np.max(fragment_sphericities)
-        mean_frag_volume = np.mean(fragment_volumes)
     else:
         mean_frag_sphericity = 0.0
         std_frag_sphericity = 0.0
         min_frag_sphericity = 0.0
         max_frag_sphericity = 0.0
-        mean_frag_volume = 0.0
+        
+    mean_frag_volume = np.mean(fragment_volumes) if fragment_volumes else 0.0
     
     return {
         'Volume': total_volume,
         'Surface_Area': surface_area,
-        'Sphericity': sphericity,  # Whole mask sphericity
+        'Sphericity': sphericity,
         'Fragment_Count': fragment_count,
         'Mean_Fragment_Sphericity': mean_frag_sphericity,  
         'Std_Fragment_Sphericity': std_frag_sphericity,    
@@ -296,7 +317,12 @@ def analyze_actin(mask, voxel_size):
         from skan import Skeleton, summarize
         skel_actin = Skeleton(skeleton, spacing=voxel_size)
         actin_branch_data = summarize(skel_actin)
-        skeleton_length = actin_branch_data['branch-distance'].sum()
+        
+        # PRUNING: Filter noise branches for consistency with Mito checking
+        MIN_BRANCH_LENGTH = 1.0
+        actin_clean = actin_branch_data[actin_branch_data['branch-distance'] > MIN_BRANCH_LENGTH]
+        
+        skeleton_length = actin_clean['branch-distance'].sum()
     else:
         skeleton_length = 0.0
     
@@ -426,6 +452,10 @@ def analyze_nucleus(mask, voxel_size):
     volume_pixels = np.sum(mask > 0)
     total_volume = volume_pixels * voxel_vol
     
+    # FILTER: Exclude tiny nuclei (likely segmentation artifacts)
+    if total_volume < 200.0:
+        return None
+        
     # Surface Area for Sphericity
     try:
         verts, faces, normals, values = measure.marching_cubes(mask, spacing=voxel_size)
@@ -581,6 +611,11 @@ def main():
                 metrics = analyze_actin(mask, voxel_size)
             elif args.structure == 'nucleus':
                 metrics = analyze_nucleus(mask, voxel_size)
+            
+            # If metrics is None (quality control failure), skip
+            if metrics is None:
+                print(f"  Skipping {file_path.name}: QC Failure (e.g. too small)")
+                continue
             
             # Store voxel size and source for auditing
             metrics['Voxel_Z'] = voxel_size[0]
