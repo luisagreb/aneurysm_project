@@ -235,6 +235,23 @@ print(results_df[['Rank', 'Classifier', 'Accuracy', 'AUC']].to_string(index=Fals
 results_df.to_csv('classification_results/ml_comparison_cv.csv', index=False)
 print(f"\nResults saved to: classification_results/ml_comparison_cv.csv")
 
+# ---------------------------------------------------------
+# SAVE MODEL FOR WEB APP
+# ---------------------------------------------------------
+print("\nSaving best model (Random Forest) to app/models/classifier.joblib...")
+import joblib
+import os
+
+model_dir = 'app/models'
+os.makedirs(model_dir, exist_ok=True)
+model_path = os.path.join(model_dir, 'classifier.joblib')
+
+# Retrain on full dataset for deployment
+clf = classifiers['Random Forest']
+clf.fit(X, y)
+joblib.dump(clf, model_path)
+print(f"Model saved to {model_path}")
+
 # Create visualization
 fig, ax = plt.subplots(figsize=(12, 8))
 

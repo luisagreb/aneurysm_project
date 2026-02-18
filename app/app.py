@@ -2,14 +2,37 @@ import os
 import io
 import time
 import base64
+import threading
 import shutil
 import subprocess
 import numpy as np
 import nibabel as nib
 from PIL import Image
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from aicsimageio import AICSImage
-from skimage import measure  
+from skimage import measure
+import scipy.ndimage as ndimage
+import zipfile
+import numpy as np
+import nibabel as nib
+
+# --- Add Project Root to Path for Imports ---
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import joblib
+import pandas as pd
+
+# --- Import Feature Extractors ---
+# We wrap this in try-except in case of dependency issues
+try:
+    from src.postprocessing.analyze_structures import analyze_nucleus, analyze_actin, analyze_mito
+    print("[INFO] Successfully imported analysis modules.")
+except ImportError as e:
+    print(f"[WARN] Could not import analysis modules: {e}")
+    # Define dummy functions so app doesn't crash if imports fail
+    def analyze_nucleus(*args): return {}
+    def analyze_actin(*args): return {}
+    def analyze_mito(*args): return {}
 
 app = Flask(__name__)
 
@@ -20,6 +43,7 @@ viewer_state = {
     "slices": 0,
     "width": 0,
     "height": 0,
+    "spacing": (1.0, 1.0, 1.0), # (Z, Y, X) physical size
     "masks": {}         # Dictionary to hold masks: key=channel_idx, val=numpy_mask
 }
 
@@ -39,7 +63,7 @@ def segmentation():
 def get_mesh(c):
     """
     Returns 3D mesh data (vertices, faces) for a given channel mask.
-    Uses Marching Cubes algorithm.
+    Uses Marching Cubes algorithm. 
     """
     print(f"[DEBUG] Request for mesh channel {c}")
     
@@ -51,10 +75,7 @@ def get_mesh(c):
         mask = viewer_state["masks"][c]
         print(f"[DEBUG] Mask shape: {mask.shape}, Max Val: {mask.max()}, Min Val: {mask.min()}")
 
-        if mask.max() == 0:
-            print(f"[WARN] Mask is empty (all zeros) for channel {c}")
-            return jsonify({"error": "Mask is empty (no segmentation found)"})
-        
+        mask = np.pad(mask, pad_width=1, mode='constant', constant_values=0)
         # Optimize: Downsample big masks (2x) to prevent browser crash
         step = 2 
         mask_small = mask[::step, ::step, ::step]
@@ -63,13 +84,34 @@ def get_mesh(c):
         # Level 0.5 means the boundary between 0 (background) and 1 (mask)
         verts, faces, normals, values = measure.marching_cubes(mask_small, level=0.5)
         
-        # Scale vertices back to original size
+        # Scale vertices back to original size (undo downsampling)
         verts = verts * step
+
+        # APPLY PHYSICAL SCALING
+        # verts columns are (Axis0, Axis1, Axis2) corresponding to (Z, Y, X) of the mask
+        spacing = viewer_state["spacing"] # (Z, Y, X)
         
-        print(f"[SUCCESS] Generated mesh with {len(verts)} vertices and {len(faces)} faces")
+        # Apply scaling
+        verts[:, 0] *= spacing[0] # Scale Z
+        verts[:, 1] *= spacing[1] # Scale Y
+        verts[:, 2] *= spacing[2] # Scale X
+
+        # REORDER FOR THREE.JS (X, Y, Z)
+        # Currently it is (Z, Y, X). 
+        # We want Three.js X = Image X, Three.js Y = Image Y, Three.js Z = Image Z
+        # So we swap columns: (Z, Y, X) -> (X, Y, Z)
+        # New Column 0 = Old Column 2
+        # New Column 1 = Old Column 1
+        # New Column 2 = Old Column 0
+        verts_xyz = np.zeros_like(verts)
+        verts_xyz[:, 0] = verts[:, 2] # X
+        verts_xyz[:, 1] = verts[:, 1] # Y
+        verts_xyz[:, 2] = verts[:, 0] # Z
+        
+        print(f"[SUCCESS] Generated mesh with {len(verts)} vertices. Spacing applied: {spacing}")
         
         return jsonify({
-            "vertices": verts.tolist(),
+            "vertices": verts_xyz.tolist(),
             "faces": faces.tolist(),
             "status": "success"
         })
@@ -115,6 +157,21 @@ def load_oir():
         viewer_state["slices"] = z
         viewer_state["width"] = w
         viewer_state["height"] = h
+        viewer_state["masks"] = {}
+
+        # Get Physical Pixel Sizes (Z, Y, X)
+        try:
+            # AICSImage uses (Z, Y, X) order for physical_pixel_sizes
+            phys = img.physical_pixel_sizes
+            # Handle potential None values safely
+            sz = phys.Z if phys.Z else 1.0
+            sy = phys.Y if phys.Y else 1.0
+            sx = phys.X if phys.X else 1.0
+            viewer_state["spacing"] = (sz, sy, sx)
+            print(f"[INFO] Physical Spacing (Z, Y, X): {viewer_state['spacing']}")
+        except Exception as e:
+            print(f"[WARN] Could not read physical pixel sizes: {e}. Defaulting to 1.0")
+            viewer_state["spacing"] = (1.0, 1.0, 1.0)
 
         return jsonify({
             "channels": c,
@@ -132,86 +189,288 @@ def load_oir():
 
 @app.route("/slice/<int:c>/<int:z>")
 def get_slice(c, z):
+    # This function returns a base64 PNG of the current slice for the frontend
+    
     data = viewer_state["data"]
-    if data is None:
-        return jsonify({"error": "No data loaded"})
+    if data is None: return jsonify({"error": "No data loaded"})
+
+    # Helper: Normalize 0..255
+    def normalize(sl):
+        vmin, vmax = sl.min(), sl.max()
+        if vmax - vmin < 1e-6: return np.zeros_like(sl, dtype=np.uint8)
+        return ((sl - vmin) / (vmax - vmin) * 255).astype(np.uint8)
 
     try:
-        if c < 0 or c >= viewer_state["channels"]:
-            return jsonify({"error": "Invalid channel"})
-        if z < 0 or z >= viewer_state["slices"]:
-            return jsonify({"error": "Invalid slice"})
+        h, w = viewer_state["height"], viewer_state["width"]
+        if z < 0 or z >= viewer_state["slices"]: return jsonify({"error": "Invalid slice"})
 
-        sl = data[c, z]
-
-        # Simple Auto-Scaling: map min..max to 0..255 for display
-        vmin, vmax = sl.min(), sl.max()
+        # Initialize RGB Canvas (Height, Width, 3)
+        rgb = np.zeros((h, w, 3), dtype=np.uint8)
         
-        # Avoid division by zero
-        if vmax - vmin < 1e-6:
-            disp = np.zeros_like(sl, dtype=np.uint8)
-        else:
-            disp = ((sl - vmin) / (vmax - vmin) * 255).astype(np.uint8)
-
-        # Create blank Red, Green, Blue channels
-        zeros = np.zeros_like(disp)
-        
-        # Color Mapping (Fiji Style)
-        if c == 0:   # Channel 1 (Nucleus) -> Blue
-            rgb = np.dstack((zeros, zeros, disp))
-        elif c == 1: # Channel 2 (Actin) -> Green
-            rgb = np.dstack((zeros, disp, zeros))
-        elif c == 2: # Channel 3 (Mito) -> Red
-            rgb = np.dstack((disp, zeros, zeros))
-        else:        # Fallback for other channels -> Grayscale
-            rgb = np.dstack((disp, disp, disp))
-
-        # Check for Segmentation Mask
-        if c in viewer_state["masks"]:
-            mask_vol = viewer_state["masks"][c]
+        # --- Mode 1: Composite View (All 3 Ch + Masks) ---
+        if c == 99:
+            # Add Blue Channel (Nucleus - Ch 0)
+            if 0 < viewer_state["channels"]: 
+                rgb[:,:,2] += normalize(data[0, z])
+            # Add Green Channel (Actin - Ch 1)
+            if 1 < viewer_state["channels"]: 
+                rgb[:,:,1] += normalize(data[1, z])
+            # Add Red Channel (Mito - Ch 2)
+            if 2 < viewer_state["channels"]: 
+                rgb[:,:,0] += normalize(data[2, z])
             
-            # DEBUG 
-            print(f"[DEBUG] Slice z={z}: Image Shape={sl.shape}, Mask Vol Shape={mask_vol.shape}")
+            # Overlay Masks (Semi-transparent)
+            # Nucleus Mask (0) -> Cyan (0, 255, 255)
+            if 0 in viewer_state["masks"] and z < viewer_state["masks"][0].shape[0]:
+                m = viewer_state["masks"][0][z] > 0
+                rgb[m] = rgb[m]*0.5 + np.array([0, 255, 255])*0.5
             
-            # Ensure mask exists for this slice (Z dimension is index 0)
-            if z < mask_vol.shape[0]: 
-                mask_slice = mask_vol[z]
+            # Actin Mask (1) -> Yellow (255, 255, 0)
+            if 1 in viewer_state["masks"] and z < viewer_state["masks"][1].shape[0]:
+                m = viewer_state["masks"][1][z] > 0
+                rgb[m] = rgb[m]*0.5 + np.array([255, 255, 0])*0.5
                 
-                # Check shapes match DEBUG
-                if mask_slice.shape != sl.shape:
-                    print(f"[ERROR] Shape Mismatch! Img {sl.shape} vs Mask {mask_slice.shape}")
-                else:
-                    # Where mask is 1, overlay Yellow (approximate)
-                    should_overlay = (mask_slice > 0)
-                    
-                    if np.any(should_overlay):
-                         print(f"[DEBUG] Overlaying {np.sum(should_overlay)} pixels")
-                    
-                    # We blend directly into the RGB array
-                    # Yellow = Red + Green
-                    rgb[:,:,0] = np.where(should_overlay, 255, rgb[:,:,0]) # Red channel -> Max
-                    rgb[:,:,1] = np.where(should_overlay, 255, rgb[:,:,1]) # Green channel -> Max
-                    # Blue channel -> Keep or Dim? Let's dim it to make yellow pop
-                    rgb[:,:,2] = np.where(should_overlay, 0, rgb[:,:,2])
-
-        # Create the image from the COLOR array
-        pil_img = Image.fromarray(rgb.astype(np.uint8))
+            # Mito Mask (2) -> Magenta (255, 0, 255)
+            if 2 in viewer_state["masks"] and z < viewer_state["masks"][2].shape[0]:
+                m = viewer_state["masks"][2][z] > 0
+                rgb[m] = rgb[m]*0.5 + np.array([255, 0, 255])*0.5
         
+        # --- Mode 2: Single Channel View ---
+        else:
+            if c < 0 or c >= viewer_state["channels"]: return jsonify({"error": "Invalid channel"})
+            
+            sl = data[c, z]
+            norm_sl = normalize(sl)
+            
+            # Apply Color
+            if c == 0:   rgb[:,:,2] = norm_sl # Blue
+            elif c == 1: rgb[:,:,1] = norm_sl # Green
+            elif c == 2: rgb[:,:,0] = norm_sl # Red
+            else:        rgb = np.dstack((norm_sl, norm_sl, norm_sl)) # Grayscale
+
+            # Overlay Mask (Yellow)
+            if c in viewer_state["masks"] and z < viewer_state["masks"][c].shape[0]:
+                m = viewer_state["masks"][c][z] > 0
+                rgb[m] = [255, 255, 0] # Solid Yellow
+
+        # Return as PNG
+        pil_img = Image.fromarray(rgb.astype(np.uint8))
         buf = io.BytesIO()
         pil_img.save(buf, format="PNG")
-
+        
         return jsonify({
-            "image": base64.b64encode(buf.getvalue()).decode(),
-            "pixels": sl.astype(int).flatten().tolist()
+            "image": base64.b64encode(buf.getvalue()).decode()
         })
+
     except Exception as e:
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)})
 
 # ----------------------------------------
-# Segmentation Helper Functions
+# Analysis & Prediction Route
 # ----------------------------------------
+
+@app.route('/analyze_cell', methods=['POST'])
+def analyze_cell():
+    if viewer_state["data"] is None:
+        return jsonify({"error": "No data loaded"})
+    
+    # 1. Check if we have masks
+    if not viewer_state["masks"]:
+        return jsonify({"error": "No segmentation masks found. Run Segmentation first."})
+        
+    try:
+        print("[INFO] Starting Feature Extraction...")
+        
+        # Get Spacing
+        spacing = viewer_state["spacing"] # (Z, Y, X)
+        
+        # 2. Extract Features
+        # We aggregate features from all available channels into a single dictionary
+        # Keys must match the training script prefixes EXACTLY, including units!
+        features = {}
+        
+        # Add Voxel Sizes (Required by Model)
+        features["Voxel_Z_µm"] = spacing[0]
+        features["Voxel_Y_µm"] = spacing[1]
+        features["Voxel_X_µm"] = spacing[2]
+        
+        # Nucleus (Channel 0)
+        if 0 in viewer_state["masks"]:
+            print("[INFO] Analyzing Nucleus...")
+            nuc_feats = analyze_nucleus(viewer_state["masks"][0], spacing)
+            if nuc_feats:
+                # Map plain keys to Model keys (with units)
+                features["Nucleus_Volume_µm³"] = nuc_feats.get('Volume', 0)
+                features["Nucleus_Sphericity_ratio"] = nuc_feats.get('Sphericity', 0)
+                features["Nucleus_Elongation_ratio"] = nuc_feats.get('Elongation', 0)
+                features["Nucleus_Flatness_ratio"] = nuc_feats.get('Flatness', 0)
+                features["Nucleus_Solidity_ratio"] = nuc_feats.get('Solidity', 0)
+                features["Nucleus_Circularity_ratio"] = nuc_feats.get('Circularity', 0)
+                
+        # Actin (Channel 1)
+        if 1 in viewer_state["masks"]:
+            print("[INFO] Analyzing Actin...")
+            actin_feats = analyze_actin(viewer_state["masks"][1], spacing)
+            if actin_feats:
+                features["Actin_Volume_µm³"] = actin_feats.get('Volume', 0)
+                features["Actin_Skeleton_Length_µm"] = actin_feats.get('Skeleton_Length', 0)
+                features["Actin_Convex_Hull_Volume_µm³"] = actin_feats.get('Convex_Hull_Volume', 0)
+                features["Actin_Solidity_ratio"] = actin_feats.get('Solidity', 0)
+                features["Actin_Extent_ratio"] = actin_feats.get('Extent', 0)
+                features["Actin_Fractional_Anisotropy_ratio"] = actin_feats.get('Fractional_Anisotropy', 0)
+                features["Actin_Major_Axis_µm"] = actin_feats.get('Major_Axis', 0)
+                features["Actin_Intermediate_Axis_µm"] = actin_feats.get('Intermediate_Axis', 0)
+                features["Actin_Minor_Axis_µm"] = actin_feats.get('Minor_Axis', 0)
+                
+        # Mito (Channel 2)
+        if 2 in viewer_state["masks"]:
+            print("[INFO] Analyzing Mitochondria...")
+            mito_feats = analyze_mito(viewer_state["masks"][2], spacing)
+            if mito_feats:
+                # Map plain keys to Model keys (with units)
+                features["Mito_Volume_µm³"] = mito_feats.get('Volume', 0)
+                features["Mito_Surface_Area_µm²"] = mito_feats.get('Surface_Area', 0)
+                features["Mito_Sphericity_ratio"] = mito_feats.get('Sphericity', 0)
+                features["Mito_Fragment_Count_n"] = mito_feats.get('Fragment_Count', 0)
+                features["Mito_Mean_Fragment_Sphericity_ratio"] = mito_feats.get('Mean_Fragment_Sphericity', 0)
+                features["Mito_Std_Fragment_Sphericity_ratio"] = mito_feats.get('Std_Fragment_Sphericity', 0)
+                features["Mito_Min_Fragment_Sphericity_ratio"] = mito_feats.get('Min_Fragment_Sphericity', 0)
+                features["Mito_Max_Fragment_Sphericity_ratio"] = mito_feats.get('Max_Fragment_Sphericity', 0)
+                features["Mito_Mean_Fragment_Volume_µm³"] = mito_feats.get('Mean_Fragment_Volume', 0)
+                features["Mito_Junction_Count_n"] = mito_feats.get('Junction_Count', 0)
+                features["Mito_Branch_Count_n"] = mito_feats.get('Branch_Count', 0)
+                features["Mito_Mean_Branch_Length_µm"] = mito_feats.get('Mean_Branch_Length', 0)
+                features["Mito_Total_Network_Length_µm"] = mito_feats.get('Total_Network_Length', 0)
+                features["Mito_Mean_Tortuosity_ratio"] = mito_feats.get('Mean_Tortuosity', 0)
+                features["Mito_Cyclomatic_Number_n"] = mito_feats.get('Cyclomatic_Number', 0)
+
+        # 3. Load Prediction Model
+        # Ensure the user has placed their trained model here
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'classifier.joblib')
+        
+        prediction = "Model Not Found"
+        confidence = 0.0
+        
+        if os.path.exists(model_path):
+            try:
+                clf = joblib.load(model_path)
+                
+                # 4. Prepare Dataframe
+                # We align with the model's expected features.
+                df = pd.DataFrame([features])
+                
+                # Robustly handle missing columns
+                if hasattr(clf, 'feature_names_in_'):
+                    expected_cols = clf.feature_names_in_
+                    
+                    # Add missing columns with 0
+                    for col in expected_cols:
+                        if col not in df.columns:
+                            df[col] = 0.0
+                            
+                    # Reorder and select ONLY expected columns
+                    df = df[expected_cols]
+                
+                # Fill NaNs with 0 (just in case)
+                df = df.fillna(0)
+                
+                pred_cls = clf.predict(df)[0] # 0 or 1
+                try:
+                    proba = clf.predict_proba(df)[0][1] # Probability of class 1
+                except:
+                    proba = 0.0
+
+                # Assuming 1 = Diseased (TAA), 0 = Healthy
+                prediction = "Diseased (TAA)" if pred_cls == 1 else "Healthy"
+                confidence = float(proba)
+                
+            except Exception as e:
+                err_msg = str(e)
+                print(f"[WARN] Prediction failed: {err_msg}")
+                
+                # DEBUG: Print column mismatch
+                if hasattr(clf, 'feature_names_in_'):
+                    expected = set(clf.feature_names_in_)
+                    generated = set(df.columns)
+                    missing = expected - generated
+                    extra = generated - expected
+                    print(f"[DEBUG] MISSING FEATURES: {missing}")
+                    print(f"[DEBUG] EXTRA FEATURES: {extra}")
+                
+                # Check for common sklearn feature mismatch errors
+                if "feature" in err_msg.lower() or "shape" in err_msg.lower() or "mismatch" in err_msg.lower():
+                     prediction = "Error: Model/Feature Mismatch. Re-train model."
+                else:
+                     prediction = f"Prediction Error: {err_msg[:30]}..."
+        else:
+            print(f"[WARN] Model not found at {model_path}")
+            prediction = "No Model File (Upload 'classifier.joblib')"
+        
+        return jsonify({
+            "status": "success",
+            "prediction": prediction,
+            "confidence": confidence,
+            "features": features
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)})
+
+# ----------------------------------------
+# Download Route
+# ----------------------------------------
+@app.route('/download_segmentation')
+def download_segmentation():
+    if not viewer_state["masks"]:
+        return "No masks to download. Run segmentation first.", 400
+        
+    try:
+        memory_file = io.BytesIO()
+        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+            # For each mask, save as NII and add to zip
+            for c, mask in viewer_state["masks"].items():
+                # mask is (Z, Y, X).
+                # Create NIfTI image. 
+                # Ideally we set the affine matrix correctly using spacing.
+                # Spacing is (Z, Y, X).
+                # Nibabel expects (X, Y, Z, T).
+                
+                # Simple identity affine for now.
+                affine = np.eye(4)
+                
+                # Swap axes for NiBabel? 
+                # AICSImage returns (Z, Y, X). NiBabel is (X, Y, Z).
+                # Let's transpose.
+                mask_t = np.transpose(mask, (2, 1, 0))
+                
+                nii = nib.Nifti1Image(mask_t, affine)
+                
+                # Set spacing
+                # viewer_state["spacing"] is (Z, Y, X).
+                # nibabel zooms should be (X, Y, Z).
+                if "spacing" in viewer_state and viewer_state["spacing"]:
+                    sp = viewer_state["spacing"]
+                    zooms = (sp[2], sp[1], sp[0]) 
+                    nii.header.set_zooms(zooms)
+                
+                # Save to temp buffer? Or file. Nifti1Image needs file usually? no.
+                # Actually we can write to a BytesIO but nibabel.save takes filename.
+                # So we use a generic filename object or just a tmp file.
+                tmp_name = f"/tmp/mask_{c}.nii.gz"
+                nib.save(nii, tmp_name)
+                zf.write(tmp_name, arcname=f"mask_channel_{c}.nii.gz")
+                
+        memory_file.seek(0)
+        return send_file(memory_file, download_name='segmentation_masks.zip', as_attachment=True)
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return f"Error creating zip: {e}", 500
 
 def save_nifti_for_nnunet(data_channel, filepath):
     """Saves a 3D numpy array (Z, Y, X) as NIfTI (X, Y, Z)"""
@@ -251,13 +510,14 @@ def run_nnunet_predict(input_folder, output_folder, task_id):
     # Run in the specific environment
     subprocess.run(cmd, check=True, env=env)
 
-@app.route('/run_segmentation', methods=['POST'])
-def run_segmentation():
-    if viewer_state["data"] is None:
-        return jsonify({"error": "No data loaded"})
+# ----------------------------------------
+# Segmentation Task (Threaded)
+# ----------------------------------------
+seg_progress = {"val": 0, "status": "Idle", "result": None}
 
+def seg_task_runner():
+    global seg_progress
     try:
-        print("[INFO] Starting Segmentation Pipeline...")
         data = viewer_state["data"]
         results = {}
         
@@ -266,54 +526,81 @@ def run_segmentation():
         if os.path.exists(base_tmp): shutil.rmtree(base_tmp)
         os.makedirs(base_tmp, exist_ok=True)
         
-        # Mapping: Channel Index -> nnU-Net Dataset ID
-        # CONFIRMED IDs:
-        # Channel 0 (Nucleus) -> Dataset 003
-        # Channel 1 (Actin)   -> Dataset 001
-        # Channel 2 (Mito)    -> Dataset 002
-        tasks = {
-            0: 3,  # Nucleus
-            1: 1,  # Actin
-            2: 2   # Mito
-        }
-
-        for ch_idx, task_id in tasks.items():
+        tasks_map = {0: 3, 1: 1, 2: 2} # Nuc, Actin, Mito
+        names = {0:"Nucleus", 1:"Actin", 2:"Mitochondria"}
+        
+        total_steps = len(tasks_map) * 3 
+        current_step = 0
+        
+        seg_progress["val"] = 5
+        seg_progress["status"] = "Initializing..."
+        
+        for ch_idx, task_id in tasks_map.items():
             if ch_idx >= data.shape[0]: continue
             
-            print(f"[INFO] Processing Channel {ch_idx} (Task {task_id})")
+            # Step 1: Prep
+            seg_progress["status"] = f"Processing {names.get(ch_idx,'Channel')}..."
             
             inp_dir = os.path.join(base_tmp, f"task{task_id}_in")
             out_dir = os.path.join(base_tmp, f"task{task_id}_out")
             os.makedirs(inp_dir, exist_ok=True)
             os.makedirs(out_dir, exist_ok=True)
             
-            # Save Input
             save_nifti_for_nnunet(data[ch_idx], os.path.join(inp_dir, "case_000_0000.nii.gz"))
+            current_step += 1
+            seg_progress["val"] = int((current_step / total_steps) * 100)
             
+            # Step 2: Run AI
             try:
-                # RUN REAL AI
                 run_nnunet_predict(inp_dir, out_dir, task_id)
+            except Exception as e:
+                print(f"[ERROR] Task {task_id} failed: {e}")
+                results[ch_idx] = f"Error: {e}"
+                continue
                 
-                # Load Result
-                output_filename = os.path.join(out_dir, "case_000.nii.gz")
+            current_step += 1
+            seg_progress["val"] = int((current_step / total_steps) * 100)
+            
+            # Step 3: Load Result
+            output_filename = os.path.join(out_dir, "case_000.nii.gz")
+            if os.path. exists(output_filename):
                 mask = load_nifti_mask(output_filename)
-                
                 if mask is not None:
                     viewer_state["masks"][ch_idx] = mask
                     results[ch_idx] = "Success"
                 else:
-                    results[ch_idx] = "Failed (No Output File)"
-                
-            except Exception as e:
-                print(f"[ERROR] Task {task_id} failed: {e}")
-                results[ch_idx] = f"Error: {e}"
+                    results[ch_idx] = "Failed (Empty)"
+            else:
+                 results[ch_idx] = "Failed (No Output)"
+                 
+            current_step += 1
+            seg_progress["val"] = int((current_step / total_steps) * 100)
 
-        return jsonify({"status": "success", "results": results})
-
+        seg_progress["val"] = 100
+        seg_progress["status"] = "Complete"
+        seg_progress["result"] = results
+        
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"error": str(e)})
+        seg_progress["status"] = f"Error: {e}"
+        seg_progress["val"] = 0
+
+@app.route('/run_segmentation', methods=['POST'])
+def run_segmentation():
+    if viewer_state["data"] is None:
+        return jsonify({"error": "No data loaded"})
+        
+    # Start Thread
+    thread = threading.Thread(target=seg_task_runner)
+    thread.daemon = True
+    thread.start()
+    
+    return jsonify({"status": "started"})
+
+@app.route('/seg_status')
+def get_seg_status():
+    return jsonify(seg_progress)
 
 
 if __name__ == '__main__':

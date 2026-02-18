@@ -1,0 +1,116 @@
+nohup: ignoring input
+
+==================================================
+OIR Analysis Platform
+==================================================
+
+Open: http://localhost:5001
+==================================================
+
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://172.23.149.82:5001
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+
+==================================================
+OIR Analysis Platform
+==================================================
+
+Open: http://localhost:5001
+==================================================
+
+ * Debugger is active!
+ * Debugger PIN: 223-901-480
+127.0.0.1 - - [12/Feb/2026 21:36:32] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [12/Feb/2026 21:36:34] "GET /segmentation HTTP/1.1" 200 -
+[INFO] Loading file: 01ASC-0180 +coll 60x DMSO48h-Zstack cell1.oir
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Shape (C,Z,Y,X): (3, 8, 805, 1012)
+127.0.0.1 - - [12/Feb/2026 21:37:00] "POST /load HTTP/1.1" 200 -
+127.0.0.1 - - [12/Feb/2026 21:37:00] "GET /slice/0/4 HTTP/1.1" 200 -
+[INFO] Starting Segmentation Pipeline...
+[INFO] Processing Channel 0 (Task 3)
+[INFO] Running /home/luisa/aneurysm_project/venv/bin/nnUNetv2_predict for Task 3...
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+There are 1 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 1 cases that I would like to predict
+
+Predicting case_000:
+perform_everything_on_device: True
+  0%|          | 0/42 [00:00<?, ?it/s]  2%|▏         | 1/42 [00:00<00:26,  1.52it/s]  5%|▍         | 2/42 [00:00<00:17,  2.23it/s]  7%|▋         | 3/42 [00:01<00:15,  2.58it/s] 10%|▉         | 4/42 [00:01<00:13,  2.77it/s] 12%|█▏        | 5/42 [00:01<00:12,  2.88it/s] 14%|█▍        | 6/42 [00:02<00:12,  2.96it/s] 17%|█▋        | 7/42 [00:02<00:11,  3.02it/s] 19%|█▉        | 8/42 [00:02<00:11,  3.06it/s] 21%|██▏       | 9/42 [00:03<00:10,  3.08it/s] 24%|██▍       | 10/42 [00:03<00:10,  3.10it/s] 26%|██▌       | 11/42 [00:03<00:09,  3.11it/s] 29%|██▊       | 12/42 [00:04<00:09,  3.11it/s] 31%|███       | 13/42 [00:04<00:09,  3.12it/s] 33%|███▎      | 14/42 [00:04<00:08,  3.13it/s] 36%|███▌      | 15/42 [00:05<00:08,  3.12it/s] 38%|███▊      | 16/42 [00:05<00:08,  3.13it/s] 40%|████      | 17/42 [00:05<00:07,  3.13it/s] 43%|████▎     | 18/42 [00:06<00:07,  3.13it/s] 45%|████▌     | 19/42 [00:06<00:07,  3.12it/s] 48%|████▊     | 20/42 [00:06<00:07,  3.12it/s] 50%|█████     | 21/42 [00:07<00:06,  3.12it/s] 52%|█████▏    | 22/42 [00:07<00:06,  3.13it/s] 55%|█████▍    | 23/42 [00:07<00:06,  3.13it/s] 57%|█████▋    | 24/42 [00:07<00:05,  3.13it/s] 60%|█████▉    | 25/42 [00:08<00:05,  3.13it/s] 62%|██████▏   | 26/42 [00:08<00:05,  3.12it/s] 64%|██████▍   | 27/42 [00:08<00:04,  3.13it/s] 67%|██████▋   | 28/42 [00:09<00:04,  3.13it/s] 69%|██████▉   | 29/42 [00:09<00:04,  3.13it/s] 71%|███████▏  | 30/42 [00:09<00:03,  3.13it/s] 74%|███████▍  | 31/42 [00:10<00:03,  3.13it/s] 76%|███████▌  | 32/42 [00:10<00:03,  3.13it/s] 79%|███████▊  | 33/42 [00:10<00:02,  3.12it/s] 81%|████████  | 34/42 [00:11<00:02,  3.12it/s] 83%|████████▎ | 35/42 [00:11<00:02,  3.13it/s] 86%|████████▌ | 36/42 [00:11<00:01,  3.14it/s] 88%|████████▊ | 37/42 [00:12<00:01,  3.13it/s] 90%|█████████ | 38/42 [00:12<00:01,  3.14it/s] 93%|█████████▎| 39/42 [00:12<00:00,  3.14it/s] 95%|█████████▌| 40/42 [00:13<00:00,  3.13it/s] 98%|█████████▊| 41/42 [00:13<00:00,  3.13it/s]100%|██████████| 42/42 [00:13<00:00,  3.14it/s]100%|██████████| 42/42 [00:13<00:00,  3.06it/s]
+sending off prediction to background worker for resampling and export
+done with case_000
+[INFO] Processing Channel 1 (Task 1)
+[INFO] Running /home/luisa/aneurysm_project/venv/bin/nnUNetv2_predict for Task 1...
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+There are 1 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 1 cases that I would like to predict
+
+Predicting case_000:
+perform_everything_on_device: True
+  0%|          | 0/42 [00:00<?, ?it/s]  2%|▏         | 1/42 [00:00<00:20,  2.03it/s]  5%|▍         | 2/42 [00:00<00:14,  2.80it/s]  7%|▋         | 3/42 [00:01<00:12,  3.11it/s] 10%|▉         | 4/42 [00:01<00:11,  3.29it/s] 12%|█▏        | 5/42 [00:01<00:10,  3.40it/s] 14%|█▍        | 6/42 [00:01<00:10,  3.47it/s] 17%|█▋        | 7/42 [00:02<00:09,  3.52it/s] 19%|█▉        | 8/42 [00:02<00:09,  3.55it/s] 21%|██▏       | 9/42 [00:02<00:09,  3.58it/s] 24%|██▍       | 10/42 [00:02<00:08,  3.59it/s] 26%|██▌       | 11/42 [00:03<00:08,  3.58it/s] 29%|██▊       | 12/42 [00:03<00:08,  3.60it/s] 31%|███       | 13/42 [00:03<00:08,  3.60it/s] 33%|███▎      | 14/42 [00:04<00:07,  3.60it/s] 36%|███▌      | 15/42 [00:04<00:07,  3.61it/s] 38%|███▊      | 16/42 [00:04<00:07,  3.62it/s] 40%|████      | 17/42 [00:04<00:06,  3.62it/s] 43%|████▎     | 18/42 [00:05<00:06,  3.62it/s] 45%|████▌     | 19/42 [00:05<00:06,  3.61it/s] 48%|████▊     | 20/42 [00:05<00:06,  3.60it/s] 50%|█████     | 21/42 [00:06<00:05,  3.61it/s] 52%|█████▏    | 22/42 [00:06<00:05,  3.61it/s] 55%|█████▍    | 23/42 [00:06<00:05,  3.62it/s] 57%|█████▋    | 24/42 [00:06<00:04,  3.62it/s] 60%|█████▉    | 25/42 [00:07<00:04,  3.62it/s] 62%|██████▏   | 26/42 [00:07<00:04,  3.62it/s] 64%|██████▍   | 27/42 [00:07<00:04,  3.61it/s] 67%|██████▋   | 28/42 [00:07<00:03,  3.60it/s] 69%|██████▉   | 29/42 [00:08<00:03,  3.61it/s] 71%|███████▏  | 30/42 [00:08<00:03,  3.61it/s] 74%|███████▍  | 31/42 [00:08<00:03,  3.62it/s] 76%|███████▌  | 32/42 [00:09<00:02,  3.61it/s] 79%|███████▊  | 33/42 [00:09<00:02,  3.62it/s] 81%|████████  | 34/42 [00:09<00:02,  3.62it/s] 83%|████████▎ | 35/42 [00:09<00:01,  3.62it/s] 86%|████████▌ | 36/42 [00:10<00:01,  3.61it/s] 88%|████████▊ | 37/42 [00:10<00:01,  3.62it/s] 90%|█████████ | 38/42 [00:10<00:01,  3.62it/s] 93%|█████████▎| 39/42 [00:10<00:00,  3.62it/s] 95%|█████████▌| 40/42 [00:11<00:00,  3.62it/s] 98%|█████████▊| 41/42 [00:11<00:00,  3.62it/s]100%|██████████| 42/42 [00:11<00:00,  3.62it/s]100%|██████████| 42/42 [00:11<00:00,  3.55it/s]
+sending off prediction to background worker for resampling and export
+done with case_000
+[INFO] Processing Channel 2 (Task 2)
+[INFO] Running /home/luisa/aneurysm_project/venv/bin/nnUNetv2_predict for Task 2...
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+There are 1 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 1 cases that I would like to predict
+
+Predicting case_000:
+perform_everything_on_device: True
+  0%|          | 0/42 [00:00<?, ?it/s]  2%|▏         | 1/42 [00:00<00:19,  2.08it/s]  5%|▍         | 2/42 [00:00<00:14,  2.85it/s]  7%|▋         | 3/42 [00:01<00:12,  3.16it/s] 10%|▉         | 4/42 [00:01<00:11,  3.33it/s] 12%|█▏        | 5/42 [00:01<00:10,  3.43it/s] 14%|█▍        | 6/42 [00:01<00:10,  3.50it/s] 17%|█▋        | 7/42 [00:02<00:09,  3.53it/s] 19%|█▉        | 8/42 [00:02<00:09,  3.56it/s] 21%|██▏       | 9/42 [00:02<00:09,  3.59it/s] 24%|██▍       | 10/42 [00:02<00:08,  3.60it/s] 26%|██▌       | 11/42 [00:03<00:08,  3.61it/s] 29%|██▊       | 12/42 [00:03<00:08,  3.62it/s] 31%|███       | 13/42 [00:03<00:08,  3.62it/s] 33%|███▎      | 14/42 [00:04<00:07,  3.63it/s] 36%|███▌      | 15/42 [00:04<00:07,  3.61it/s] 38%|███▊      | 16/42 [00:04<00:07,  3.62it/s] 40%|████      | 17/42 [00:04<00:06,  3.63it/s] 43%|████▎     | 18/42 [00:05<00:06,  3.62it/s] 45%|████▌     | 19/42 [00:05<00:06,  3.61it/s] 48%|████▊     | 20/42 [00:05<00:06,  3.62it/s] 50%|█████     | 21/42 [00:05<00:05,  3.63it/s] 52%|█████▏    | 22/42 [00:06<00:05,  3.63it/s] 55%|█████▍    | 23/42 [00:06<00:05,  3.61it/s] 57%|█████▋    | 24/42 [00:06<00:04,  3.62it/s] 60%|█████▉    | 25/42 [00:07<00:04,  3.63it/s] 62%|██████▏   | 26/42 [00:07<00:04,  3.63it/s] 64%|██████▍   | 27/42 [00:07<00:04,  3.64it/s] 67%|██████▋   | 28/42 [00:07<00:03,  3.64it/s] 69%|██████▉   | 29/42 [00:08<00:03,  3.63it/s] 71%|███████▏  | 30/42 [00:08<00:03,  3.63it/s] 74%|███████▍  | 31/42 [00:08<00:03,  3.61it/s] 76%|███████▌  | 32/42 [00:09<00:02,  3.62it/s] 79%|███████▊  | 33/42 [00:09<00:02,  3.61it/s] 81%|████████  | 34/42 [00:09<00:02,  3.62it/s] 83%|████████▎ | 35/42 [00:09<00:01,  3.62it/s] 86%|████████▌ | 36/42 [00:10<00:01,  3.62it/s] 88%|████████▊ | 37/42 [00:10<00:01,  3.63it/s] 90%|█████████ | 38/42 [00:10<00:01,  3.63it/s] 93%|█████████▎| 39/42 [00:10<00:00,  3.63it/s] 95%|█████████▌| 40/42 [00:11<00:00,  3.62it/s] 98%|█████████▊| 41/42 [00:11<00:00,  3.62it/s]100%|██████████| 42/42 [00:11<00:00,  3.62it/s]100%|██████████| 42/42 [00:11<00:00,  3.57it/s]
+sending off prediction to background worker for resampling and export
+done with case_000
+127.0.0.1 - - [12/Feb/2026 21:38:02] "POST /run_segmentation HTTP/1.1" 200 -
+[DEBUG] Request for mesh channel 0
+[DEBUG] Slice z=4: Image Shape=(805, 1012), Mask Vol Shape=(8, 805, 1012)
+[DEBUG] Mask shape: (8, 805, 1012), Max Val: 1.0, Min Val: 0.0
+[DEBUG] Overlaying 8948 pixels
+[SUCCESS] Generated mesh with 1107 vertices and 1760 faces
+127.0.0.1 - - [12/Feb/2026 21:38:02] "GET /mesh/0 HTTP/1.1" 200 -
+[DEBUG] Request for mesh channel 1
+[DEBUG] Mask shape: (8, 805, 1012), Max Val: 1.0, Min Val: 0.0
+127.0.0.1 - - [12/Feb/2026 21:38:03] "GET /slice/0/4 HTTP/1.1" 200 -
+[SUCCESS] Generated mesh with 149590 vertices and 264770 faces
+127.0.0.1 - - [12/Feb/2026 21:38:03] "GET /mesh/1 HTTP/1.1" 200 -
+[DEBUG] Request for mesh channel 2
+[DEBUG] Mask shape: (8, 805, 1012), Max Val: 1.0, Min Val: 0.0
+[SUCCESS] Generated mesh with 32352 vertices and 52344 faces
+127.0.0.1 - - [12/Feb/2026 21:38:05] "GET /mesh/2 HTTP/1.1" 200 -
+[DEBUG] Slice z=3: Image Shape=(805, 1012), Mask Vol Shape=(8, 805, 1012)
+[DEBUG] Overlaying 8932 pixels
+127.0.0.1 - - [12/Feb/2026 21:40:03] "GET /slice/0/3 HTTP/1.1" 200 -
+[DEBUG] Slice z=2: Image Shape=(805, 1012), Mask Vol Shape=(8, 805, 1012)
+[DEBUG] Overlaying 8871 pixels
+[DEBUG] Slice z=1: Image Shape=(805, 1012), Mask Vol Shape=(8, 805, 1012)
+[DEBUG] Overlaying 8723 pixels
+[DEBUG] Slice z=0: Image Shape=(805, 1012), Mask Vol Shape=(8, 805, 1012)
+[DEBUG] Overlaying 8647 pixels
+127.0.0.1 - - [12/Feb/2026 21:40:05] "GET /slice/0/2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Feb/2026 21:40:05] "GET /slice/0/1 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Feb/2026 21:40:05] "GET /slice/0/0 HTTP/1.1" 200 -

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Segmentation Analysis</title>
+    <title>CellVision - Segmentation</title>
     <!-- 1. Load Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -141,59 +141,103 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #d65db1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto 20px auto;
         }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
         }
+
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .progress-circle .bg {
+            stroke: #f3f3f3;
+        }
+
+        .progress-circle .fg {
+            stroke: #d65db1;
+            stroke-dasharray: 283;
+            /* 2*pi*45 */
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .progress-circle span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #d65db1;
+        }
+
+        /* Removed keyframes spin */
     </style>
 </head>
 
 <body>
 
     <div class="container">
-        <h1>Segmentation Analysis (3D)</h1>
+        <h1>CellVision: Segmentation Analysis (3D)</h1>
         <p><a href="/" style="color: #d65db1; text-decoration: none;">&larr; Back to Home</a></p>
 
         <div class="top-controls">
             <input type="file" id="file-input" accept=".oir">
             <button onclick="loadFile()">Load OIR</button>
             <button id="run-btn" onclick="runSegmentation()">Run Segmentation</button>
+            <button id="analyze-btn" onclick="analyzeCell()"
+                style="margin-left: 10px; background: #9b59b6; color: white;">Analyze Cell</button>
+
+            <span style="margin-left: 15px; font-weight:bold; color:#5e4b56;">View:</span>
+            <select id="channel-visual" onchange="update2D()"
+                style="padding:5px; border-radius:5px; border:1px solid #d65db1;">
+                <option value="99">All </option>
+                <option value="0">Nucleus </option>
+                <option value="1">Actin </option>
+                <option value="2">Mitochondria</option>
+            </select>
 
             <div style="flex:1"></div> <!-- Spacer -->
-            <span>Slice: <b id="slice-val">0/0</b></span>
         </div>
 
         <!-- Main 2D Viewer -->
         <div class="main">
             <div class="image-area">
                 <div id="status-container">
-                    <div class="spinner"></div>
-                    <div id="status-text">Processing...</div>
+                    <div class="progress-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="fg" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <span id="progress-val">0%</span>
+                    </div>
+                    <div id="status-text" style="color:#5e4b56; font-size:18px;">Processing...</div>
                 </div>
                 <canvas id="canvas"></canvas>
             </div>
 
             <div class="panel">
                 <h3 style="color:#d65db1; margin-bottom:10px;">Controls</h3>
-                <button onclick="prevSlice()" style="width:40px">&lt;</button>
-                <button onclick="nextSlice()" style="width:40px">&gt;</button>
-                <input type="range" id="slice-slider" style="width:100%; margin-top:10px;"
-                    oninput="setSlice(this.value)">
+
+                <!-- Navigation Row: < Slider > Count -->
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <button onclick="prevSlice()" style="padding:5px 10px;">&lt;</button>
+                    <input type="range" id="slice-slider" style="flex:1; accent-color:#d65db1;"
+                        oninput="setSlice(this.value)">
+                    <button onclick="nextSlice()" style="padding:5px 10px;">&gt;</button>
+                    <b id="slice-val" style="min-width:40px; text-align:right; font-size:14px; color:#5e4b56;">0/0</b>
+                </div>
                 <p style="margin-top:20px; font-size:13px; color:#666">
                     1. Load an OIR file.<br>
                     2. Click "Run Segmentation".<br>
@@ -215,12 +259,57 @@
                 <h3>Mitochondria</h3>
             </div>
         </div>
+
+        <!-- Analysis Results -->
+        <div id="analysis-results"
+            style="display:none; margin-top:30px; background:white; padding:25px; border-radius:15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #ffe4e9; padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="color:#d65db1; margin:0;">Analysis Results</h2>
+                <div>
+                    <button onclick="downloadFeatures()"
+                        style="background:#5e4b56; color:white; margin-right:10px;">Download Features (CSV)</button>
+                    <button onclick="downloadSegmentation()" style="background:#d65db1; color:white;">Download
+                        Segmentation (NII)</button>
+                </div>
+            </div>
+
+            <!-- Prediction Summary -->
+            <div style="display:flex; gap:20px; margin-bottom:20px;">
+                <div style="flex:1; padding:20px; background:#fdf2f8; border-radius:10px; text-align:center;">
+                    <h4 style="color:#999; margin-bottom:5px;">PREDICTED CONDITION</h4>
+                    <div id="pred-result" style="font-size:24px; font-weight:800; color:#5e4b56;">-</div>
+                </div>
+                <div style="flex:1; padding:20px; background:#fdf2f8; border-radius:10px; text-align:center;">
+                    <h4 style="color:#999; margin-bottom:5px;">DISEASE PROBABILITY</h4>
+                    <div id="pred-prob" style="font-size:24px; font-weight:800; color:#d65db1;">-</div>
+                    <div style="font-size:12px; color:#666; margin-top:5px;">(>50% = Diseased)</div>
+                </div>
+            </div>
+
+            <h3 style="color:#5e4b56; margin-bottom:15px;">Extracted Features</h3>
+            <div style="overflow-x:auto;">
+                <table id="feature-table" style="width:100%; border-collapse: collapse; font-size:14px;">
+                    <thead>
+                        <tr style="background:#ffe4e9; color:#5e4b56;">
+                            <th style="padding:12px; text-align:left; border-radius:8px 0 0 8px;">Structure</th>
+                            <th style="padding:12px; text-align:left;">Feature</th>
+                            <th style="padding:12px; text-align:right;">Value</th>
+                            <th style="padding:12px; text-align:left; border-radius:0 8px 8px 0;">Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody style="color:#333;"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // Global State
         let totalSlices = 0, currentSlice = 0;
         let viewers = {}; // {0: {scene, camera, renderer, ...}}
+        let currentAnalysisData = null;
 
         // Colors for the 3D models
         const COLORS = {
@@ -283,6 +372,8 @@
             if (!f) return alert("Select File");
 
             showStatus("Loading...");
+            document.querySelector('.progress-circle').classList.add('indeterminate');
+            document.getElementById('progress-val').textContent = "";
             const fd = new FormData(); fd.append('file', f);
 
             try {
@@ -296,29 +387,145 @@
             hideStatus();
         }
 
-        // 3. Run Segmentation
+        // 3. Run Segmentation (Polling)
         async function runSegmentation() {
             if (totalSlices === 0) return alert("Load file first");
 
-            showStatus("Running AI (This takes time)...");
+            showStatus("Initializing AI...");
+            updateProgress(0);
+
             try {
-                const res = await fetch('/run_segmentation', { method: 'POST' });
+                // start thread
+                await fetch('/run_segmentation', { method: 'POST' });
+
+                // Poll every second
+                const interval = setInterval(async () => {
+                    try {
+                        const res = await fetch('/seg_status');
+                        const status = await res.json();
+
+                        updateProgress(status.val);
+                        document.getElementById('status-text').textContent = status.status;
+
+                        if (status.status === "Complete" || status.val === 100) {
+                            clearInterval(interval);
+
+                            // Success - Refresh Views
+                            update2D();
+                            await loadMesh(0);
+                            await loadMesh(1);
+                            await loadMesh(2);
+
+                            hideStatus();
+                            alert("Segmentation Complete!");
+                        }
+                        else if (status.status.startsWith("Error")) {
+                            clearInterval(interval);
+                            hideStatus();
+                            alert(status.status);
+                        }
+                    } catch (e) { console.error(e); }
+                }, 1000);
+
+            } catch (e) {
+                alert("Error starting: " + e.message);
+                hideStatus();
+            }
+        }
+
+        function updateProgress(p) {
+            const offset = 283 - (283 * p / 100);
+            document.querySelector('.progress-circle .fg').style.strokeDashoffset = offset;
+            document.getElementById('progress-val').textContent = p + '%';
+        }
+
+        // 3.5 Analyze Cell (Classification)
+        async function analyzeCell() {
+            showStatus("Analyzing (10s)...");
+            try {
+                const res = await fetch('/analyze_cell', { method: 'POST' });
                 const data = await res.json();
 
                 if (data.error) throw new Error(data.error);
 
-                // Update 2D (to show overlays)
-                update2D();
+                currentAnalysisData = data;
 
-                // Update 3D Models
-                await loadMesh(0);
-                await loadMesh(1);
-                await loadMesh(2);
+                // Show Section
+                const section = document.getElementById('analysis-results');
+                section.style.display = 'block';
 
-                alert("Segmentation Complete!");
+                // Prediction Header
+                const result = document.getElementById('pred-result');
+                result.textContent = data.prediction;
+                result.style.color = (data.prediction === "Healthy") ? "#27ae60" : "#c0392b";
 
-            } catch (e) { alert("Error: " + e.message); }
+                const prob = (data.confidence * 100).toFixed(1);
+                document.getElementById('pred-prob').textContent = `${prob}%`;
+
+                // Table Rows
+                const tbody = document.querySelector('#feature-table tbody');
+                tbody.innerHTML = ''; // Clear previous
+
+                if (data.features) {
+                    const keys = Object.keys(data.features).sort();
+                    for (const key of keys) {
+                        if (key.startsWith('Voxel_')) continue;
+
+                        const parts = key.split('_');
+                        let unit = parts[parts.length - 1];
+                        let struct = parts[0];
+                        if (struct === "Mito") struct = "Mitochondria";
+
+                        const featName = parts.slice(1, parts.length - 1).join(' ');
+
+                        let val = data.features[key];
+                        if (typeof val === 'number') val = val.toFixed(2);
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td style="padding:12px; border-bottom:1px solid #eee;"><b>${struct}</b></td>
+                            <td style="padding:12px; border-bottom:1px solid #eee;">${featName}</td>
+                            <td style="padding:12px; text-align:right; border-bottom:1px solid #eee; font-family:monospace;">${val}</td>
+                            <td style="padding:12px; color:#777; border-bottom:1px solid #eee;">${unit}</td>
+                         `;
+                        tbody.appendChild(row);
+                    }
+                }
+
+                // Smooth Scroll
+                section.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (e) {
+                console.error(e);
+                alert("Analysis Error: " + e.message);
+            }
             hideStatus();
+        }
+
+        function downloadFeatures() {
+            if (!currentAnalysisData) return alert("No results to save.");
+            let csv = "Structure,Feature,Value,Unit\n";
+            const keys = Object.keys(currentAnalysisData.features).sort();
+            for (const key of keys) {
+                if (key.startsWith('Voxel_')) continue;
+                const parts = key.split('_');
+                let unit = parts[parts.length - 1];
+                let struct = parts[0];
+                if (struct === "Mito") struct = "Mitochondria";
+                const featName = parts.slice(1, parts.length - 1).join(' ');
+                const val = currentAnalysisData.features[key];
+                csv += `${struct},${featName},${val},${unit}\n`;
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analysis_features_${Date.now()}.csv`;
+            a.click();
+        }
+
+        function downloadSegmentation() {
+            window.open('/download_segmentation', '_blank');
         }
 
         // 4. Load 3D Mesh
@@ -372,8 +579,11 @@
         async function update2D() {
             document.getElementById('slice-val').textContent = `${currentSlice}/${totalSlices}`;
             const cvs = document.getElementById('canvas');
-            // Using Ch 0 for now
-            const res = await fetch(`/slice/0/${currentSlice}`);
+
+            // Get selected channel
+            const ch = document.getElementById('channel-visual').value;
+
+            const res = await fetch(`/slice/${ch}/${currentSlice}`);
             const data = await res.json();
             const img = new Image();
             img.onload = () => { cvs.width = img.width; cvs.height = img.height; cvs.getContext('2d').drawImage(img, 0, 0); };
@@ -387,7 +597,10 @@
             document.getElementById('status-container').style.display = 'block';
             document.getElementById('status-text').textContent = msg;
         }
-        function hideStatus() { document.getElementById('status-container').style.display = 'none'; }
+        function hideStatus() {
+            document.getElementById('status-container').style.display = 'none';
+            document.querySelector('.progress-circle').classList.remove('indeterminate');
+        }
 
         // Init
         initAll3D();
