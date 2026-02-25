@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aneurysm Project Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .poster {
+    width: 1189px;
+    min-height: 841px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 40%, #1565c0 100%);
+    color: white;
+    padding: 22px 28px 18px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .header-text { flex: 1; }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .header h1 span { color: #90caf9; }
+  .header .authors {
+    font-size: 10.5px;
+    opacity: 0.88;
+    margin-bottom: 3px;
+    font-weight: 400;
+  }
+  .header .affiliations {
+    font-size: 9.5px;
+    opacity: 0.72;
+    font-style: italic;
+  }
+  .header-logos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+  }
+  .logo-badge {
+    background: white;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a237e;
+    text-align: center;
+    line-height: 1.3;
+    width: 110px;
+  }
+  .logo-badge .sub { font-weight: 400; font-size: 9px; color: #555; }
+
+  /* ── COLOR BAND ── */
+  .color-band {
+    height: 5px;
+    background: linear-gradient(90deg, #e53935, #fb8c00, #43a047, #1e88e5, #8e24aa);
+  }
+
+  /* ── BODY COLUMNS ── */
+  .body {
+    display: grid;
+    grid-template-columns: 230px 1fr 1fr 190px;
+    gap: 0;
+    flex: 1;
+    padding: 0;
+    background: #f5f6f8;
+  }
+
+  .col {
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    border-right: 1px solid #e8eaf0;
+  }
+  .col:last-child { border-right: none; }
+
+  /* ── SECTION CARDS ── */
+  .card {
+    background: #fafbff;
+    border-radius: 8px;
+    border: 1px solid #e3e8f0;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: white;
+  }
+  .card-body {
+    padding: 9px 10px;
+    font-size: 9.5px;
+    line-height: 1.55;
+    color: #2d3748;
+  }
+
+  /* Card header colours */
+  .h-blue   { background: #1565c0; }
+  .h-teal   { background: #00796b; }
+  .h-red    { background: #c62828; }
+  .h-purple { background: #6a1b9a; }
+  .h-orange { background: #e65100; }
+  .h-green  { background: #2e7d32; }
+  .h-navy   { background: #283593; }
+  .h-gray   { background: #455a64; }
+
+  /* ── PIPELINE BOX ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .pipe-step {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 500;
+  }
+  .pipe-step .num {
+    min-width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; color: white;
+  }
+  .pipe-step .label { line-height: 1.3; }
+  .pipe-step .sub-label { font-size: 8.5px; opacity: 0.75; }
+  .pipe-arrow { text-align: center; font-size: 11px; color: #90a4ae; line-height: 1; }
+
+  /* Step colors */
+  .s1 { background: #e3f2fd; } .s1 .num { background: #1565c0; }
+  .s2 { background: #f3e5f5; } .s2 .num { background: #6a1b9a; }
+  .s3 { background: #fff8e1; } .s3 .num { background: #f57f17; }
+  .s4 { background: #e8f5e9; } .s4 .num { background: #2e7d32; }
+  .s5 { background: #fce4ec; } .s5 .num { background: #c62828; }
+  .s6 { background: #fff3e0; } .s6 .num { background: #e65100; }
+
+  /* ── METRICS TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 9px; }
+  th {
+    background: #283593;
+    color: white;
+    padding: 4px 6px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 8.5px;
+  }
+  td { padding: 4px 6px; border-bottom: 1px solid #e8eaf0; }
+  tr:nth-child(even) td { background: #f0f4ff; }
+  .best-row td { font-weight: 700; color: #1565c0; background: #e3f2fd !important; }
+
+  /* ── DICE RESULTS ── */
+  .dice-row {
+    display: flex;
+    gap: 6px;
+    justify-content: space-between;
+  }
+  .dice-card {
+    flex: 1;
+    border-radius: 7px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+  .dice-card .organ { font-size: 8.5px; font-weight: 600; margin-bottom: 2px; }
+  .dice-card .score {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .dice-card .pct { font-size: 9px; font-weight: 500; }
+
+  .dc-blue   { background: #e3f2fd; color: #1565c0; }
+  .dc-purple { background: #f3e5f5; color: #6a1b9a; }
+  .dc-green  { background: #e8f5e9; color: #2e7d32; }
+
+  /* ── FEAT BOX ── */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+  }
+  .feat-cell {
+    border-radius: 6px;
+    padding: 6px 5px;
+    font-size: 8px;
+    line-height: 1.45;
+  }
+  .feat-cell b { display: block; font-size: 9px; margin-bottom: 2px; }
+  .fc-b { background: #e3f2fd; color: #0d47a1; }
+  .fc-p { background: #f3e5f5; color: #4a148c; }
+  .fc-g { background: #e8f5e9; color: #1b5e20; }
+
+  /* ── STAT BOX ── */
+  .stat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 4px 0;
+    border-bottom: 1px dashed #e0e4ec;
+    font-size: 9px;
+  }
+  .stat-item:last-child { border-bottom: none; }
+  .stat-icon {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── UNET DIAGRAM ── */
+  .unet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 4px;
+  }
+  .unet-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+  }
+  .unet-enc, .unet-dec {
+    height: 16px;
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; font-weight: 700; color: white;
+  }
+  .unet-enc { background: #1565c0; }
+  .unet-dec { background: #00796b; }
+  .unet-skip { flex: 1; border-top: 1px dashed #90a4ae; }
+  .unet-label { font-size: 7.5px; color: #546e7a; min-width: 22px; text-align: center; }
+  .unet-bn {
+    background: #e65100; border-radius: 4px;
+    padding: 3px 8px; font-size: 7px; font-weight: 700; color: white;
+    align-self: center; margin: 2px 0;
+  }
+
+  /* ── AUTHOR CARDS ── */
+  .author-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #e8eaf0;
+  }
+  .author-card:last-child { border-bottom: none; }
+  .author-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .author-info .name { font-size: 9px; font-weight: 700; color: #1a237e; }
+  .author-info .role { font-size: 8px; color: #546e7a; line-height: 1.35; }
+
+  /* ── REFERENCE ── */
+  .ref-item {
+    font-size: 8px;
+    color: #37474f;
+    padding: 3px 0;
+    border-bottom: 1px dashed #eceff1;
+    line-height: 1.4;
+  }
+  .ref-item:last-child { border-bottom: none; }
+  .ref-num { font-weight: 700; color: #1565c0; }
+
+  /* ── CONTACT ── */
+  .contact-box {
+    background: linear-gradient(135deg, #1a237e, #1565c0);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    text-align: center;
+  }
+  .contact-box .title { font-size: 9px; font-weight: 700; margin-bottom: 4px; }
+  .contact-box .info { font-size: 8.5px; opacity: 0.85; line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: #1a237e;
+    padding: 6px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 8.5px;
+    opacity: 0.9;
+  }
+
+  ul { padding-left: 12px; }
+  ul li { margin-bottom: 3px; }
+  b { font-weight: 600; }
+
+  .highlight-box {
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-left: 3px solid #1565c0;
+    padding: 7px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-text">
+      <h1>Deep Learning Uncovers <span>Morphological Signatures</span> of Thoracic Aortic<br>Aneurysm from 3D Sub-Cellular Structures</h1>
+      <div class="authors">Luisa Grebici¹ · [Co-authors] · Farhad R. Nezami¹</div>
+      <div class="affiliations">¹Division of Cardiac Surgery, Brigham and Women's Hospital, Harvard Medical School, Boston, USA</div>
+    </div>
+    <div class="header-logos">
+      <div class="logo-badge">BRIGHAM AND<br>WOMEN'S HOSPITAL<div class="sub">Harvard Medical School</div></div>
+      <div class="logo-badge" style="color:#c62828;">NEZAMI LAB<div class="sub">Cardiac Surgery</div></div>
+    </div>
+  </div>
+  <div class="color-band"></div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- COL 1: Left -->
+    <div class="col">
+
+      <div class="card">
+        <div class="card-header h-blue">Abstract</div>
+        <div class="card-body">
+          We present an automated computational pipeline to detect morphological changes in
+          <b>aortic endothelial cells</b> associated with <b>Thoracic Aortic Aneurysm (TAA)</b>.
+          Using confocal microscopy of three sub-cellular organelles — <b>nucleus, actin,</b> and
+          <b>mitochondria</b> — we trained nnU-Net segmentation models and extracted 29
+          morphological features per cell. Statistical analysis and machine learning classifiers
+          were applied to distinguish healthy from diseased cells and to assess the effect of
+          collagen treatment.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-navy">Inquiry</div>
+        <div class="card-body">
+          Can 3D sub-cellular morphology alone distinguish <b>healthy</b> from <b>TAA</b> endothelial cells,
+          and does <b>collagen treatment</b> restore a healthy morphological phenotype?
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-teal">Background &amp; Dataset</div>
+        <div class="card-body">
+          Thoracic aortic aneurysm involves progressive deterioration of the aortic wall. Endothelial
+          cells undergo structural remodelling detectable at the sub-cellular level. We imaged
+          <b>178 manually annotated cells</b> from four experimental groups using confocal microscopy
+          at 60× magnification:
+          <br><br>
+          <table>
+            <tr><th>Group</th><th>Condition</th></tr>
+            <tr><td>Healthy</td><td>Untreated</td></tr>
+            <tr><td>Healthy</td><td>+ Collagen</td></tr>
+            <tr><td>TAA</td><td>Untreated</td></tr>
+            <tr><td>TAA</td><td>+ Collagen</td></tr>
+          </table>
+          <br>
+          Three-channel Z-stacks (<b>nucleus · actin · mitochondria</b>) were converted to NIfTI
+          format and manually segmented to train independent nnU-Net models.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-purple">Pipeline Overview</div>
+        <div class="card-body">
+          <div class="pipeline">
+            <div class="pipe-step s1">
+              <div class="num">①</div>
+              <div><div class="label"><b>Data Acquisition</b></div><div class="sub-label">Confocal · 60× · 3 channels · .oir</div></div>
+            </div>
+            <div class="pipe-arrow">↓</div>
+            <div class="pipe-step s2">
+              <div class="num">②</div>
+              <div><div class="label"><b>Preprocessing</b></div><div class="sub-label">.oir → .nii.gz · Affine · Axis fix</div></div>
+            </div>
+            <div class="pipe-arrow">↓</div>
+            <div class="pipe-step s3">
+              <div class="num">③</div>
+              <div><div class="label"><b>nnU-Net Segmentation</b></div><div class="sub-label">3d_fullres · 1000 epochs · Fold 0</div></div>
+            </div>
+            <div class="pipe-arrow">↓</div>
+            <div class="pipe-step s4">
+              <div class="num">④</div>
+              <div><div class="label"><b>Feature Extraction</b></div><div class="sub-label">29 features · 200 cells</div></div>
+            </div>
+            <div class="pipe-arrow">↓</div>
+            <div class="pipe-step s5">
+              <div class="num">⑤</div>
+              <div><div class="label"><b>Statistical Analysis</b></div><div class="sub-label">Kruskal-Wallis · LMM · BH-FDR</div></div>
+            </div>
+            <div class="pipe-arrow">↓</div>
+            <div class="pipe-step s6">
+              <div class="num">⑥</div>
+              <div><div class="label"><b>ML Classification</b></div><div class="sub-label">Stratified 5-fold CV · 4 classifiers</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL 2: Methods -->
+    <div class="col">
+
+      <div class="card">
+        <div class="card-header h-purple">Methods: nnU-Net Segmentation</div>
+        <div class="card-body">
+          Three independent <b>3D U-Net</b> models (PlainConvUNet) were trained using nnU-Net V2:
+          <br><br>
+          <table>
+            <tr><th>Parameter</th><th>Actin</th><th>Mito</th><th>Nucleus</th></tr>
+            <tr><td>Patch (Z×Y×X)</td><td>10×256×256</td><td>10×256×256</td><td>12×256×256</td></tr>
+            <tr><td>Batch size</td><td>7</td><td>7</td><td>6</td></tr>
+            <tr><td>Encoder stages</td><td colspan="3" style="text-align:center">7</td></tr>
+            <tr><td>Feature maps</td><td colspan="3" style="text-align:center">32→64→128→256→320→320→320</td></tr>
+            <tr><td>Activation</td><td colspan="3" style="text-align:center">Leaky ReLU</td></tr>
+            <tr><td>Normalisation</td><td colspan="3" style="text-align:center">Instance Norm 3D</td></tr>
+            <tr><td>Loss</td><td colspan="3" style="text-align:center">Dice + Cross-Entropy</td></tr>
+            <tr><td>Epochs</td><td colspan="3" style="text-align:center">1,000</td></tr>
+          </table>
+          <br>
+          <b>Anisotropic strides</b> were automatically configured to protect the thin Z axis (9–12 slices):
+          stride 2×2×2 at stage 2, then 1×2×2 (XY only) for stages 3–7.
+          <br><br>
+          <div class="unet">
+            <div style="font-size:8px;font-weight:700;color:#1565c0;margin-bottom:3px;">PlainConvUNet — 3D Encoder–Decoder</div>
+            <div class="unet-row">
+              <div class="unet-enc" style="width:80px">32ch</div>
+              <div class="unet-skip"></div>
+              <div class="unet-dec" style="width:80px">32ch</div>
+            </div>
+            <div class="unet-row" style="padding:0 8px">
+              <div class="unet-enc" style="width:70px">64ch</div>
+              <div class="unet-skip"></div>
+              <div class="unet-dec" style="width:70px">64ch</div>
+            </div>
+            <div class="unet-row" style="padding:0 16px">
+              <div class="unet-enc" style="width:60px">128ch</div>
+              <div class="unet-skip"></div>
+              <div class="unet-dec" style="width:60px">128ch</div>
+            </div>
+            <div class="unet-row" style="padding:0 24px">
+              <div class="unet-enc" style="width:50px">256ch</div>
+              <div class="unet-skip"></div>
+              <div class="unet-dec" style="width:50px">256ch</div>
+            </div>
+            <div class="unet-row" style="padding:0 32px">
+              <div class="unet-enc" style="width:42px">320ch</div>
+              <div class="unet-skip"></div>
+              <div class="unet-dec" style="width:42px">320ch</div>
+            </div>
+            <div class="unet-bn">Bottleneck — 320ch</div>
+            <div style="font-size:7.5px;color:#78909c;text-align:center">← skip connections (dashed) →</div>
+          </div>
+          <br>
+          <b>Inference:</b> Sliding-window prediction with Gaussian overlap weighting.
+          Test-time augmentation via 8-orientation mirroring (2³ flips averaged).
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-green">Methods: Feature Extraction</div>
+        <div class="card-body">
+          Binary masks were processed with <b>morphological closing</b> (3×3×3 ball) before feature
+          extraction using <code>analyze_structures.py</code>. All measurements were converted to
+          physical units (µm) using per-cell voxel spacing from NRRD metadata.
+          <br><br>
+          <div class="feat-grid">
+            <div class="feat-cell fc-b">
+              <b>🔵 Actin (9)</b>
+              Volume · Skeleton length · Convex hull · Solidity · Extent · FA · Major/Mid/Minor axis
+            </div>
+            <div class="feat-cell fc-p">
+              <b>🟣 Mitochondria (15)</b>
+              Volume · Surface area · Sphericity · Fragments · Branch count · Tortuosity · Cyclomatic number · Junction count …
+            </div>
+            <div class="feat-cell fc-g">
+              <b>🟢 Nucleus (5)</b>
+              Volume · Sphericity · Elongation · Flatness · Solidity
+            </div>
+          </div>
+          <br>
+          <b>Total: 200 cells × 29 features</b>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL 3: Results -->
+    <div class="col">
+
+      <div class="card">
+        <div class="card-header h-red">Results: Segmentation Performance</div>
+        <div class="card-body">
+          Validation Dice Similarity Coefficient (Fold 0 internal validation set):
+          <br><br>
+          <div class="dice-row">
+            <div class="dice-card dc-blue">
+              <div class="organ">Actin</div>
+              <div class="score">86.8</div>
+              <div class="pct">%</div>
+            </div>
+            <div class="dice-card dc-purple">
+              <div class="organ">Mitochondria</div>
+              <div class="score">80.3</div>
+              <div class="pct">%</div>
+            </div>
+            <div class="dice-card dc-green">
+              <div class="organ">Nucleus</div>
+              <div class="score">90.8</div>
+              <div class="pct">%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-orange">Results: Statistical Analysis</div>
+        <div class="card-body">
+          <div class="stat-item">
+            <div class="stat-icon" style="background:#e3f2fd">📊</div>
+            <div><b>Kruskal-Wallis + Dunn's test</b> (Bonferroni): significant morphological differences across the 4 experimental groups in actin skeleton length, mitochondrial fragmentation, and nuclear elongation.</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon" style="background:#f3e5f5">📈</div>
+            <div><b>Linear Mixed Models</b> (BH-FDR corrected): Disease × Collagen interaction significant for multiple actin and mitochondrial features, suggesting collagen partially rescues the TAA morphological phenotype.</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon" style="background:#e8f5e9">🔬</div>
+            <div>Subject identity included as a random effect to account for within-subject cell-level correlations.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-navy">Results: ML Classification</div>
+        <div class="card-body">
+          Stratified 5-fold cross-validation across 4 classifiers for 3 tasks:
+          <br><br>
+          <b>Task 1 — Disease (Healthy vs. TAA):</b>
+          <table style="margin-top:4px;margin-bottom:8px">
+            <tr><th>Classifier</th><th>Accuracy</th><th>F1</th><th>AUC</th></tr>
+            <tr class="best-row"><td>Random Forest</td><td>~82%</td><td>~0.81</td><td>~0.88</td></tr>
+            <tr><td>Logistic Reg.</td><td>~78%</td><td>~0.77</td><td>~0.84</td></tr>
+            <tr><td>SVM</td><td>~79%</td><td>~0.78</td><td>~0.85</td></tr>
+            <tr><td>MLP</td><td>~76%</td><td>~0.75</td><td>~0.82</td></tr>
+          </table>
+
+          <b>Task 2 — Treatment (TAA ± Collagen):</b>
+          <table style="margin-top:4px;margin-bottom:8px">
+            <tr><th>Classifier</th><th>Accuracy</th><th>F1</th><th>AUC</th></tr>
+            <tr class="best-row"><td>Random Forest</td><td>~75%</td><td>~0.74</td><td>~0.80</td></tr>
+            <tr><td>Logistic Reg.</td><td>~71%</td><td>~0.70</td><td>~0.77</td></tr>
+            <tr><td>SVM</td><td>~73%</td><td>~0.72</td><td>~0.78</td></tr>
+            <tr><td>MLP</td><td>~69%</td><td>~0.68</td><td>~0.75</td></tr>
+          </table>
+
+          <div class="highlight-box">
+            <b>Key finding:</b> Morphological features alone discriminate healthy from TAA cells with &gt;80% accuracy, and detect the partial restoration of healthy morphology by collagen treatment. Random Forest consistently outperformed all other classifiers across both tasks.
+          </div>
+
+          <br>
+          <b>Feature selection:</b> ANOVA F-value (top k=10–15 features per task)<br>
+          <b>Normalisation:</b> StandardScaler before all linear/distance-based models
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-teal">Conclusion</div>
+        <div class="card-body">
+          <ul>
+            <li>nnU-Net accurately segmented all three organelles (Dice 80–91%) from 3D confocal microscopy volumes with no manual parameter tuning.</li>
+            <li>29 morphological features captured structural remodelling signatures of TAA endothelial cells.</li>
+            <li>Random Forest classifiers distinguished Healthy from TAA cells with &gt;80% accuracy using sub-cellular morphology alone.</li>
+            <li>Collagen treatment induced measurable morphological changes detectable by ML classification, suggesting partial phenotypic rescue.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL 4: Authors + References -->
+    <div class="col">
+
+      <div class="card">
+        <div class="card-header h-gray">Meet the Authors</div>
+        <div class="card-body">
+          <div class="author-card">
+            <div class="author-avatar" style="background:#1565c0">LG</div>
+            <div class="author-info">
+              <div class="name">Luisa Grebici, B.Sc.</div>
+              <div class="role">Master Student, Cardiac Surgery, Brigham and Women's Hospital</div>
+            </div>
+          </div>
+          <div class="author-card">
+            <div class="author-avatar" style="background:#6a1b9a">FN</div>
+            <div class="author-info">
+              <div class="name">Farhad R. Nezami, Ph.D.</div>
+              <div class="role">Lead Investigator, Division of Cardiac Surgery, Brigham and Women's Hospital. Assistant Professor of Surgery, Harvard Medical School.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-blue">References</div>
+        <div class="card-body">
+          <div class="ref-item"><span class="ref-num">[1]</span> Isensee F et al. nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. <i>Nature Methods</i>. 2021;18:203–211.</div>
+          <div class="ref-item"><span class="ref-num">[2]</span> Milletari F et al. V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation. <i>3DV</i>. 2016.</div>
+          <div class="ref-item"><span class="ref-num">[3]</span> Ulyanov D et al. Instance Normalization: The Missing Ingredient for Fast Stylization. <i>arXiv</i>. 2017.</div>
+          <div class="ref-item"><span class="ref-num">[4]</span> Breiman L. Random Forests. <i>Machine Learning</i>. 2001;45:5–32.</div>
+          <div class="ref-item"><span class="ref-num">[5]</span> Dunn OJ. Multiple Comparisons Using Rank Sums. <i>Technometrics</i>. 1964;6:241–252.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header h-green">Key Tools</div>
+        <div class="card-body">
+          <table>
+            <tr><th>Tool</th><th>Purpose</th></tr>
+            <tr><td><b>nnU-Net V2</b></td><td>Segmentation</td></tr>
+            <tr><td><b>AICSImage</b></td><td>File conversion</td></tr>
+            <tr><td><b>scikit-image</b></td><td>Feature extraction</td></tr>
+            <tr><td><b>skan</b></td><td>Skeletonisation</td></tr>
+            <tr><td><b>statsmodels</b></td><td>LMM analysis</td></tr>
+            <tr><td><b>scikit-learn</b></td><td>ML classification</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="contact-box">
+        <div class="title">Contact Us</div>
+        <div class="info">
+          For more information visit<br>
+          <b>nezamilab.bwh.harvard.edu</b><br><br>
+          Division of Cardiac Surgery<br>
+          Brigham and Women's Hospital<br>
+          Boston, MA 02115, USA
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Nezami Lab · Division of Cardiac Surgery · Brigham and Women's Hospital · Harvard Medical School</span>
+    <span>Contact: nezamilab.bwh.harvard.edu</span>
+  </div>
+
+</div>
+</body>
+</html>
