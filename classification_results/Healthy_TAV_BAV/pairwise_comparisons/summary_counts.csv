@@ -1,0 +1,10 @@
+Comparison,Significant,Total,Percent
+Disease Effect (No Collagen) TAV-TAA,12,33,36.4%
+Disease Effect (+Collagen) TAV-TAA,5,33,15.2%
+Collagen Effect (Healthy),0,33,0.0%
+Collagen Effect (TAV_TAA),0,33,0.0%
+Interaction Healthy_NoColl vs BAV_TAA_Coll,16,33,48.5%
+Interaction Healthy_Coll vs TAV_TAA_NoColl,15,33,45.5%
+Disease Effect (+Collagen) BAV-TAA,15,33,45.5%
+Collagen Effect (BAV_TAA),0,33,0.0%
+Interaction Healthy_Coll vs BAV_TAA_NoColl,17,33,51.5%

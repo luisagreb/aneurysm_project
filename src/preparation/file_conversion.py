@@ -1,74 +1,147 @@
 from pathlib import Path
 import numpy as np
 import nibabel as nib
-import os
+import pandas as pd
 from aicsimageio import AICSImage
 from aicsimageio.readers import BioformatsReader
 
-# ---------------- CONVERT .OIR TO NIFTI ----------------  
-INPUT_ROOT = Path("/Volumes/StudentData/Luisa/Marie's Data/CONVERT")
+# ─────────────────────────────────────────────────────────
+# Paths  (relative to project root)
+# ─────────────────────────────────────────────────────────
+INPUT_ROOT  = Path("data/raw/new_data_oir")           # New BAV .oir files
+OUTPUT_ROOT = Path("data/processed/new_data_nifti")   # Per-channel NIfTI output
 
-def convert_oir_to_nifti_channels(input_file: Path) -> None:
+# Channel mapping — verified from original data acquisition
+CHANNEL_LABELS = {0: "Nucleus", 1: "Actin", 2: "Mitochondria"}
+
+# ─────────────────────────────────────────────────────────
+# Conversion
+# ─────────────────────────────────────────────────────────
+
+def convert_oir_to_nifti_channels(input_file: Path, output_dir: Path) -> dict:
     """
-    Convert one .oir file into:
-      - multi-channel .nii.gz
-      - per-channel .nii.gz (ch1 nucleus, ch2 actin, ch3 mitochondria)
-    and save **in the same folder** as the original .oir file.
+    Convert one .oir file into per-channel .nii.gz files, preserving all
+    physical pixel metadata (spacing in X, Y, Z) from the original file.
+
+    Channel mapping:
+      channel_00.nii.gz  →  Nucleus
+      channel_01.nii.gz  →  Actin
+      channel_02.nii.gz  →  Mitochondria
+
+    Args:
+        input_file:  Path to the .oir file
+        output_dir:  Folder where per-channel NIfTI files are saved
+
+    Returns:
+        dict with conversion metadata (spacing, shape, success)
     """
-    print(f" Converting: {input_file}")
+    print(f"  Converting: {input_file.name}")
 
-    out_dir = input_file.parent
-    base_name = input_file.stem
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load with BioFormats
-    img = AICSImage(str(input_file))
-    # Load in CZYX order
-    data = img.get_image_data("CZYX")
+    # ── Read with BioFormats (preserves all Olympus metadata) ──
+    img = AICSImage(str(input_file), reader=BioformatsReader)
+    data = img.get_image_data("CZYX")       # shape: (C, Z, Y, X)
     data = data.astype(np.float32)
 
-    # Voxel sizes → affine
+    # ── Physical voxel sizes from .oir metadata (in µm) ──
     ps = img.physical_pixel_sizes
     if ps and ps.X and ps.Y:
-        zsz = ps.Z if ps.Z else ps.Y
-        sx, sy, sz = float(ps.X) / 1000, float(ps.Y) / 1000, float(zsz) / 1000
-        affine = np.diag([sx, sy, sz, 1.0])
+        zsz = float(ps.Z) if ps.Z else float(ps.Y)
+        sx  = float(ps.X)
+        sy  = float(ps.Y)
+        sz  = zsz
     else:
-        affine = np.eye(4, dtype=np.float32)
+        sx = sy = sz = 1.0
+        print("  ⚠  No physical pixel sizes found — using 1 µm isotropic")
 
-    # ---- SAVE MULTICHANNEL ----
-    mc_out = out_dir / f"{base_name}_allchannels.nii.gz"
-    nib.save(nib.Nifti1Image(data, affine), str(mc_out))
-    print(f"   ✔ Saved: {mc_out.name}")
+    print(f"  Shape (C,Z,Y,X): {data.shape}")
+    print(f"  Spacing (µm)  X={sx:.4f}  Y={sy:.4f}  Z={sz:.4f}")
 
-    # ---- SAVE PER CHANNEL ----
-    for c in range(data.shape[0]):
-        ch_data = data[c]
-        ch_out = out_dir / f"{base_name}_ch{c+1}.nii.gz"
-        nib.save(nib.Nifti1Image(ch_data, affine), str(ch_out))
-        print(f"   ✔ Saved channel {c+1}: {ch_out.name}")
+    # ── Transpose from (Z,Y,X) → (X,Y,Z) to match existing pipeline ──
+    # prepare_test_data_for_nnunet.py transposes volumes and uses unit spacing.
+    # The nnU-Net models were trained on data in this (X,Y,Z) + isotropic format.
+    # affine = identity (pixdim=1,1,1) to match existing imagesTs files.
+    affine = np.eye(4, dtype=np.float32)
+
+    # ── Save per-channel NIfTI ──
+    n_channels = min(data.shape[0], 3)   # cap at 3
+    for c in range(n_channels):
+        label   = CHANNEL_LABELS.get(c, f"ch{c}")
+        vol_zyx = data[c]                          # shape (Z, Y, X)
+        vol_xyz = np.transpose(vol_zyx, (2, 1, 0)) # → (X, Y, Z)
+        ch_out  = output_dir / f"channel_{c:02d}.nii.gz"
+        nib.save(nib.Nifti1Image(vol_xyz, affine), str(ch_out))
+        print(f"  ✓ Saved {label}: {ch_out.name}  shape={vol_xyz.shape}")
+
+    return {
+        "source":  str(input_file),
+        "output":  str(output_dir),
+        "shape":   data.shape,
+        "spacing_x_um": sx,
+        "spacing_y_um": sy,
+        "spacing_z_um": sz,
+        "n_channels":   n_channels,
+        "success":      True,
+    }
+
 
 def iter_oir_files(root: Path):
     """Recursively find .oir / .oi files."""
-    for p in root.rglob("*"):
+    for p in sorted(root.rglob("*")):
         if p.is_file() and p.suffix.lower() in {".oir", ".oi"}:
             yield p
 
-def main():
-    print(f"🔎 Scanning directory: {INPUT_ROOT}")
-    files = list(iter_oir_files(INPUT_ROOT))
 
+# ─────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────
+
+def main():
+    print("=" * 65)
+    print("OIR → NIfTI Channel Conversion")
+    print(f"Input:  {INPUT_ROOT.resolve()}")
+    print(f"Output: {OUTPUT_ROOT.resolve()}")
+    print("=" * 65)
+
+    files = list(iter_oir_files(INPUT_ROOT))
     if not files:
-        print(" No .oir/.oi files found.")
+        print("No .oir/.oi files found — check INPUT_ROOT path.")
         return
 
-    print(f" Found {len(files)} files to process.")
+    print(f"Found {len(files)} .oir files\n")
 
-    for i, f in enumerate(files, 1):
-        print(f"\n[{i}/{len(files)}]")
+    records = []
+    errors  = 0
+
+    for i, oir_path in enumerate(files, 1):
+        # Preserve folder hierarchy:  subject/condition/cell_name/
+        rel        = oir_path.relative_to(INPUT_ROOT)     # e.g. 02Asc-0017/+Col/File.oir
+        cell_dir   = OUTPUT_ROOT / rel.parent / rel.stem  # drop .oir extension
+
+        print(f"\n[{i}/{len(files)}] {rel}")
         try:
-            convert_oir_to_nifti_channels(f)
+            rec = convert_oir_to_nifti_channels(oir_path, cell_dir)
+            records.append(rec)
         except Exception as e:
-            print(f" Error with {f}: {e}")
+            print(f"  ✗ ERROR: {e}")
+            import traceback; traceback.print_exc()
+            records.append({"source": str(oir_path), "success": False, "error": str(e)})
+            errors += 1
+
+    # Save conversion log
+    log_path = OUTPUT_ROOT / "conversion_log.csv"
+    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(records).to_csv(log_path, index=False)
+
+    print("\n" + "=" * 65)
+    print(f"DONE — {len(files) - errors} succeeded, {errors} failed")
+    print(f"Conversion log: {log_path}")
+    print("=" * 65)
+    print("\nNext step:")
+    print("  Run prepare_test_data_for_nnunet.py pointing --source to:")
+    print(f"  {OUTPUT_ROOT.resolve()}")
+
 
 if __name__ == "__main__":
     main()

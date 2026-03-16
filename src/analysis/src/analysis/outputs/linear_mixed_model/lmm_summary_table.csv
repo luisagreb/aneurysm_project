@@ -1,6 +1,0 @@
-Feature,Coefficient,p-value,FDR p-value,ICC,Significant
-Actin_Skeleton_Length_µm,18695.2334,0.0033,0.0165,0.3747,True
-Mito_Fragment_Count_n,334.7229,0.0225,0.0428,0.3299,True
-Mito_Sphericity_ratio,-0.0243,0.0257,0.0428,0.4133,True
-Actin_Solidity_ratio,-0.0505,0.092,0.0989,0.2675,False
-Actin_Minor_Axis_µm,-0.1135,0.0989,0.0989,0.4313,False
