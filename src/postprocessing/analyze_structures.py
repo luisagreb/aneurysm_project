@@ -26,8 +26,14 @@ def get_voxel_size_from_nrrd(nifti_path, raw_nrrd_dir):
     Returns:
         [vz, vy, vx] in microns, or None if not found
     """
-    # Extract cell name from NIfTI filename
-    cell_name = Path(nifti_path).stem.replace('_segmentation', '')
+    # Extract cell name from NIfTI filename.
+    # Use .name and strip both .nii.gz and .nii extensions (Path.stem only strips .gz).
+    fname = Path(nifti_path).name
+    for suffix in ('_segmentation.nii.gz', '.nii.gz', '_segmentation.nii', '.nii'):
+        if fname.endswith(suffix):
+            fname = fname[: -len(suffix)]
+            break
+    cell_name = fname
     nrrd_folder = Path(raw_nrrd_dir) / cell_name
     
     if nrrd_folder.exists():
@@ -139,12 +145,15 @@ def analyze_mito(mask, voxel_size):
     total_volume = volume_pixels * voxel_vol
     
     # Surface Area (Marching Cubes)
+    # Pad by 1 voxel so the z-boundary caps are closed — without padding,
+    # objects touching the z edge produce an open mesh that halves surface area.
     try:
-        verts, faces, normals, values = measure.marching_cubes(mask, spacing=voxel_size)
+        mask_padded = np.pad(mask, 1, mode='constant')
+        verts, faces, normals, values = measure.marching_cubes(mask_padded, spacing=voxel_size)
         surface_area = measure.mesh_surface_area(verts, faces)
     except (ValueError, RuntimeError):
         surface_area = 0.0
-        
+
     # Sphericity
     sphericity = calculate_sphericity(total_volume, surface_area)
 
@@ -223,21 +232,21 @@ def analyze_mito(mask, voxel_size):
         mean_tortuosity = 0.0
         cyclomatic_number = 0
 
-    # Fragment Count
+    # Fragment Count — only count fragments >= 10 voxels (consistent with
+    # Mean_Fragment_Volume which also skips fragments < 10 voxels)
     labeled_mask, num_features = measure.label(mask, return_num=True)
-    fragment_count = num_features
-    
+
     # --- Per-Fragment Sphericity ---
     fragment_sphericities = []
     fragment_volumes = []
-    
-    if fragment_count > 0:
-        # Optimization: Only compute for a subset if too many? No, do all.
-        # But skip very small ones.
+    fragment_count = 0   # counted below after applying the same size filter
+
+    if num_features > 0:
         regions = measure.regionprops(labeled_mask)
         for region in regions:
-            if region.area < 10: # Skip tiny voxel fragments
+            if region.area < 10: # Skip tiny voxel fragments (noise)
                 continue
+            fragment_count += 1
                 
             frag_volume = region.area * voxel_vol
             fragment_volumes.append(frag_volume)
@@ -456,13 +465,14 @@ def analyze_nucleus(mask, voxel_size):
     if total_volume < 200.0:
         return None
         
-    # Surface Area for Sphericity
+    # Surface Area for Sphericity — pad so z-boundary caps are closed
     try:
-        verts, faces, normals, values = measure.marching_cubes(mask, spacing=voxel_size)
+        mask_padded = np.pad(mask, 1, mode='constant')
+        verts, faces, normals, values = measure.marching_cubes(mask_padded, spacing=voxel_size)
         surface_area = measure.mesh_surface_area(verts, faces)
     except (ValueError, RuntimeError):
         surface_area = 0.0
-    
+
     sphericity = calculate_sphericity(total_volume, surface_area)
     
     # Circularity (2D metric from maximum area slice - more robust than 3D sphericity)
@@ -597,9 +607,20 @@ def main():
                 voxel_source = 'Default'
                 print(f"  ERROR: Using default voxel size {voxel_size} µm (INACCURATE!)")
             
+            # AXIS ORDER FIX:
+            # The raw NRRD files are stored as (Z, Y, X) and get_voxel_size_from_nrrd
+            # returns [vz, vy, vx] matching that order.
+            # However, nnU-Net's NIfTI output reverses the axes to (X, Y, Z).
+            # Confirmed: NRRD shape (18, 930, 964) → NIfTI shape (964, 930, 18).
+            # So for NIfTI files we must reverse the voxel_size to [vx, vy, vz]
+            # so that spacing axis 0 matches X, axis 1 matches Y, axis 2 matches Z.
+            if file_path.name.endswith('.nii.gz') and voxel_source in ('NRRD', 'Manual'):
+                voxel_size = [voxel_size[2], voxel_size[1], voxel_size[0]]
+                print(f"  Voxel size reordered for NIfTI (X,Y,Z): {voxel_size} µm")
+
             # Ensure binary (0 and 1)
             mask = (mask > 0).astype(np.uint8)
-            
+
             # Binary closing: Fill small holes to improve surface area / sphericity
             from scipy.ndimage import binary_closing
             mask = binary_closing(mask, structure=np.ones((3, 3, 3))).astype(np.uint8)
@@ -618,9 +639,9 @@ def main():
                 continue
             
             # Store voxel size and source for auditing
-            metrics['Voxel_Z'] = voxel_size[0]
+            metrics['Voxel_Z'] = voxel_size[2]
             metrics['Voxel_Y'] = voxel_size[1]
-            metrics['Voxel_X'] = voxel_size[2]
+            metrics['Voxel_X'] = voxel_size[0]
             metrics['Voxel_Source'] = voxel_source
             metrics['Filename'] = file_path.name
             results.append(metrics)
