@@ -34,7 +34,7 @@ import statsmodels.formula.api as smf
 warnings.filterwarnings('ignore')
 
 # ── Config ────────────────────────────────────────────────────────────────────
-FEATURES_FILE = 'outputs/Advanced_Features_Raw_Final.csv'
+FEATURES_FILE = 'outputs/Advanced_Features_Raw_200.csv'
 BASE_DIR      = 'classification_results/smc_analysis'
 LMM_DIR       = f'{BASE_DIR}/lmm'
 PW_DIR        = f'{BASE_DIR}/pairwise'
@@ -45,20 +45,20 @@ ALPHA         = 0.05
 for d in [LMM_DIR, PW_DIR, AGE_SEX_DIR, PLOTS_DIR]:
     os.makedirs(d, exist_ok=True)
 
-NON_ANEURYSMAL = ['01asc-180','01asc-222','01asc-230','01c-83',
+NON_ANEURYSMAL = ['01asc-180','01asc-222','01asc-230',
                   '01c-96','01c-97','01c-113','01c-117','01c-202']
 ANEURYSMAL     = ['03asc-24','03asc-43','03rt-45','03asc-46','03asc-47',
                   '03asc-51','03asc-54','03asc-55','03asc-56','03asc-57']
 
 FEATURE_COLS = [
-    'Actin_Volume_µm³','Actin_Skeleton_Length_µm','Actin_Solidity_ratio',
-    'Actin_Fractional_Anisotropy_ratio','Actin_Major_Axis_µm','Actin_Minor_Axis_µm',
-    'Mito_Volume_µm³','Mito_Sphericity_ratio','Mito_Fragment_Count_n',
-    'Mito_Mean_Fragment_Volume_µm³','Mito_Branch_Count_n',
-    'Mito_Total_Network_Length_µm','Mito_Mean_Tortuosity_ratio',
-    'Mito_Junction_Count_n','Mito_Cyclomatic_Number_n',
-    'Nucleus_Volume_µm³','Nucleus_Sphericity_ratio','Nucleus_Circularity_ratio',
-    'Nucleus_Elongation_ratio','Nucleus_Flatness_ratio','Nucleus_Solidity_ratio'
+    'Actin_Volume','Actin_Skeleton_Length','Actin_Solidity',
+    'Actin_Fractional_Anisotropy','Actin_Major_Axis','Actin_Minor_Axis',
+    'Mito_Volume','Mito_Sphericity','Mito_Fragment_Count',
+    'Mito_Mean_Fragment_Volume','Mito_Branch_Count',
+    'Mito_Total_Network_Length','Mito_Mean_Tortuosity',
+    'Mito_Junction_Count','Mito_Cyclomatic_Number',
+    'Nucleus_Volume','Nucleus_Sphericity','Nucleus_Circularity',
+    'Nucleus_Elongation','Nucleus_Flatness','Nucleus_Solidity'
 ]
 
 GROUP_ORDER = ['Non-Aneurysmal_NoCollagen','Non-Aneurysmal_Collagen',

@@ -4,289 +4,410 @@
 <head>
     <title>CellVision - 3D Viewer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #fff5f8;
-            color: #5e4b56;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 10px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #d65db1;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .top-controls {
-            background: #ffe4e9;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            background: #080614;
+            color: #f0e6ff;
+            height: 100vh;
             display: flex;
-            gap: 15px;
+            overflow: hidden;
+        }
+
+        /* ── Sidebar ─────────────────────────────── */
+        .sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            background: #110b24;
+            border-right: 1px solid #1e1540;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 22px 18px;
+            border-bottom: 1px solid #1e1540;
+        }
+
+        .brand-icon {
+            font-size: 22px;
+            color: #7c3aed;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f0e6ff;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: #4a3870;
+            padding: 8px 18px 6px;
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            text-decoration: none;
+            color: #9d8fc0;
+            font-size: 13px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #1a1436;
+            color: #f0e6ff;
+        }
+
+        .nav-item.active {
+            background: #1e1640;
+            color: #a78bfa;
+            border-left-color: #7c3aed;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 12px 0;
+            border-top: 1px solid #1e1540;
+        }
+
+        /* ── Main Content ────────────────────────── */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .page-header {
+            padding: 14px 20px 10px;
+            border-bottom: 1px solid #1e1540;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f0e6ff;
+        }
+
+        /* ── Top Controls ────────────────────────── */
+        .top-controls {
+            background: #0f0b20;
+            padding: 10px 16px;
+            border-bottom: 1px solid #1e1540;
+            display: flex;
+            gap: 12px;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 4px 6px rgba(214, 93, 177, 0.1);
         }
 
         button {
-            background: #ffb7ce;
-            color: #5e4b56;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            background: #2d2060;
+            color: #c4b5fd;
+            border: 1px solid #3d2d80;
+            padding: 7px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s;
         }
 
         button:hover {
-            background: #ff9eb9;
-            color: #fff;
+            background: #3d2d80;
+            color: #f0e6ff;
+            border-color: #7c3aed;
         }
 
         input[type="range"] {
-            width: 150px;
-            accent-color: #d65db1;
+            width: 140px;
+            accent-color: #7c3aed;
         }
 
         input[type="file"] {
-            color: #5e4b56;
+            color: #9d8fc0;
+            font-size: 13px;
         }
 
         select {
-            background: #fff;
-            color: #5e4b56;
-            border: 2px solid #ffb7ce;
-            padding: 6px;
-            border-radius: 8px;
+            background: #1a1436;
+            color: #c4b5fd;
+            border: 1px solid #2d2060;
+            padding: 6px 10px;
+            border-radius: 6px;
             outline: none;
+            font-size: 13px;
         }
 
         label {
-            font-size: 13px;
-            color: #8c7b85;
+            font-size: 12px;
+            color: #6d5d9a;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .main {
+        /* ── Body Layout ─────────────────────────── */
+        .body-layout {
+            flex: 1;
             display: flex;
-            gap: 15px;
+            gap: 0;
+            overflow: hidden;
         }
 
         .image-area {
             flex: 1;
-            background: #ffe4e9;
-            border-radius: 12px;
-            padding: 10px;
-            min-height: 550px;
+            background: #0b091a;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 4px 6px rgba(214, 93, 177, 0.05);
+            border-right: 1px solid #1e1540;
         }
 
         #canvas {
             max-width: 100%;
+            max-height: 100%;
             border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        /* ── Right Panel ─────────────────────────── */
         .panel {
-            width: 320px;
-            background: #ffe4e9;
-            border-radius: 12px;
-            padding: 15px;
-            max-height: 80vh;
+            width: 300px;
+            flex-shrink: 0;
+            background: #0f0b20;
+            padding: 16px;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(214, 93, 177, 0.1);
         }
 
-        .section {
-            margin-bottom: 20px;
-        }
+        .section { margin-bottom: 20px; }
 
         .section-title {
-            color: #d65db1;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #6d5d9a;
             margin-bottom: 10px;
-            border-bottom: 2px solid #ffccd5;
-            padding-bottom: 5px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1e1540;
         }
 
         .info-box {
-            background: #fff;
-            padding: 10px;
+            background: #1a1436;
+            padding: 10px 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #ffccd5;
+            border: 1px solid #2d2060;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
-            padding: 4px 0;
+            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid #1e1540;
         }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-row span:first-child { color: #9d8fc0; }
 
         .info-val {
-            color: #d65db1;
-            font-weight: bold;
+            color: #a78bfa;
+            font-weight: 600;
+            font-family: monospace;
         }
 
-        #status {
-            font-size: 18px;
-            color: #d65db1;
-            font-weight: 500;
-            margin-top: 15px;
-        }
-
-        .nav-btn {
-            padding: 6px 12px;
-        }
-
-        .tip {
-            background: #fff0f5;
-            border-left: 4px solid #ffb7ce;
-            padding: 10px;
-            font-size: 12px;
-            color: #5e4b56;
-            margin-top: 10px;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .tip b {
-            color: #d65db1;
-        }
-
-        /* Status Box Centering & Styling */
+        /* ── Status Container ────────────────────── */
         #status-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-
-            /* Flebox for perfect centering */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-
             text-align: center;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(17, 11, 36, 0.95);
+            border: 1px solid #2d2060;
             padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(214, 93, 177, 0.15);
-            min-width: 350px;
-            /* Wider to prevent wrapping */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            min-width: 320px;
         }
 
-        /* Loading Spinner */
+        #status {
+            font-size: 15px;
+            color: #a78bfa;
+            font-weight: 500;
+            margin-top: 14px;
+        }
+
+        /* ── Spinner ─────────────────────────────── */
         .spinner {
             display: none;
-            width: 60px;
-            height: 60px;
-            margin: 0 auto;
-            border: 5px solid rgba(255, 183, 206, 0.3);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(124, 58, 237, 0.2);
             border-radius: 50%;
-            border-top: 5px solid #d65db1;
-            animation: spin 1s linear infinite;
+            border-top: 4px solid #7c3aed;
+            animation: spin 0.9s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
+
+        .nav-btn { padding: 5px 10px; }
+
+        .slice-info {
+            min-width: 64px;
+            text-align: center;
+            font-size: 13px;
+            color: #9d8fc0;
+            font-family: monospace;
+        }
+
+        .instructions {
+            font-size: 12px;
+            color: #6d5d9a;
+            line-height: 1.8;
+        }
+
+        .instructions b { color: #a78bfa; }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>CellVision: 3D Viewer</h1>
-        <p><a href="/" style="color: #d65db1; text-decoration: none;">&larr; Back to Home</a></p>
 
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">◈</span>
+            <span class="brand-name">CellVision</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Tools</div>
+            <a href="/viewer" class="nav-item active">
+                <span class="nav-icon">⬡</span>
+                <span>3D Viewer</span>
+            </a>
+            <a href="/segmentation" class="nav-item">
+                <span class="nav-icon">⬢</span>
+                <span>Segmentation</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Home</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <div class="page-header">
+            <div class="page-title">3D Viewer</div>
+        </div>
+
+        <!-- Controls Bar -->
         <div class="top-controls">
-            <!-- 1. File Loader -->
             <input type="file" id="file-input" accept=".oir,.OIR">
             <button onclick="loadFile()">Load OIR</button>
 
-            <!-- 2. Channel Selector -->
-            <label>Channel:</label>
+            <label>Channel</label>
             <select id="channel-select" onchange="setChannel(this.value)">
                 <option value="0">Ch 1</option>
             </select>
 
-            <!-- 3. Z-Slice Navigation -->
             <button class="nav-btn" onclick="prevSlice()">&lt;</button>
-            <span id="slice-info" style="min-width:70px;text-align:center">0/0</span>
+            <span id="slice-info" class="slice-info">0 / 0</span>
             <button class="nav-btn" onclick="nextSlice()">&gt;</button>
             <input type="range" id="slice-slider" min="0" max="0" value="0" oninput="setSlice(this.value)">
         </div>
 
-        <div class="main">
-            <!-- Left: Image Display -->
-            <div class="image-area">
+        <!-- Body -->
+        <div class="body-layout">
 
-                <!-- Status & Spinner Container -->
+            <!-- Image Area -->
+            <div class="image-area">
                 <div id="status-container">
                     <div id="spinner" class="spinner"></div>
                     <div id="status">Load an .oir file to begin</div>
                 </div>
-
                 <canvas id="canvas" style="display:none"></canvas>
             </div>
 
-            <!-- Right: Info Panel -->
+            <!-- Right Panel -->
             <div class="panel">
                 <div class="section">
                     <div class="section-title">Image Info</div>
                     <div class="info-box">
-                        <div class="info-row"><span>Position:</span><span class="info-val" id="pos-val">(-, -)</span>
+                        <div class="info-row">
+                            <span>Position</span>
+                            <span class="info-val" id="pos-val">(-, -)</span>
                         </div>
-                        <div class="info-row"><span>Intensity:</span><span class="info-val" id="int-val">-</span></div>
-                        <div class="info-row"><span>Dimensions:</span><span class="info-val" id="dim-val">-</span></div>
-                        <div class="info-row"><span>Raw Shape:</span><span class="info-val" id="shape-val">-</span>
+                        <div class="info-row">
+                            <span>Intensity</span>
+                            <span class="info-val" id="int-val">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Dimensions</span>
+                            <span class="info-val" id="dim-val">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Raw Shape</span>
+                            <span class="info-val" id="shape-val">—</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
                     <div class="section-title">Instructions</div>
-                    <p style="font-size:12px; color:#aaa; line-height: 1.6;">
-                        1. <b style="color:#00d4ff">Load OIR</b> to upload a file.<br>
+                    <p class="instructions">
+                        1. <b>Load OIR</b> to upload a file.<br>
                         2. Use the slider or mouse wheel to browse Z-slices.<br>
-                        3. Switch channels to see different stains (Nucleus, Actin, etc).
+                        3. Switch channels to see different stains.
                     </p>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
         let totalSlices = 0, currentSlice = 0, currentChannel = 0;
         let width = 0, height = 0;
-        let pixels = null; // Store raw pixel data for mouseover
+        let pixels = null;
 
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -296,11 +417,8 @@
             if (!f) return alert('Select a file first');
 
             document.getElementById('status').textContent = 'Loading... (this may take a moment)';
-
-            // Show spinner
             document.getElementById('spinner').style.display = 'block';
-            document.getElementById('status-container').style.display = 'flex'; // Ensure container is visible
-
+            document.getElementById('status-container').style.display = 'flex';
             canvas.style.display = 'none';
 
             const fd = new FormData();
@@ -312,9 +430,8 @@
 
                 if (data.error) throw new Error(data.error);
 
-                // Hide spinner on success
                 document.getElementById('spinner').style.display = 'none';
-                document.getElementById('status').textContent = ''; // Clear status text
+                document.getElementById('status').textContent = '';
                 document.getElementById('status-container').style.display = 'none';
 
                 totalSlices = data.slices;
@@ -322,11 +439,9 @@
                 height = data.height;
                 let channels = data.channels;
 
-                // Reset to middle slice
                 currentSlice = Math.floor(totalSlices / 2);
                 currentChannel = 0;
 
-                // Update UI
                 document.getElementById('dim-val').textContent = `${width}x${height}x${totalSlices} (${channels}ch)`;
                 document.getElementById('shape-val').textContent = data.raw_shape;
 
@@ -345,23 +460,20 @@
 
                 document.getElementById('status').style.display = 'none';
                 canvas.style.display = 'block';
-
                 updateDisplay();
             } catch (e) {
                 alert("Error loading file: " + e.message);
                 document.getElementById('status').textContent = 'Error loading file. Check terminal.';
-                document.getElementById('spinner').style.display = 'none'; // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
             }
         }
 
         async function updateDisplay() {
-            document.getElementById('slice-info').textContent = `${parseInt(currentSlice) + 1}/${totalSlices}`;
+            document.getElementById('slice-info').textContent = `${parseInt(currentSlice) + 1} / ${totalSlices}`;
 
             try {
-                // Request the specific channel and slice image
                 const res = await fetch(`/slice/${currentChannel}/${currentSlice}`);
                 const data = await res.json();
-
                 if (data.error) { console.error(data.error); return; }
 
                 pixels = data.pixels;
@@ -373,16 +485,10 @@
                     ctx.drawImage(img, 0, 0);
                 };
                 img.src = 'data:image/png;base64,' + data.image;
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        function setSlice(val) {
-            currentSlice = parseInt(val);
-            updateDisplay();
-        }
-
+        function setSlice(val) { currentSlice = parseInt(val); updateDisplay(); }
         function prevSlice() {
             if (currentSlice > 0) {
                 currentSlice--;
@@ -390,7 +496,6 @@
                 updateDisplay();
             }
         }
-
         function nextSlice() {
             if (currentSlice < totalSlices - 1) {
                 currentSlice++;
@@ -398,13 +503,8 @@
                 updateDisplay();
             }
         }
+        function setChannel(val) { currentChannel = parseInt(val); updateDisplay(); }
 
-        function setChannel(val) {
-            currentChannel = parseInt(val);
-            updateDisplay();
-        }
-
-        // Mouse interaction: show pixel position + intensity
         canvas.addEventListener('mousemove', e => {
             if (!pixels) return;
             const rect = canvas.getBoundingClientRect();
@@ -412,28 +512,22 @@
             const sy = canvas.height / rect.height;
             const x = Math.floor((e.clientX - rect.left) * sx);
             const y = Math.floor((e.clientY - rect.top) * sy);
-
             if (x >= 0 && x < width && y >= 0 && y < height) {
                 document.getElementById('pos-val').textContent = `(${x}, ${y})`;
                 document.getElementById('int-val').textContent = pixels[y * width + x];
             }
         });
 
-        // Mouse wheel: scroll through slices (Throttled)
         let lastScrollTime = 0;
         canvas.addEventListener('wheel', e => {
             e.preventDefault();
-
             const now = Date.now();
-            // Speed Limit: Wait 50ms between scrolls
             if (now - lastScrollTime < 50) return;
             lastScrollTime = now;
-
             if (e.deltaY > 0) nextSlice();
             else prevSlice();
         });
 
-        // Arrow keys: navigate slices
         document.addEventListener('keydown', e => {
             if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prevSlice();
             else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextSlice();

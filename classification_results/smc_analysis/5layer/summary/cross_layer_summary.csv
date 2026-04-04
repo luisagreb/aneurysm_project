@@ -1,0 +1,22 @@
+Feature,Layer1_sig,Layer2_sig,Layer3_Disease_sig,Layer4_Rescue_sig,Layer4_Rescue_dir,Layer5_Sex_sig,N_layers_sig,Label
+Actin_Skeleton_Length,True,True,False,False,False,False,2,Actin Skeleton Length
+Actin_Fractional_Anisotropy,True,True,False,False,False,False,2,Actin Fractional Anisotropy
+Actin_Solidity,True,True,False,False,False,False,2,Actin Solidity
+Mito_Sphericity,True,True,False,False,False,False,2,Mito Sphericity
+Actin_Minor_Axis,True,True,False,False,False,False,2,Actin Minor Axis
+Mito_Cyclomatic_Number,True,True,False,False,False,False,2,Mito Cyclomatic Number
+Nucleus_Solidity,True,True,False,False,False,True,2,Nucleus Solidity
+Mito_Total_Network_Length,True,True,False,False,False,False,2,Mito Total Network Length
+Mito_Branch_Count,True,True,False,False,False,False,2,Mito Branch Count
+Mito_Junction_Count,True,True,False,False,False,False,2,Mito Junction Count
+Mito_Fragment_Count,True,False,False,False,False,False,1,Mito Fragment Count
+Mito_Volume,True,False,False,False,False,False,1,Mito Volume
+Actin_Volume,False,False,False,False,False,False,0,Actin Volume
+Actin_Major_Axis,False,False,False,False,False,False,0,Actin Major Axis
+Mito_Mean_Fragment_Volume,False,False,False,False,False,False,0,Mito Mean Fragment Volume
+Mito_Mean_Tortuosity,False,False,False,False,False,False,0,Mito Mean Tortuosity
+Nucleus_Volume,False,False,False,False,False,True,0,Nucleus Volume
+Nucleus_Sphericity,False,False,False,False,False,False,0,Nucleus Sphericity
+Nucleus_Circularity,False,False,False,False,False,False,0,Nucleus Circularity
+Nucleus_Elongation,False,False,False,False,False,False,0,Nucleus Elongation
+Nucleus_Flatness,False,False,False,False,False,False,0,Nucleus Flatness

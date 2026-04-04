@@ -2,96 +2,111 @@
 <html>
 
 <head>
-    <title>CellVision - Home</title>
-    <!-- CSS: This controls the look (Colors, Layout, Fonts) -->
+    <title>CellVision</title>
     <style>
-        /* 1. Body: Sets the font and centers everything on the screen */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fff5f8;
-            /* Your pink background */
-            margin: 0;
-            display: flex;
-            /* Use Flexbox for layout */
-            justify-content: center;
-            /* Center horizontally */
-            align-items: center;
-            /* Center vertically */
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #080614;
+            color: #f0e6ff;
             height: 100vh;
-            /* Take up full screen height */
-        }
-
-        /* 2. Menu Container: Holds your buttons */
-        .menu {
             display: flex;
-            /* Arrange buttons in a row */
-            gap: 30px;
-            /* Space between buttons */
-            text-align: center;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* 3. The Cards (Buttons): Styles the links to look like big buttons */
-        .card {
-            background-color: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(214, 93, 177, 0.2);
-            /* Soft shadow */
-            text-decoration: none;
-            /* Remove underline from link */
-            color: #5e4b56;
-            /* Text color */
-            transition: transform 0.2s;
-            /* Smooth hover animation */
-            width: 200px;
+        .home-wrap { text-align: center; }
+
+        .logo-mark {
+            font-size: 52px;
+            color: #7c3aed;
+            margin-bottom: 10px;
             display: block;
         }
 
-        /* Hover Effect: Moves the card up slightly when you mouse over it */
+        h1 {
+            font-size: 3.8em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c084fc 0%, #7c3aed 50%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #9d8fc0;
+            font-size: 15px;
+            margin-bottom: 56px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .card {
+            background: #1a1436;
+            border: 1px solid #2d2060;
+            padding: 36px 40px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #f0e6ff;
+            transition: all 0.2s ease;
+            width: 220px;
+            display: block;
+        }
+
         .card:hover {
             transform: translateY(-5px);
-            background-color: #fff0f5;
+            border-color: #7c3aed;
+            box-shadow: 0 8px 28px rgba(124, 58, 237, 0.35);
+            background: #211a48;
         }
 
-        h2 {
-            margin-top: 0;
-            color: #d65db1;
+        .card-icon {
+            font-size: 34px;
+            margin-bottom: 14px;
+            color: #a78bfa;
         }
 
-        /* Pink Titles */
-        p {
-            margin: 10px 0 0 0;
-            font-size: 14px;
-            color: #888;
+        .card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #c084fc;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 13px;
+            color: #9d8fc0;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- This is the visible content -->
-    <div style="text-align:center;">
-        <h1
-            style="font-size: 4em; color: #d65db1; margin-bottom: 40px; font-weight: 800; text-shadow: 0 4px 15px rgba(214, 93, 177, 0.2);">
-            CellVision</h1>
+    <div class="home-wrap">
+        <span class="logo-mark">◈</span>
+        <h1>CellVision</h1>
+        <p class="subtitle">3D Cell Phenotyping Platform</p>
 
         <div class="menu">
-
-            <!-- Link 1: Goes to the Viewer Page */ -->
             <a href="/viewer" class="card">
+                <div class="card-icon">⬡</div>
                 <h2>3D Viewer</h2>
                 <p>Visualize OIR files</p>
             </a>
-
-            <!-- Link 2: Goes to the Segmentation Page */ -->
             <a href="/segmentation" class="card">
+                <div class="card-icon">⬢</div>
                 <h2>Segmentation Analysis</h2>
                 <p>Nucleus, Actin, Mitochondria</p>
             </a>
-
         </div>
     </div>
-
 </body>
 
 </html>

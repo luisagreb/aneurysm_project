@@ -1,0 +1,1868 @@
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:328: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  actin_branch_data = summarize(skel_actin)
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:328: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  actin_branch_data = summarize(skel_actin)
+Found 153 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Actin/Inference_Raw. structure=actin
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.150116079565757, 0.150116079565757] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.150116079565757, 0.150116079565757, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.38, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.38] µm
+Processed 01C-0113 no coll veh60x Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.134519603766718, 0.134519603766718] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.134519603766718, 0.134519603766718, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.169803434262906, 0.169803434262906] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.169803434262906, 0.169803434262906, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.156939537727837, 0.156939537727837] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.156939537727837, 0.156939537727837, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.114453143536323, 0.114453143536323] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.114453143536323, 0.114453143536323, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.163118259685626, 0.163118259685626] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.163118259685626, 0.163118259685626, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.113202289508604, 0.113202289508604] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.113202289508604, 0.113202289508604, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.132794993462016, 0.132794993462016] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.132794993462016, 0.132794993462016, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.155759541203568, 0.155759541203568] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.155759541203568, 0.155759541203568, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.120441970814387, 0.120441970814387] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.120441970814387, 0.120441970814387, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.13365173535532, 0.13365173535532] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13365173535532, 0.13365173535532, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell6_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.143861242917184, 0.143861242917184] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.143861242917184, 0.143861242917184, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 03Asc24- DMSO low-cell-1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 03Asc24- DMSO low-cell-4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc24- DMSO low-cell-5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc24-DMSO high cell-1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc24-DMSO high cell-2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.151211817372807, 0.151211817372807] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.151211817372807, 0.151211817372807, 0.37] µm
+Processed 03Asc24-DMSO high cell-3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24-DMSO high cell-4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.177059991282688, 0.177059991282688] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.177059991282688, 0.177059991282688, 0.37] µm
+Processed 03Asc24-DMSO high cell-5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.17408419310987, 0.17408419310987] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.17408419310987, 0.17408419310987, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14092529918418, 0.14092529918418] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14092529918418, 0.14092529918418, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.13903368443003, 0.13903368443003] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13903368443003, 0.13903368443003, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_actin_inference.csv
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:328: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  actin_branch_data = summarize(skel_actin)
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:328: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  actin_branch_data = summarize(skel_actin)
+Found 47 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Actin/Training_Labels. structure=actin
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell10.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.181719464737496, 0.181719464737496] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.181719464737496, 0.181719464737496, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell6.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell7.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell8.nii.gz
+  Voxel size from NRRD: [0.37, 0.118377251314712, 0.118377251314712] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.118377251314712, 0.118377251314712, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell9.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell10.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell6.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell7.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell8.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell9.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.103580094900373, 0.103580094900373] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.103580094900373, 0.103580094900373, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.188327445273405, 0.188327445273405] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.188327445273405, 0.188327445273405, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.127092140982052, 0.127092140982052] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.127092140982052, 0.127092140982052, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell5.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_actin_training.csv
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:169: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  branch_data = summarize(skel_obj)
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:169: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  branch_data = summarize(skel_obj)
+Found 162 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Mito/Inference_Raw. structure=mito
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.150116079565757, 0.150116079565757] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.150116079565757, 0.150116079565757, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.38, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.38] µm
+Processed 01C-0113 no coll veh60x Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.134519603766718, 0.134519603766718] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.134519603766718, 0.134519603766718, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.169803434262906, 0.169803434262906] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.169803434262906, 0.169803434262906, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.156939537727837, 0.156939537727837] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.156939537727837, 0.156939537727837, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.114453143536323, 0.114453143536323] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.114453143536323, 0.114453143536323, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.163118259685626, 0.163118259685626] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.163118259685626, 0.163118259685626, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.113202289508604, 0.113202289508604] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.113202289508604, 0.113202289508604, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.132794993462016, 0.132794993462016] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.132794993462016, 0.132794993462016, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.155759541203568, 0.155759541203568] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.155759541203568, 0.155759541203568, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.120441970814387, 0.120441970814387] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.120441970814387, 0.120441970814387, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.13365173535532, 0.13365173535532] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13365173535532, 0.13365173535532, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell6_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.143861242917184, 0.143861242917184] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.143861242917184, 0.143861242917184, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 03Asc24- DMSO low-cell-1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 03Asc24- DMSO low-cell-4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc24- DMSO low-cell-5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc24-DMSO high cell-1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc24-DMSO high cell-2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.151211817372807, 0.151211817372807] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.151211817372807, 0.151211817372807, 0.37] µm
+Processed 03Asc24-DMSO high cell-3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24-DMSO high cell-4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.177059991282688, 0.177059991282688] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.177059991282688, 0.177059991282688, 0.37] µm
+Processed 03Asc24-DMSO high cell-5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.127092140982052, 0.127092140982052] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.127092140982052, 0.127092140982052, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.17408419310987, 0.17408419310987] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.17408419310987, 0.17408419310987, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14092529918418, 0.14092529918418] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14092529918418, 0.14092529918418, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.13903368443003, 0.13903368443003] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13903368443003, 0.13903368443003, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_mito_inference.csv
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:169: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  branch_data = summarize(skel_obj)
+/home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py:169: VisibleDeprecationWarning: separator in column name will change to _ in version 0.13; to silence this warning, use `separator='-'` to maintain current behavior and use `separator='_'` to switch to the new default behavior.
+  branch_data = summarize(skel_obj)
+Found 38 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Mito/Training_Labels. structure=mito
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell10.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.181719464737496, 0.181719464737496] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.181719464737496, 0.181719464737496, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell6.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell7.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell8.nii.gz
+  Voxel size from NRRD: [0.37, 0.118377251314712, 0.118377251314712] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.118377251314712, 0.118377251314712, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell9.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell10.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell6.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell7.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell8.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell9.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.103580094900373, 0.103580094900373] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.103580094900373, 0.103580094900373, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.188327445273405, 0.188327445273405] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.188327445273405, 0.188327445273405, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell5.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_mito_training.csv
+Found 107 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Nucleus/Inference_Raw. structure=nucleus
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell10_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.181719464737496, 0.181719464737496] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.181719464737496, 0.181719464737496, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell6_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell7_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell8_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.118377251314712, 0.118377251314712] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.118377251314712, 0.118377251314712, 0.37] µm
+Processed 01ASC-0180 +coll 60x DMSO48h-Zstack cell9_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48H-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell10_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell6_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell7_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell8_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 01ASC-0180 -coll 60x DMSO48h-Zstack cell9_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.188327445273405, 0.188327445273405] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.188327445273405, 0.188327445273405, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.150116079565757, 0.150116079565757] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.150116079565757, 0.150116079565757, 0.37] µm
+  Skipping 01C-0096 -coll 60x vehicleZstack cell4_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+  Skipping 01C-0113 +coll veh60x Zstack cell2_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+  Skipping 01C-222 -Col 60x veh-Zstack Cell1_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.163118259685626, 0.163118259685626] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.163118259685626, 0.163118259685626, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.113202289508604, 0.113202289508604] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.113202289508604, 0.113202289508604, 0.37] µm
+  Skipping 01C-222 -Col 60x veh-Zstack Cell4_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Asc-0043 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.201126397864801, 0.201126397864801] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.201126397864801, 0.201126397864801, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0043 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0051 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.109031678842497, 0.109031678842497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.109031678842497, 0.109031678842497, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 03Asc-0051 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0054 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.132794993462016, 0.132794993462016] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.132794993462016, 0.132794993462016, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0055 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.155759541203568, 0.155759541203568] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.155759541203568, 0.155759541203568, 0.37] µm
+Processed 03Asc-0055 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.120441970814387, 0.120441970814387] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.120441970814387, 0.120441970814387, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.13365173535532, 0.13365173535532] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13365173535532, 0.13365173535532, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc-0056 +Col 60x veh-Zstack Cell6_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.143861242917184, 0.143861242917184] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.143861242917184, 0.143861242917184, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.171206768430368, 0.171206768430368] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.171206768430368, 0.171206768430368, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0056 -Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+  Skipping 03Asc-0057 +Col 60x veh-Zstack Cell1_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+  Skipping 03Asc-0057 +Col 60x veh-Zstack Cell4_segmentation.nii.gz: QC Failure (e.g. too small)
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-0057 +Col 60x veh-Zstack Cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.127092140982052, 0.127092140982052] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.127092140982052, 0.127092140982052, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc46 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 +coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.180139295478909, 0.180139295478909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.180139295478909, 0.180139295478909, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell1_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell2_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.175559482881988, 0.175559482881988] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.175559482881988, 0.175559482881988, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell3_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.17408419310987, 0.17408419310987] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.17408419310987, 0.17408419310987, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell4_segmentation.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc47 -coll 60x veh 48h-Zstack cell5_segmentation.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_nucleus_inference.csv
+Found 93 files in /home/luisa/aneurysm_project/experiments/V2/restored_names/Nucleus/Training_Labels. structure=nucleus
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.129475118625466, 0.129475118625466] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.129475118625466, 0.129475118625466, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.103580094900373, 0.103580094900373] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.103580094900373, 0.103580094900373, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.14903610777032, 0.14903610777032] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14903610777032, 0.14903610777032, 0.37] µm
+Processed 01Asc-230 +Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 01Asc-230 -Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 +coll 60x vehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.205109098812619, 0.205109098812619] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.205109098812619, 0.205109098812619, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0083 -coll 60x vehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.119745774451298, 0.119745774451298] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.119745774451298, 0.119745774451298, 0.37] µm
+Processed 01C-0096 +coll 60x vehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.144867265594927, 0.144867265594927] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.144867265594927, 0.144867265594927, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.186630801622293, 0.186630801622293] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.186630801622293, 0.186630801622293, 0.37] µm
+Processed 01C-0096 -coll 60x vehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.18332760159358, 0.18332760159358] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.18332760159358, 0.18332760159358, 0.37] µm
+Processed 01C-0097 +coll 60x VehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.191814990556246, 0.191814990556246] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.191814990556246, 0.191814990556246, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.15459715656772, 0.15459715656772] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15459715656772, 0.15459715656772, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.193607654019388, 0.193607654019388] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.193607654019388, 0.193607654019388, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-0097 -coll 60x VehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 +coll veh60x Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.38, 0.15935399215442, 0.15935399215442] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.15935399215442, 0.15935399215442, 0.38] µm
+Processed 01C-0113 no coll veh60x Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0113 no coll veh60x Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.134519603766718, 0.134519603766718] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.134519603766718, 0.134519603766718, 0.37] µm
+Processed 01C-0117 +coll 60x VehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.169803434262906, 0.169803434262906] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.169803434262906, 0.169803434262906, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.164412849048211, 0.164412849048211] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.164412849048211, 0.164412849048211, 0.37] µm
+Processed 01C-0117 -coll 60x VehicleZstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.168422918537191, 0.168422918537191] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.168422918537191, 0.168422918537191, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 +coll 60x veh 48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.156939537727837, 0.156939537727837] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.156939537727837, 0.156939537727837, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.16706466919415, 0.16706466919415] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.16706466919415, 0.16706466919415, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.197295418857853, 0.197295418857853] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.197295418857853, 0.197295418857853, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 01C-202 -coll 60x Veh24h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.121858935176909, 0.121858935176909] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.121858935176909, 0.121858935176909, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.14797156414339, 0.14797156414339] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14797156414339, 0.14797156414339, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.114453143536323, 0.114453143536323] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.114453143536323, 0.114453143536323, 0.37] µm
+Processed 01C-222 +Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.152323668971136, 0.152323668971136] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.152323668971136, 0.152323668971136, 0.37] µm
+Processed 01C-222 -Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-0057 -Col 60x veh-Zstack Cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.160589294419182, 0.160589294419182] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.160589294419182, 0.160589294419182, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc-024 +coll 60x veh 48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.131114044177687, 0.131114044177687] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.131114044177687, 0.131114044177687, 0.37] µm
+Processed 03Asc24- DMSO low-cell-1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24- DMSO low-cell-3.nii.gz
+  Voxel size from NRRD: [0.37, 0.115088994333747, 0.115088994333747] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.115088994333747, 0.115088994333747, 0.37] µm
+Processed 03Asc24- DMSO low-cell-4.nii.gz
+  Voxel size from NRRD: [0.37, 0.138106793200497, 0.138106793200497] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.138106793200497, 0.138106793200497, 0.37] µm
+Processed 03Asc24- DMSO low-cell-5.nii.gz
+  Voxel size from NRRD: [0.37, 0.161843898281832, 0.161843898281832] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.161843898281832, 0.161843898281832, 0.37] µm
+Processed 03Asc24-DMSO high cell-1.nii.gz
+  Voxel size from NRRD: [0.37, 0.184964455179237, 0.184964455179237] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.184964455179237, 0.184964455179237, 0.37] µm
+Processed 03Asc24-DMSO high cell-2.nii.gz
+  Voxel size from NRRD: [0.37, 0.151211817372807, 0.151211817372807] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.151211817372807, 0.151211817372807, 0.37] µm
+Processed 03Asc24-DMSO high cell-3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Asc24-DMSO high cell-4.nii.gz
+  Voxel size from NRRD: [0.37, 0.177059991282688, 0.177059991282688] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.177059991282688, 0.177059991282688, 0.37] µm
+Processed 03Asc24-DMSO high cell-5.nii.gz
+  Voxel size from NRRD: [0.37, 0.158137549466218, 0.158137549466218] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.158137549466218, 0.158137549466218, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.14092529918418, 0.14092529918418] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.14092529918418, 0.14092529918418, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.190055220000684, 0.190055220000684] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.190055220000684, 0.190055220000684, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.13903368443003, 0.13903368443003] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.13903368443003, 0.13903368443003, 0.37] µm
+Processed 03Rt-0045 +coll 60x veh 48h-Zstack cell5.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell1.nii.gz
+  Voxel size from NRRD: [0.37, 0.165728151840596, 0.165728151840596] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.165728151840596, 0.165728151840596, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell2.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell3.nii.gz
+  Voxel size from NRRD: [0.37, 0.207160189800746, 0.207160189800746] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.207160189800746, 0.207160189800746, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell4.nii.gz
+  Voxel size from NRRD: [0.37, 0.172633491500621, 0.172633491500621] µm
+  Voxel size reordered for NIfTI (X,Y,Z): [0.172633491500621, 0.172633491500621, 0.37] µm
+Processed 03Rt-0045 -coll 60x veh 48h-Zstack cell5.nii.gz
+Saved results to /home/luisa/aneurysm_project/outputs/features_nucleus_training.csv
+============================================================
+Feature Extraction Pipeline — 200-cell Main Dataset
+============================================================
+
+>>> ACTIN
+  Inference_Raw: 153 files → features_actin_inference.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Actin/Inference_Raw --output_csv /home/luisa/aneurysm_project/outputs/features_actin_inference.csv --structure actin --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+  Training_Labels: 47 files → features_actin_training.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Actin/Training_Labels --output_csv /home/luisa/aneurysm_project/outputs/features_actin_training.csv --structure actin --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+
+>>> MITO
+  Inference_Raw: 162 files → features_mito_inference.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Mito/Inference_Raw --output_csv /home/luisa/aneurysm_project/outputs/features_mito_inference.csv --structure mito --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+  Training_Labels: 38 files → features_mito_training.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Mito/Training_Labels --output_csv /home/luisa/aneurysm_project/outputs/features_mito_training.csv --structure mito --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+
+>>> NUCLEUS
+  Inference_Raw: 107 files → features_nucleus_inference.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Nucleus/Inference_Raw --output_csv /home/luisa/aneurysm_project/outputs/features_nucleus_inference.csv --structure nucleus --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+  Training_Labels: 93 files → features_nucleus_training.csv
+  Running: /home/luisa/nnunet_env/bin/python /home/luisa/aneurysm_project/src/postprocessing/analyze_structures.py --input_dir /home/luisa/aneurysm_project/experiments/V2/restored_names/Nucleus/Training_Labels --output_csv /home/luisa/aneurysm_project/outputs/features_nucleus_training.csv --structure nucleus --raw_nrrd_dir /home/luisa/aneurysm_project/data/raw/nrrd_files
+
+>>> Combining inference + training CSVs per structure
+  Saved 200 rows → /home/luisa/aneurysm_project/outputs/features_actin.csv
+  Saved 200 rows → /home/luisa/aneurysm_project/outputs/features_mito.csv
+  Saved 194 rows → /home/luisa/aneurysm_project/outputs/features_nucleus.csv
+
+>>> Merging into wide-format master CSV
+
+Wide-format merge: 200 cells, 36 columns
+
+Master CSV saved → /home/luisa/aneurysm_project/outputs/Advanced_Features_Raw_200.csv
+  200 cells  |  36 columns
+
+Column groups:
+  Actin: 9 features  |  0 cells with any NaN
+  Mito: 15 features  |  0 cells with any NaN
+  Nucleus: 6 features  |  11 cells with any NaN
+
+Done.
