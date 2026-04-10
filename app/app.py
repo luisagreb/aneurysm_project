@@ -355,55 +355,40 @@ def analyze_cell():
         
         if os.path.exists(model_path):
             try:
-                clf = joblib.load(model_path)
-                
-                # 4. Prepare Dataframe
-                # We align with the model's expected features.
-                df = pd.DataFrame([features])
-                
-                # Robustly handle missing columns
-                if hasattr(clf, 'feature_names_in_'):
-                    expected_cols = clf.feature_names_in_
-                    
-                    # Add missing columns with 0
-                    for col in expected_cols:
-                        if col not in df.columns:
-                            df[col] = 0.0
-                            
-                    # Reorder and select ONLY expected columns
-                    df = df[expected_cols]
-                
-                # Fill NaNs with 0 (just in case)
-                df = df.fillna(0)
-                
-                pred_cls = clf.predict(df)[0] # 0 or 1
-                try:
-                    proba = clf.predict_proba(df)[0][1] # Probability of class 1
-                except:
-                    proba = 0.0
+                bundle    = joblib.load(model_path)
+                # Support both plain pipeline and {pipeline, features, threshold} bundle
+                if isinstance(bundle, dict):
+                    clf       = bundle['pipeline']
+                    feat_list = bundle.get('features', None)
+                    threshold = bundle.get('threshold', 0.5)
+                else:
+                    clf       = bundle
+                    feat_list = list(clf.feature_names_in_) if hasattr(clf, 'feature_names_in_') else None
+                    threshold = 0.5
 
-                # Assuming 1 = Diseased (TAA), 0 = Healthy
+                df_pred = pd.DataFrame([features])
+
+                # Select only the features the model expects
+                if feat_list:
+                    for col in feat_list:
+                        if col not in df_pred.columns:
+                            df_pred[col] = 0.0
+                    df_pred = df_pred[feat_list]
+
+                df_pred = df_pred.fillna(0)
+
+                proba     = float(clf.predict_proba(df_pred)[0][1])
+                pred_cls  = int(proba >= threshold)
+
                 prediction = "Diseased (TAA)" if pred_cls == 1 else "Healthy"
-                confidence = float(proba)
-                
+                confidence = proba
+                print(f"[INFO] TAA prob={proba:.3f} threshold={threshold} → {prediction}")
+
             except Exception as e:
                 err_msg = str(e)
                 print(f"[WARN] Prediction failed: {err_msg}")
-                
-                # DEBUG: Print column mismatch
-                if hasattr(clf, 'feature_names_in_'):
-                    expected = set(clf.feature_names_in_)
-                    generated = set(df.columns)
-                    missing = expected - generated
-                    extra = generated - expected
-                    print(f"[DEBUG] MISSING FEATURES: {missing}")
-                    print(f"[DEBUG] EXTRA FEATURES: {extra}")
-                
-                # Check for common sklearn feature mismatch errors
-                if "feature" in err_msg.lower() or "shape" in err_msg.lower() or "mismatch" in err_msg.lower():
-                     prediction = "Error: Model/Feature Mismatch. Re-train model."
-                else:
-                     prediction = f"Prediction Error: {err_msg[:30]}..."
+                import traceback; traceback.print_exc()
+                prediction = f"Prediction Error: {err_msg[:50]}"
         else:
             print(f"[WARN] Model not found at {model_path}")
             prediction = "No Model File (Upload 'classifier.joblib')"
@@ -607,6 +592,6 @@ if __name__ == '__main__':
     print("\n" + "=" * 50)
     print("OIR Analysis Platform")
     print("=" * 50)
-    print("\nOpen: http://localhost:5001")
+    print("\nOpen: http://localhost:5051")
     print("=" * 50 + "\n")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5051, debug=False, use_reloader=False)
