@@ -633,3 +633,238 @@ fig5.suptitle(
 plt.savefig(OUT_FILE5, dpi=180, bbox_inches='tight')
 plt.close()
 print(f"Saved: {OUT_FILE5}")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Figure 6 — Disease effect two-panel (No Collagen | +Collagen)
+# Style: full feature list, sorted by NoCol effect, background shading,
+#        colored bold labels for significant features
+# ══════════════════════════════════════════════════════════════════════════════
+
+OUT_FILE6 = Path('classification_results/three_group_analysis/disease_effect_twopanel_tav.png')
+OUT_FILE6b = Path('classification_results/three_group_analysis/disease_effect_twopanel_bav.png')
+
+COLOR_POS = '#E57373'   # red  — higher in TAA
+COLOR_NEG = '#64B5F6'   # blue — lower in TAA
+
+def make_twopanel(grp_taa, out_path):
+    """Two-panel disease effect figure: NoCollagen | +Collagen."""
+    res_nc = compare_cell('TAV-NA', 'NoCollagen', grp_taa, 'NoCollagen')
+    res_c  = compare_cell('TAV-NA', 'Collagen',   grp_taa, 'Collagen')
+
+    # Sort all features by NoCollagen Cohen's d (most negative → most positive)
+    feats_sorted = res_nc['Cohens_d'].sort_values().index.tolist()
+    n = len(feats_sorted)
+    y = np.arange(n)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 12), sharey=True)
+    fig.subplots_adjust(wspace=0.04, left=0.24, right=0.97, top=0.88, bottom=0.07)
+
+    def draw_panel(ax, res, title):
+        # Determine x range
+        all_d = res['Cohens_d'].dropna().abs().max()
+        xmax  = max(all_d * 1.25, 1.0)
+
+        # Background shading for effect size thresholds
+        ax.axvspan(-xmax, -0.8, alpha=0.07, color='#888888', zorder=0)
+        ax.axvspan( 0.8,  xmax, alpha=0.07, color='#888888', zorder=0)
+        ax.axvspan(-0.8, -0.5, alpha=0.04, color='#888888', zorder=0)
+        ax.axvspan( 0.5,  0.8, alpha=0.04, color='#888888', zorder=0)
+
+        for i, feat in enumerate(feats_sorted):
+            d   = res.loc[feat, 'Cohens_d']
+            sig = res.loc[feat, 'sig']
+            fdr = res.loc[feat, 'p_FDR']
+            if np.isnan(d):
+                continue
+            color = COLOR_POS if d >= 0 else COLOR_NEG
+            alpha = 1.0 if sig else 0.38
+            ax.barh(i, d, color=color, alpha=alpha, height=0.65, edgecolor='none', zorder=2)
+
+            s = stars(fdr)
+            if s:
+                x_off = 0.05 if d >= 0 else -0.05
+                ha    = 'left' if d >= 0 else 'right'
+                ax.text(d + x_off, i, s, va='center', ha=ha,
+                        fontsize=9, color='#111111', fontweight='bold', zorder=3)
+
+        ax.axvline(0, color='black', lw=1.0, zorder=3)
+        ax.set_xlim(-xmax, xmax)
+        ax.set_xlabel("Cohen's d (Effect Size)", fontsize=12)
+        ax.set_title(title, fontsize=13, fontweight='bold', pad=10)
+        ax.grid(axis='x', color='#dddddd', lw=0.6, zorder=1)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.text(0.99, 0.01,
+                '* p<0.05  ** p<0.01  *** p<0.001\n(BH-FDR, cell-level)',
+                transform=ax.transAxes, ha='right', va='bottom',
+                fontsize=8.5, color='#888888')
+
+        # Effect size threshold labels (on first panel only)
+        if ax == ax1:
+            ax.text(-xmax + 0.03, n - 0.5, 'Large effect', fontsize=8,
+                    color='#999999', va='top')
+            ax.text(-0.65, n - 0.5, 'Medium\neffect', fontsize=7.5,
+                    color='#aaaaaa', va='top', ha='center')
+
+    draw_panel(ax1, res_nc, f'Disease Effect  (No Collagen)\nTAV-NA  vs  {grp_taa}')
+    draw_panel(ax2, res_c,  f'Disease Effect  (+Collagen)\nTAV-NA  vs  {grp_taa}')
+
+    # Y-axis labels on ax1 only (sharey), colored by significance in NoCollagen
+    ax1.set_yticks(y)
+    tick_labels = [f.replace('_', ' ') for f in feats_sorted]
+    ax1.set_yticklabels(tick_labels, fontsize=10)
+
+    for tick, feat in zip(ax1.get_yticklabels(), feats_sorted):
+        sig = res_nc.loc[feat, 'sig']
+        d   = res_nc.loc[feat, 'Cohens_d']
+        if sig:
+            tick.set_color(COLOR_POS if d >= 0 else COLOR_NEG)
+            tick.set_fontweight('bold')
+        else:
+            tick.set_color('#555555')
+
+    # Legend
+    handles = [
+        mpatches.Patch(facecolor=COLOR_POS, alpha=1.0,  label='Higher in TAA (positive d)'),
+        mpatches.Patch(facecolor=COLOR_NEG, alpha=1.0,  label='Lower in TAA (negative d)'),
+        mpatches.Patch(facecolor='#aaaaaa', alpha=0.38, label='FDR ≥ 0.05 (faded)'),
+        mpatches.Patch(facecolor='#888888', alpha=0.07, label='Large effect  |d| > 0.8'),
+        mpatches.Patch(facecolor='#888888', alpha=0.04, label='Medium effect  |d| > 0.5'),
+    ]
+    fig.legend(handles=handles, loc='upper center', ncol=5, fontsize=9,
+               bbox_to_anchor=(0.5, 0.96), framealpha=0.9)
+
+    fig.suptitle(
+        f'SMC Morphology: Disease Effect by Collagen Condition\n'
+        f'TAV-NA vs {grp_taa}  |  Cell-level  |  BH-FDR corrected',
+        fontsize=14, fontweight='bold', y=1.00)
+
+    plt.savefig(out_path, dpi=180, bbox_inches='tight')
+    plt.close()
+    print(f"Saved: {out_path}")
+
+make_twopanel('TAV-ATAA', OUT_FILE6)
+make_twopanel('BAV-ATAA', OUT_FILE6b)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Figure 7 — 4-group boxplots for all 21 features
+# Groups: Healthy NoCol | Healthy +Col | TAV-ATAA NoCol | TAV-ATAA +Col
+# (+ separate set for BAV-ATAA)
+# ══════════════════════════════════════════════════════════════════════════════
+
+from scipy.stats import mannwhitneyu
+from itertools import combinations
+
+BOXPLOT_OUT = Path('classification_results/three_group_analysis/boxplots_4group')
+BOXPLOT_OUT.mkdir(exist_ok=True)
+BOXPLOT_OUT_BAV = Path('classification_results/three_group_analysis/boxplots_4group_bav')
+BOXPLOT_OUT_BAV.mkdir(exist_ok=True)
+
+# Colors: Healthy=green shades, TAA=red shades
+COLORS_4 = {
+    'Healthy\nNo Coll':  '#66BB6A',
+    'Healthy\n+Coll':    '#A5D6A7',
+    'TAA\nNo Coll':      '#EF5350',
+    'TAA\n+Coll':        '#FFAB91',
+}
+
+def make_4group_boxplots(taa_group, out_dir):
+    healthy_nc  = df_raw[(df_raw['Group'] == 'TAV-NA')   & (df_raw['Collagen_Status'] == 'NoCollagen')]
+    healthy_col = df_raw[(df_raw['Group'] == 'TAV-NA')   & (df_raw['Collagen_Status'] == 'Collagen')]
+    taa_nc      = df_raw[(df_raw['Group'] == taa_group)  & (df_raw['Collagen_Status'] == 'NoCollagen')]
+    taa_col     = df_raw[(df_raw['Group'] == taa_group)  & (df_raw['Collagen_Status'] == 'Collagen')]
+
+    group_labels = ['Healthy\nNo Coll', 'Healthy\n+Coll', 'TAA\nNo Coll', 'TAA\n+Coll']
+    group_data_map = {
+        'Healthy\nNo Coll': healthy_nc,
+        'Healthy\n+Coll':   healthy_col,
+        'TAA\nNo Coll':     taa_nc,
+        'TAA\n+Coll':       taa_col,
+    }
+
+    # Pairs to test (key disease + collagen comparisons)
+    test_pairs = [
+        (0, 2),  # Healthy NoCol vs TAA NoCol
+        (0, 3),  # Healthy NoCol vs TAA +Col
+        (1, 3),  # Healthy +Col vs TAA +Col
+    ]
+
+    for feat in FEATURE_COLS:
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        data_groups = [group_data_map[lbl][feat].dropna().values for lbl in group_labels]
+        colors      = [COLORS_4[lbl] for lbl in group_labels]
+        positions   = [1, 2, 3, 4]
+
+        # Boxplots
+        bp = ax.boxplot(data_groups, positions=positions, patch_artist=True,
+                        widths=0.55, showfliers=True,
+                        flierprops=dict(marker='o', markersize=3,
+                                        markerfacecolor='#888888', alpha=0.5),
+                        medianprops=dict(color='black', linewidth=2),
+                        whiskerprops=dict(linewidth=1.2),
+                        capprops=dict(linewidth=1.2),
+                        boxprops=dict(linewidth=1.2))
+
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.85)
+
+        # Mean ± SD diamond markers
+        for i, (vals, pos) in enumerate(zip(data_groups, positions)):
+            if len(vals) == 0:
+                continue
+            mean_v = np.mean(vals)
+            ax.plot(pos, mean_v, marker='D', color='black',
+                    markersize=6, zorder=5, label='Mean ± SD' if i == 0 else '')
+            sd_v = np.std(vals, ddof=1)
+            ax.errorbar(pos, mean_v, yerr=sd_v, fmt='none',
+                        color='black', capsize=4, linewidth=1.2, zorder=4)
+
+        # Significance brackets
+        y_max   = max(np.percentile(g, 97) for g in data_groups if len(g) > 0)
+        y_range = y_max - min(np.percentile(g, 3) for g in data_groups if len(g) > 0)
+        step    = y_range * 0.10
+        y_top   = y_max + step * 0.5
+
+        drawn = 0
+        for (i, j) in test_pairs:
+            d1, d2 = data_groups[i], data_groups[j]
+            if len(d1) < 3 or len(d2) < 3:
+                continue
+            _, p = mannwhitneyu(d1, d2, alternative='two-sided')
+            s = stars(p)
+            if not s:
+                continue
+            y_br = y_top + step * drawn
+            x1, x2 = positions[i], positions[j]
+            ax.plot([x1, x1, x2, x2], [y_br, y_br + step*0.3,
+                                         y_br + step*0.3, y_br],
+                    color='black', lw=1.2)
+            ax.text((x1 + x2) / 2, y_br + step * 0.32, s,
+                    ha='center', va='bottom', fontsize=11, fontweight='bold')
+            drawn += 1
+
+        ax.set_xticks(positions)
+        ax.set_xticklabels(group_labels, fontsize=11)
+        ax.set_ylabel(feat.replace('_', ' '), fontsize=11)
+        ax.set_title(feat.replace('_', ' '), fontsize=13, fontweight='bold')
+        ax.legend(fontsize=9, loc='upper right')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.grid(axis='y', color='#eeeeee', lw=0.7)
+
+        ax.text(0.01, 0.01,
+                f'TAV-NA (NC={len(healthy_nc)}, C={len(healthy_col)})  '
+                f'{taa_group} (NC={len(taa_nc)}, C={len(taa_col)})\n'
+                'Brackets: Mann-Whitney (uncorrected)',
+                transform=ax.transAxes, fontsize=7.5, color='#888888', va='bottom')
+
+        plt.tight_layout()
+        plt.savefig(out_dir / f'{feat}.png', dpi=180, bbox_inches='tight')
+        plt.close()
+
+    print(f"Saved {len(FEATURE_COLS)} boxplots → {out_dir}/")
+
+make_4group_boxplots('TAV-ATAA', BOXPLOT_OUT)
+make_4group_boxplots('BAV-ATAA', BOXPLOT_OUT_BAV)
