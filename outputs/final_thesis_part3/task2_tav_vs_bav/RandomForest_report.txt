@@ -1,0 +1,11 @@
+Task 2 — TAV-ATAA vs BAV-ATAA — RandomForest
+acc=0.769  balanced_acc=0.845
+
+              precision    recall  f1-score   support
+
+    TAV-ATAA       1.00      0.69      0.82        29
+    BAV-ATAA       0.53      1.00      0.69        10
+
+    accuracy                           0.77        39
+   macro avg       0.76      0.84      0.75        39
+weighted avg       0.88      0.77      0.78        39

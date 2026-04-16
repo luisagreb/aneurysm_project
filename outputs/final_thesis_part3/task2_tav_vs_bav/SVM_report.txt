@@ -1,0 +1,11 @@
+Task 2 — TAV-ATAA vs BAV-ATAA — SVM
+acc=0.949  balanced_acc=0.966
+
+              precision    recall  f1-score   support
+
+    TAV-ATAA       1.00      0.93      0.96        29
+    BAV-ATAA       0.83      1.00      0.91        10
+
+    accuracy                           0.95        39
+   macro avg       0.92      0.97      0.94        39
+weighted avg       0.96      0.95      0.95        39

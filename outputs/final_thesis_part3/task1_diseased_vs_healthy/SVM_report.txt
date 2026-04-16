@@ -1,0 +1,11 @@
+Task 1 — Diseased vs Healthy — SVM
+acc=0.592  balanced_acc=0.608
+
+              precision    recall  f1-score   support
+
+     Healthy       0.52      0.74      0.61        31
+    Diseased       0.70      0.47      0.57        40
+
+    accuracy                           0.59        71
+   macro avg       0.61      0.61      0.59        71
+weighted avg       0.62      0.59      0.59        71

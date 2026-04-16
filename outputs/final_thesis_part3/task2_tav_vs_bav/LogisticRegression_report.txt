@@ -1,0 +1,11 @@
+Task 2 — TAV-ATAA vs BAV-ATAA — LogisticRegression
+acc=0.897  balanced_acc=0.931
+
+              precision    recall  f1-score   support
+
+    TAV-ATAA       1.00      0.86      0.93        29
+    BAV-ATAA       0.71      1.00      0.83        10
+
+    accuracy                           0.90        39
+   macro avg       0.86      0.93      0.88        39
+weighted avg       0.93      0.90      0.90        39

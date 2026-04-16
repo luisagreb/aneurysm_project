@@ -1,0 +1,11 @@
+Task 1 — Diseased vs Healthy — RandomForest
+acc=0.465  balanced_acc=0.510
+
+              precision    recall  f1-score   support
+
+     Healthy       0.44      0.87      0.59        31
+    Diseased       0.60      0.15      0.24        40
+
+    accuracy                           0.46        71
+   macro avg       0.52      0.51      0.41        71
+weighted avg       0.53      0.46      0.39        71
