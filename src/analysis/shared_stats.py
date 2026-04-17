@@ -554,13 +554,14 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                 stars = sig_stars(q)
                 ax.set_title(f"{level}\nd={d:.2f}  q={q:.3f}  {stars}", fontsize=20)
 
-                # significance bar
+                # significance bar — placed above all visible data points
                 if q < ALPHA and len(vals_g1) > 0 and len(vals_g2) > 0:
-                    y_top = max(np.percentile(vals_g1, 95) if len(vals_g1) else 0,
-                                np.percentile(vals_g2, 95) if len(vals_g2) else 0) * 1.1
+                    all_vals = np.concatenate([vals_g1, vals_g2])
+                    y_top = all_vals.max() * 1.08
+                    ax.set_ylim(top=y_top * 1.12)
                     ax.plot([1, 1, 2, 2],
                             [y_top * 0.97, y_top, y_top, y_top * 0.97],
-                            'k-', lw=1.2)
+                            'k-', lw=1.5)
                     ax.text(1.5, y_top * 1.01, stars,
                             ha='center', fontsize=24, fontweight='bold')
 
@@ -944,7 +945,8 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                         pt_agg[(pt_agg['Disease'] == dis)][feat].dropna().values
                     ])
                     if len(all_vals):
-                        y_top = np.percentile(all_vals, 97) * 1.08
+                        y_top = all_vals.max() * 1.08
+                        ax.set_ylim(top=y_top * 1.12)
                         ax.plot([pos_nc, pos_nc, pos_col, pos_col],
                                 [y_top * 0.97, y_top, y_top, y_top * 0.97],
                                 'k-', lw=1.1)
