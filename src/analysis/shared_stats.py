@@ -514,8 +514,8 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
         feat_cols = res_cell['Feature'].tolist() if not res_cell.empty else []
 
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(16, 8))
-        fig.suptitle(feat.replace('_', ' '), fontsize=26, fontweight='bold')
+        fig, axes = plt.subplots(1, 2, figsize=(36, 18))
+        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
 
         for ax, df_use, res, level in [
             (axes[0], df_pt,  res_pt,   'Patient-level'),
@@ -541,9 +541,10 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                            color=c, alpha=0.55, s=18, zorder=4, edgecolors='none')
 
             ax.set_xticks([1, 2])
-            ax.set_xticklabels([g1_label, g2_label], fontsize=26)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=20)
-            ax.set_title(level, fontsize=22)
+            ax.set_xticklabels([g1_label, g2_label], fontsize=36)
+            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
+            ax.set_title(level, fontsize=34)
+            ax.tick_params(axis='y', labelsize=28)
             ax.grid(axis='y', alpha=0.3)
 
             # annotation
@@ -552,7 +553,7 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                 d   = row.get('Cohen_d', np.nan)
                 q   = row.get('BH_q',    1.0)
                 stars = sig_stars(q)
-                ax.set_title(f"{level}\nd={d:.2f}  q={q:.3f}  {stars}", fontsize=20)
+                ax.set_title(f"{level}\nd={d:.2f}  q={q:.3f}  {stars}", fontsize=32)
 
                 # significance bar — anchored to matplotlib's current ylim
                 if q < ALPHA and len(vals_g1) > 0 and len(vals_g2) > 0:
@@ -565,7 +566,7 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                             [ymax + yr * 0.01, bracket_y, bracket_y, ymax + yr * 0.01],
                             'k-', lw=1.5)
                     ax.text(1.5, bracket_y + yr * 0.01, stars,
-                            ha='center', va='bottom', fontsize=24, fontweight='bold')
+                            ha='center', va='bottom', fontsize=36, fontweight='bold')
 
         plt.tight_layout()
         fname = feat.replace('/', '_').replace(' ', '_')
@@ -661,25 +662,26 @@ def plot_lmm_forest(lmm, path, title='LMM — Forest Plot'):
     terms = lmm['Term'].unique().tolist()
     max_feats = max((len(lmm[lmm['Term'] == t]) for t in terms), default=6)
     fig, axes = plt.subplots(1, len(terms),
-                             figsize=(len(terms) * 8, max(10, max_feats * 1.0)))
+                             figsize=(len(terms) * 18, max(20, max_feats * 1.6)))
     if len(terms) == 1:
         axes = [axes]
-    fig.suptitle(title, fontsize=26, fontweight='bold')
+    fig.suptitle(title, fontsize=40, fontweight='bold')
 
     for ax, term in zip(axes, terms):
         sub = lmm[lmm['Term'] == term].sort_values('Coef')
         colors_feat = ['#E74C3C' if s else '#AAA' for s in sub['Significant']]
         y = np.arange(len(sub))
-        ax.scatter(sub['Coef'], y, color=colors_feat, zorder=4, s=50)
+        ax.scatter(sub['Coef'], y, color=colors_feat, zorder=4, s=120)
         for i, (_, row) in enumerate(sub.iterrows()):
             ax.plot([row['CI_low'], row['CI_high']], [i, i],
-                    color='#E74C3C' if row['Significant'] else '#CCC', lw=1.5)
-        ax.axvline(0, color='black', lw=0.9, ls='--')
+                    color='#E74C3C' if row['Significant'] else '#CCC', lw=2.5)
+        ax.axvline(0, color='black', lw=1.2, ls='--')
         ax.set_yticks(y)
-        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=30)
-        ax.set_xlabel('Coefficient (95% CI)', fontsize=22)
+        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=42)
+        ax.set_xlabel('Coefficient (95% CI)', fontsize=34)
+        ax.tick_params(axis='x', labelsize=30)
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{term}\n{n_sig}/{len(sub)} sig', fontsize=22, fontweight='bold')
+        ax.set_title(f'{term}\n{n_sig}/{len(sub)} sig', fontsize=34, fontweight='bold')
         ax.grid(axis='x', alpha=0.3)
 
     plt.tight_layout()
@@ -809,16 +811,16 @@ def plot_lmm_heatmap(lmm, path, title='LMM — All Effects'):
 
     vmax = max(3.0, float(np.abs(pivot.values).max()))
 
-    fig, ax = plt.subplots(figsize=(max(9, n_term * 2.0), max(12, n_feat * 0.52)))
+    fig, ax = plt.subplots(figsize=(max(20, n_term * 5), max(24, n_feat * 0.9)))
 
     im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r',
                    vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(np.arange(n_term))
-    ax.set_xticklabels(term_order, fontsize=20)
+    ax.set_xticklabels(term_order, fontsize=34)
     ax.set_yticks(np.arange(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=15)
-    ax.set_ylabel('Feature', fontsize=18)
+    ax.set_yticklabels(y_labels, fontsize=28)
+    ax.set_ylabel('Feature', fontsize=30)
 
     ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
@@ -829,19 +831,20 @@ def plot_lmm_heatmap(lmm, path, title='LMM — All Effects'):
         for j in range(n_term):
             if sig_pv.iloc[i, j]:
                 ax.text(j, i, '*', ha='center', va='center',
-                        fontsize=18, fontweight='bold', color='black')
+                        fontsize=30, fontweight='bold', color='black')
 
     cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.03)
     cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$',
-                   fontsize=15)
+                   fontsize=26)
+    cbar.ax.tick_params(labelsize=22)
     thr = -np.log10(ALPHA)
     for sgn in [1, -1]:
         cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=1.5)
-        cbar.ax.text(1.1, sgn * thr, 'p=0.05', va='center', fontsize=12,
+        cbar.ax.text(1.1, sgn * thr, 'p=0.05', va='center', fontsize=20,
                      transform=cbar.ax.get_yaxis_transform())
 
     ax.set_title(f'{title}\nColor = -log10(p_FDR) × sign(coef)  |  * = FDR < 0.05',
-                 fontsize=18, fontweight='bold')
+                 fontsize=30, fontweight='bold')
     plt.tight_layout()
     save(fig, path)
 
@@ -928,7 +931,7 @@ def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
 
     n_panels = len(panels)
     fig, axes = plt.subplots(n_panels, 1,
-                             figsize=(14, max(10, n_subj * 0.9) * n_panels))
+                             figsize=(28, max(16, n_subj * 1.6) * n_panels))
     if n_panels == 1:
         axes = [axes]
 
@@ -939,19 +942,19 @@ def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
                         xerr=1.96 * ses[idx],
                         fmt='o', color='black',
                         markerfacecolor='white', markeredgecolor='black',
-                        markeredgewidth=1.8, markersize=10,
-                        elinewidth=2.0, capsize=0, zorder=3)
-        ax.axvline(0, color='red', ls='--', lw=2.2)
+                        markeredgewidth=2.2, markersize=16,
+                        elinewidth=2.5, capsize=0, zorder=3)
+        ax.axvline(0, color='red', ls='--', lw=2.5)
         ax.set_yticks(range(n_subj))
-        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=22)
-        ax.set_xlabel(xlabel, fontsize=24)
-        ax.set_ylabel('Subject ID', fontsize=24)
-        ax.set_title(panel_title, fontsize=26, fontweight='bold')
-        ax.tick_params(axis='x', labelsize=20)
+        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=34)
+        ax.set_xlabel(xlabel, fontsize=36)
+        ax.set_ylabel('Subject ID', fontsize=36)
+        ax.set_title(panel_title, fontsize=40, fontweight='bold')
+        ax.tick_params(axis='x', labelsize=30)
         ax.grid(axis='x', alpha=0.3)
 
     if title:
-        fig.suptitle(title, fontsize=28, fontweight='bold')
+        fig.suptitle(title, fontsize=44, fontweight='bold')
 
     plt.tight_layout()
     save(fig, path)
@@ -991,13 +994,13 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                     edgecolor='white', height=0.85)
             ax.axvline(0, color='black', lw=1.2)
             ax.set_yticks(range(len(sub)))
-            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
-            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=24)
-            ax.tick_params(axis='x', labelsize=20)
+            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=36)
+            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=32)
+            ax.tick_params(axis='x', labelsize=28)
             n_sig = sub['Significant'].sum()
             ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n'
                          f'{n_sig}/{len(sub)} sig (BH-FDR)',
-                         fontsize=22, fontweight='bold', pad=10)
+                         fontsize=30, fontweight='bold', pad=10)
             ax.grid(axis='x', alpha=0.3)
 
             xlim = ax.get_xlim()
@@ -1006,11 +1009,11 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                 if row.get('Significant', False):
                     x = row['Cohen_d']
                     ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
-                            va='center', ha='left' if x >= 0 else 'right', fontsize=22)
+                            va='center', ha='left' if x >= 0 else 'right', fontsize=30)
 
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
     fig.legend(handles=patches, loc='lower center', ncol=3,
-               fontsize=24, bbox_to_anchor=(0.5, 0.005))
+               fontsize=30, bbox_to_anchor=(0.5, 0.005))
     # single subplots_adjust — avoids tight_layout conflict
     fig.subplots_adjust(left=0.34, right=0.97, top=0.97, bottom=0.05,
                         hspace=0.40, wspace=0.55)
@@ -1152,8 +1155,8 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
     ]
 
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(20, 9))
-        fig.suptitle(feat.replace('_', ' '), fontsize=26, fontweight='bold')
+        fig, axes = plt.subplots(1, 2, figsize=(40, 18))
+        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
 
         for ax, df_src, level_label, is_cell in [
             (axes[0], pt_agg, 'Patient-level', False),
@@ -1195,9 +1198,10 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                            color=color, alpha=0.55, s=16, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels([d[1] for d in data_groups], fontsize=24)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=20)
-            ax.set_title(level_label, fontsize=22)
+            ax.set_xticklabels([d[1] for d in data_groups], fontsize=34)
+            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
+            ax.tick_params(axis='y', labelsize=28)
+            ax.set_title(level_label, fontsize=36)
             ax.grid(axis='y', alpha=0.3)
 
             # collagen rescue p-values — compute all first, then draw with stable ylim
@@ -1248,7 +1252,7 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                             [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
                             'k-', lw=1.1)
                     ax.text((pos_nc + pos_col) / 2, b_y + yr * 0.01,
-                            sig_stars(p), ha='center', va='bottom', fontsize=22,
+                            sig_stars(p), ha='center', va='bottom', fontsize=34,
                             fontweight='bold', color='black')
 
         # legend
@@ -1260,7 +1264,7 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
             mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Coll',  hatch='///'),
         ]
         fig.legend(handles=patches, loc='lower center', ncol=4,
-                   fontsize=20, bbox_to_anchor=(0.5, -0.04))
+                   fontsize=30, bbox_to_anchor=(0.5, -0.04))
         plt.tight_layout(rect=[0, 0.06, 1, 1])
 
         fname = feat.replace('/', '_').replace(' ', '_')
@@ -1337,8 +1341,8 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
         return np.nan
 
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(22, 9))
-        fig.suptitle(feat.replace('_', ' '), fontsize=26, fontweight='bold')
+        fig, axes = plt.subplots(1, 2, figsize=(40, 18))
+        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
 
         for ax, is_cell, level_label, res in [
             (axes[0], False, 'Patient-level', res_pt),
@@ -1382,9 +1386,10 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                            color=color, alpha=0.55, s=18, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels(xlabels, fontsize=20)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=20)
-            ax.set_title(level_label, fontsize=22)
+            ax.set_xticklabels(xlabels, fontsize=34)
+            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
+            ax.tick_params(axis='y', labelsize=28)
+            ax.set_title(level_label, fontsize=36)
             ax.grid(axis='y', alpha=0.3)
             ax.set_xlim(0.3, 5.1)
 
@@ -1419,7 +1424,7 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                             [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
                             'k-', lw=1.5)
                     ax.text((x1 + x2) / 2, b_y + yr * 0.01, stars,
-                            ha='center', va='bottom', fontsize=24, fontweight='bold')
+                            ha='center', va='bottom', fontsize=36, fontweight='bold')
 
         patches = [
             mpatches.Patch(facecolor=c1,    label=f'{g1_label} NoCol'),
@@ -1428,7 +1433,7 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
             mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Col', hatch='///'),
         ]
         fig.legend(handles=patches, loc='lower center', ncol=4,
-                   fontsize=20, bbox_to_anchor=(0.5, -0.04))
+                   fontsize=30, bbox_to_anchor=(0.5, -0.04))
         plt.tight_layout(rect=[0, 0.06, 1, 1])
         fname = feat.replace('/', '_').replace(' ', '_')
         save(fig, out / f'{prefix}_{fname}.png')
