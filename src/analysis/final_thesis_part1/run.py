@@ -93,9 +93,7 @@ def main():
     print("\n" + "=" * 70)
     print("L3 — LMM CONFIRMATORY")
     print("=" * 70)
-    sig_feats = (res_pt.loc[res_pt['Significant'], 'Feature'].tolist()
-                 if not res_pt.empty else feat_cols)
-    lmm = ss.run_lmm(df, G1, G2, feat_cols, sig_feats=sig_feats, label='LMM')
+    lmm = ss.run_lmm(df, G1, G2, feat_cols, sig_feats=None, label='LMM')
     if lmm is not None:
         lmm.to_csv(LMM_DIR / 'L3_lmm_results.csv', index=False)
         ss.plot_lmm_forest(lmm, LMM_DIR / 'L3_lmm_forest.png',
