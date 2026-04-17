@@ -554,16 +554,18 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                 stars = sig_stars(q)
                 ax.set_title(f"{level}\nd={d:.2f}  q={q:.3f}  {stars}", fontsize=20)
 
-                # significance bar — placed above all visible data points
+                # significance bar — anchored to matplotlib's current ylim
                 if q < ALPHA and len(vals_g1) > 0 and len(vals_g2) > 0:
-                    all_vals = np.concatenate([vals_g1, vals_g2])
-                    y_top = all_vals.max() * 1.08
-                    ax.set_ylim(top=y_top * 1.12)
+                    ymin, ymax = ax.get_ylim()
+                    yr = ymax - ymin
+                    bracket_y  = ymax + yr * 0.03
+                    new_top    = ymax + yr * 0.18
+                    ax.set_ylim(ymin, new_top)
                     ax.plot([1, 1, 2, 2],
-                            [y_top * 0.97, y_top, y_top, y_top * 0.97],
+                            [ymax + yr * 0.01, bracket_y, bracket_y, ymax + yr * 0.01],
                             'k-', lw=1.5)
-                    ax.text(1.5, y_top * 1.01, stars,
-                            ha='center', fontsize=24, fontweight='bold')
+                    ax.text(1.5, bracket_y + yr * 0.01, stars,
+                            ha='center', va='bottom', fontsize=24, fontweight='bold')
 
         plt.tight_layout()
         fname = feat.replace('/', '_').replace(' ', '_')
@@ -939,20 +941,16 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                         p = np.nan
 
                 if not np.isnan(p):
-                    all_vals = np.concatenate([
-                        df_src[(df_src['Disease'] == dis)][feat].dropna().values
-                        if is_cell else
-                        pt_agg[(pt_agg['Disease'] == dis)][feat].dropna().values
-                    ])
-                    if len(all_vals):
-                        y_top = all_vals.max() * 1.08
-                        ax.set_ylim(top=y_top * 1.12)
-                        ax.plot([pos_nc, pos_nc, pos_col, pos_col],
-                                [y_top * 0.97, y_top, y_top, y_top * 0.97],
-                                'k-', lw=1.1)
-                        ax.text((pos_nc + pos_col) / 2, y_top * 1.01,
-                                sig_stars(p), ha='center', fontsize=22,
-                                fontweight='bold', color='black')
+                    ymin, ymax = ax.get_ylim()
+                    yr = ymax - ymin
+                    bracket_y = ymax + yr * 0.03
+                    ax.set_ylim(ymin, ymax + yr * 0.18)
+                    ax.plot([pos_nc, pos_nc, pos_col, pos_col],
+                            [ymax + yr * 0.01, bracket_y, bracket_y, ymax + yr * 0.01],
+                            'k-', lw=1.1)
+                    ax.text((pos_nc + pos_col) / 2, bracket_y + yr * 0.01,
+                            sig_stars(p), ha='center', va='bottom', fontsize=22,
+                            fontweight='bold', color='black')
 
         # legend
         import matplotlib.patches as mpatches
