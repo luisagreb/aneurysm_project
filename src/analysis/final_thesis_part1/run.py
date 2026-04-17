@@ -98,6 +98,12 @@ def main():
         lmm.to_csv(LMM_DIR / 'L3_lmm_results.csv', index=False)
         ss.plot_lmm_forest(lmm, LMM_DIR / 'L3_lmm_forest.png',
                            title=f'LMM — {G1_LABEL} vs {G2_LABEL}')
+        dis_rows = lmm[lmm['Term'] == f'{G2_LABEL} vs {G1_LABEL}']
+        best_feat = (dis_rows.sort_values('p').iloc[0]['Feature']
+                     if not dis_rows.empty else feat_cols[0])
+        ss.plot_lmm_caterpillar(df, G1, G2, best_feat,
+                                LMM_DIR / 'L3_lmm_caterpillar.png',
+                                title=f'LMM Random Effects — {best_feat.replace("_", " ")}')
 
     # ── L4 Collagen rescue ────────────────────────────────────────────────────
     print("\n" + "=" * 70)

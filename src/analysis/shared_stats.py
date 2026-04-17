@@ -102,7 +102,7 @@ def footer(fig, level='patient'):
             else 'Cell-level — exploratory (BH-FDR)')
     fig.text(0.98, 0.005,
              f'* p<0.05  ** p<0.01  *** p<0.001  ({note})',
-             ha='right', fontsize=22, style='italic', color='#555')
+             ha='right', fontsize=56, style='italic', color='#555')
 
 
 def adaptive_test(a, b):
@@ -584,31 +584,35 @@ def plot_cohens_d_bars(res, path, title, g1_label, g2_label, level='patient'):
     sub = res.sort_values('Cohen_d', ascending=True).copy()
     colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
 
-    fig, ax = plt.subplots(figsize=(40, max(20, len(sub) * 2.4)))
+    fig_side = max(40, len(sub) * 2.4)
+    fig, ax = plt.subplots(figsize=(fig_side, fig_side))
     bars = ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
                    edgecolor='white', height=0.85)
     ax.axvline(0, color='black', lw=1.2)
     ax.set_yticks(range(len(sub)))
-    ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=34)
-    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=28)
-    ax.set_title(title, fontsize=30, fontweight='bold')
-    ax.tick_params(axis='x', labelsize=24)
+    ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=100)
+    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=80)
+    ax.set_title(title, fontsize=90, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=70)
     ax.grid(axis='x', alpha=0.3)
 
     xlim = ax.get_xlim()
-    pad  = (xlim[1] - xlim[0]) * 0.02
+    x_range = xlim[1] - xlim[0]
+    ax.set_xlim(xlim[0] - x_range * 0.08, xlim[1] + x_range * 0.08)
+    xlim = ax.get_xlim()
+    pad  = (xlim[1] - xlim[0]) * 0.03
     for i, (_, row) in enumerate(sub.iterrows()):
         if row.get('Significant', False):
             x = row['Cohen_d']
             ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
                     va='center', ha='left' if x >= 0 else 'right',
-                    fontsize=26, fontweight='bold')
+                    fontsize=76, fontweight='bold')
 
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, fontsize=24, loc='lower right')
+    ax.legend(handles=patches, fontsize=70, loc='lower right')
     footer(fig, level)
     plt.tight_layout()
-    fig.subplots_adjust(left=0.38)
+    fig.subplots_adjust(left=0.40)
     save(fig, path)
 
 
@@ -677,6 +681,117 @@ def plot_lmm_forest(lmm, path, title='LMM — Forest Plot'):
         n_sig = sub['Significant'].sum()
         ax.set_title(f'{term}\n{n_sig}/{len(sub)} sig', fontsize=22, fontweight='bold')
         ax.grid(axis='x', alpha=0.3)
+
+    plt.tight_layout()
+    save(fig, path)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PLOT: LMM CATERPILLAR (random effects per subject)
+# ══════════════════════════════════════════════════════════════════════════════
+def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
+    """
+    Caterpillar plot of LMM random effects for a single feature.
+    Tries a random-slope model (Disease_bin | Subject) first;
+    falls back to random-intercept only.
+    Two panels: Random Slopes (top) + Random Intercepts (bottom).
+    """
+    if not HAS_STATSMODELS:
+        return
+
+    df2 = df[df['Disease'].isin([g1, g2])].copy()
+    df2['Disease_bin'] = (df2['Disease'] == g2).astype(float)
+    df2['Sex_bin']     = (df2['Gender']  == 'Male').astype(float)
+
+    needed = ['Subject', 'Disease_bin', 'Age', 'Sex_bin', feat_col]
+    sub = df2[needed].rename(columns={feat_col: 'Y'}).dropna()
+
+    if sub['Subject'].nunique() < 5:
+        print(f"  Caterpillar: too few subjects ({sub['Subject'].nunique()}) — skipped")
+        return
+
+    # ── fit model ─────────────────────────────────────────────────────────────
+    has_slope = False
+    res = None
+    try:
+        res = smf.mixedlm(
+            'Y ~ Disease_bin + Age + Sex_bin',
+            data=sub, groups=sub['Subject'],
+            re_formula='~Disease_bin'
+        ).fit(reml=True, method='lbfgs')
+        has_slope = True
+        print(f"  Caterpillar: random-slope model for {feat_col}")
+    except Exception:
+        pass
+
+    if res is None:
+        try:
+            res = smf.mixedlm(
+                'Y ~ Disease_bin + Age + Sex_bin',
+                data=sub, groups=sub['Subject']
+            ).fit(reml=True, method='lbfgs')
+            print(f"  Caterpillar: random-intercept model for {feat_col}")
+        except Exception as e:
+            print(f"  Caterpillar: model failed — {e}")
+            return
+
+    # ── extract BLUPs and posterior SEs ───────────────────────────────────────
+    re_blups = res.random_effects          # {subject: pd.Series}
+    subjects = sorted(re_blups.keys())
+    n_subj   = len(subjects)
+
+    int_vals = np.array([re_blups[s].iloc[0] for s in subjects])
+    if has_slope and all(len(re_blups[s]) > 1 for s in subjects):
+        slp_vals = np.array([re_blups[s].iloc[1] for s in subjects])
+    else:
+        has_slope = False
+
+    try:
+        re_cov   = res.random_effects_cov  # {subject: pd.DataFrame}
+        int_ses  = np.array([np.sqrt(re_cov[s].iloc[0, 0]) for s in subjects])
+        slp_ses  = (np.array([np.sqrt(re_cov[s].iloc[1, 1]) for s in subjects])
+                    if has_slope else None)
+    except Exception:
+        # fallback: uniform SE from population covariance diagonal
+        cov_re  = res.cov_re.values
+        int_ses = np.full(n_subj, np.sqrt(cov_re[0, 0]))
+        slp_ses = (np.full(n_subj, np.sqrt(cov_re[1, 1]))
+                   if has_slope and cov_re.shape[0] > 1 else None)
+        if has_slope and slp_ses is None:
+            has_slope = False
+
+    # ── build panels list ─────────────────────────────────────────────────────
+    panels = []
+    if has_slope:
+        panels.append((slp_vals, slp_ses, 'Random Slopes',     'Slope'))
+    panels.append(    (int_vals, int_ses, 'Random Intercepts', 'Intercept'))
+
+    n_panels = len(panels)
+    fig, axes = plt.subplots(n_panels, 1,
+                             figsize=(14, max(10, n_subj * 0.9) * n_panels))
+    if n_panels == 1:
+        axes = [axes]
+
+    for ax, (vals, ses, panel_title, xlabel) in zip(axes, panels):
+        order = np.argsort(vals)           # ascending → highest subject ends up at top
+        for rank, idx in enumerate(order):
+            ax.errorbar(vals[idx], rank,
+                        xerr=1.96 * ses[idx],
+                        fmt='o', color='black',
+                        markerfacecolor='white', markeredgecolor='black',
+                        markeredgewidth=1.8, markersize=10,
+                        elinewidth=2.0, capsize=0, zorder=3)
+        ax.axvline(0, color='red', ls='--', lw=2.2)
+        ax.set_yticks(range(n_subj))
+        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=22)
+        ax.set_xlabel(xlabel, fontsize=24)
+        ax.set_ylabel('Subject ID', fontsize=24)
+        ax.set_title(panel_title, fontsize=26, fontweight='bold')
+        ax.tick_params(axis='x', labelsize=20)
+        ax.grid(axis='x', alpha=0.3)
+
+    if title:
+        fig.suptitle(title, fontsize=28, fontweight='bold')
 
     plt.tight_layout()
     save(fig, path)
