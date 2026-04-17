@@ -148,6 +148,8 @@ def main():
 
     ss.plot_sex_bars(sex_pt, sex_cell, SEX_DIR / 'L5_sex_effect.png',
                      title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
+    ss.plot_sex_heatmap(df_pt, feat_cols, G1, G2, SEX_DIR / 'L5_sex_heatmap.png',
+                        title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
 
     # ── L6 Hypertension ───────────────────────────────────────────────────────
     print("\n" + "=" * 70)
@@ -179,15 +181,18 @@ def main():
 
     if not diam_pt.empty:
         diam_pt.to_csv(DIAM_DIR / 'L7_diameter_pt.csv', index=False)
+        n_subj = df_pt['AortaDiam_mm'].notna().sum()
+        ss.plot_diameter_spearman(
+            diam_pt, DIAM_DIR / 'L7_diameter_pt.png',
+            title=f'Aortic diameter ↔ morphology\n{G1_LABEL} + {G2_LABEL} combined'
+                  f'  (N={n_subj} specimens)\nSolid = FDR<0.05, faded = ns')
     if not diam_cell.empty:
         diam_cell.to_csv(DIAM_DIR / 'L7_diameter_cell.csv', index=False)
-
-    if not diam_pt.empty:
-        _plot_spearman_bars(diam_pt, DIAM_DIR / 'L7_diameter_pt.png',
-                            f'L7 Aorta Diameter Spearman — Patient-level')
-    if not diam_cell.empty:
-        _plot_spearman_bars(diam_cell, DIAM_DIR / 'L7_diameter_cell.png',
-                            f'L7 Aorta Diameter Spearman — Cell-level')
+        n_cells = df_nc['AortaDiam_mm'].notna().sum()
+        ss.plot_diameter_spearman(
+            diam_cell, DIAM_DIR / 'L7_diameter_cell.png',
+            title=f'Aortic diameter ↔ morphology (cell-level)\n{G1_LABEL} + {G2_LABEL}'
+                  f'  (N={n_cells} cells)\nSolid = FDR<0.05, faded = ns')
 
     # ── Summary ───────────────────────────────────────────────────────────────
     print("\n" + "=" * 70)

@@ -633,22 +633,21 @@ def plot_level_comparison(res_pt, res_cell, path, title):
 
     n = len(merged)
     y = np.arange(n)
-    fig, ax = plt.subplots(figsize=(42, max(20, n * 2.4)))
+    fig, ax = plt.subplots(figsize=(50, max(24, n * 3.0)))
     bw = 0.35
     ax.barh(y - bw/2, merged['-l10_pt'],   height=bw,
             color=LEVEL_COLORS['Patient'], label='Patient-level', alpha=0.85)
     ax.barh(y + bw/2, merged['-l10_cell'], height=bw,
             color=LEVEL_COLORS['Cell'],    label='Cell-level (exploratory)', alpha=0.85)
-    ax.axvline(thr, color='red', ls='--', lw=1.5, label=f'FDR = {ALPHA}')
+    ax.axvline(thr, color='red', ls='--', lw=2.0, label=f'FDR = {ALPHA}')
     ax.set_yticks(y)
-    ax.set_yticklabels([f.replace('_', ' ') for f in merged['Feature']], fontsize=34)
-    ax.set_xlabel('-log₁₀ (BH-FDR q-value)', fontsize=28)
-    ax.set_title(title, fontsize=30, fontweight='bold')
-    ax.tick_params(axis='x', labelsize=24)
-    ax.legend(fontsize=24)
+    ax.set_yticklabels([f.replace('_', ' ') for f in merged['Feature']], fontsize=52)
+    ax.set_xlabel('-log₁₀ (BH-FDR q-value)', fontsize=44)
+    ax.set_title(title, fontsize=46, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=38)
+    ax.legend(fontsize=38, loc='lower right')
     ax.grid(axis='x', alpha=0.3)
-    plt.tight_layout()
-    fig.subplots_adjust(left=0.38)
+    fig.subplots_adjust(left=0.44, right=0.97, top=0.95, bottom=0.06)
     save(fig, path)
 
 
@@ -994,7 +993,10 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                     edgecolor='white', height=0.85)
             ax.axvline(0, color='black', lw=1.2)
             ax.set_yticks(range(len(sub)))
-            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=36)
+            if col_i == 0:
+                ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=36)
+            else:
+                ax.set_yticklabels([])
             ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=32)
             ax.tick_params(axis='x', labelsize=28)
             n_sig = sub['Significant'].sum()
@@ -1014,9 +1016,8 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
     fig.legend(handles=patches, loc='lower center', ncol=3,
                fontsize=30, bbox_to_anchor=(0.5, 0.005))
-    # single subplots_adjust — avoids tight_layout conflict
-    fig.subplots_adjust(left=0.34, right=0.97, top=0.97, bottom=0.05,
-                        hspace=0.40, wspace=0.55)
+    fig.subplots_adjust(left=0.38, right=0.97, top=0.93, bottom=0.06,
+                        hspace=0.55, wspace=0.30)
     save(fig, path)
 
 
@@ -1111,6 +1112,152 @@ def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
     save(fig, out / 'SUMMARY_pca.png')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PLOT: AORTA DIAMETER — STYLED SPEARMAN BARS
+# ══════════════════════════════════════════════════════════════════════════════
+def plot_diameter_spearman(res, path, title='L7 — Aorta Diameter'):
+    """
+    Styled Spearman ρ bar chart (reference style).
+    Red = negative ρ, blue = positive ρ.
+    Solid = FDR < 0.05, faded (alpha=0.22) = ns.
+    Features sorted by organelle group then name.
+    """
+    if res.empty:
+        return
+
+    org_rank = {'Actin': 0, 'Mitochondria': 1, 'Nucleus': 2, 'Other': 3}
+    sub = res.copy()
+    sub['_org_rank'] = sub['Organelle'].map(org_rank).fillna(3)
+    sub = sub.sort_values(['_org_rank', 'Feature']).reset_index(drop=True)
+    n = len(sub)
+
+    fig, ax = plt.subplots(figsize=(32, max(22, n * 1.4)))
+    ax.set_facecolor('#F4F6F9')
+    fig.patch.set_facecolor('white')
+
+    for i, row in sub.iterrows():
+        rho = row['Spearman_r']
+        sig = row.get('Significant', False)
+        alp = 0.88 if sig else 0.22
+        col = '#C0392B' if rho < 0 else '#2471A3'
+        ax.barh(i, rho, color=col, alpha=alp, height=0.72, edgecolor='none')
+
+    ax.axvline(0, color='#777', ls='--', lw=1.4)
+    ax.set_xlim(-1.05, 1.05)
+    ax.set_xticks(np.arange(-1.0, 1.25, 0.25))
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(sub['Feature'], fontsize=34)
+    ax.set_xlabel('Spearman ρ  (feature vs. aortic diameter)', fontsize=30)
+    ax.set_title(title, fontsize=34, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=28)
+    ax.grid(axis='x', color='white', linewidth=1.8, zorder=0)
+
+    # organelle separator lines
+    prev_org = None
+    for i, row in sub.iterrows():
+        if prev_org is not None and row['Organelle'] != prev_org:
+            ax.axhline(i - 0.5, color='#BBBBBB', lw=1.4)
+        prev_org = row['Organelle']
+
+    # significance stars in matching colour
+    for i, row in sub.iterrows():
+        if row.get('Significant', False):
+            x = row['Spearman_r']
+            col = '#C0392B' if x < 0 else '#2471A3'
+            ax.text(x + (0.03 if x >= 0 else -0.03), i, sig_stars(row['BH_q']),
+                    va='center', ha='left' if x >= 0 else 'right',
+                    fontsize=30, fontweight='bold', color=col)
+
+    solid_p = mpatches.Patch(color='#777', alpha=0.88, label='FDR < 0.05  (solid)')
+    faded_p = mpatches.Patch(color='#777', alpha=0.22, label='ns  (faded)')
+    ax.legend(handles=[solid_p, faded_p], fontsize=26, loc='lower right', framealpha=0.9)
+
+    fig.subplots_adjust(left=0.42, right=0.97, top=0.93, bottom=0.07)
+    save(fig, path)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PLOT: SEX EFFECT HEATMAP (Cohen's d per group)
+# ══════════════════════════════════════════════════════════════════════════════
+def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path, title='Sex Effect'):
+    """
+    Heatmap of Cohen's d (Male − Female) within each group.
+    One column per group; features sorted by mean |Cohen's d|.
+    Stars for BH-FDR < 0.05 within each group.
+    """
+    groups = [g1, g2]
+    d_cols, q_cols, col_labels = [], [], []
+
+    for g in groups:
+        sub_g = df_pt[df_pt['Disease'] == g]
+        nm = int((sub_g['Gender'] == 'Male').sum())
+        nf = int((sub_g['Gender'] == 'Female').sum())
+        col_labels.append(f"{GROUP_LABELS[g]}\n(M={nm}, F={nf})")
+
+        ds, pvals = [], []
+        for feat in feat_cols:
+            m = sub_g[sub_g['Gender'] == 'Male'][feat].dropna().values
+            f = sub_g[sub_g['Gender'] == 'Female'][feat].dropna().values
+            if len(m) >= 2 and len(f) >= 2:
+                d = cohens_d(f, m)
+                try:
+                    _, p = mannwhitneyu(m, f, alternative='two-sided')
+                except Exception:
+                    p = np.nan
+            else:
+                d, p = 0.0, np.nan
+            ds.append(d)
+            pvals.append(p if not np.isnan(p) else 1.0)
+
+        qs = bh_fdr(np.array(pvals))
+        d_cols.append(ds)
+        q_cols.append(qs)
+
+    d_df  = pd.DataFrame(np.column_stack(d_cols), index=feat_cols, columns=col_labels)
+    q_df  = pd.DataFrame(np.column_stack(q_cols), index=feat_cols, columns=col_labels)
+    sig_df = q_df < ALPHA
+
+    order = d_df.abs().mean(axis=1).sort_values().index
+    d_df  = d_df.loc[order]
+    q_df  = q_df.loc[order]
+    sig_df = sig_df.loc[order]
+
+    n_feat = len(d_df)
+    n_col  = len(groups)
+    vmax   = max(4.0, float(d_df.abs().values.max()))
+
+    fig, ax = plt.subplots(figsize=(max(16, n_col * 7), max(24, n_feat * 0.9)))
+
+    im = ax.imshow(d_df.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
+
+    ax.set_xticks(range(n_col))
+    ax.set_xticklabels(col_labels, fontsize=32)
+    ax.set_yticks(range(n_feat))
+    ax.set_yticklabels(d_df.index, fontsize=28)
+
+    ax.set_xticks(np.arange(-0.5, n_col, 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
+    ax.grid(which='minor', color='white', linewidth=1.8)
+    ax.tick_params(which='minor', bottom=False, left=False)
+
+    for i in range(n_feat):
+        for j in range(n_col):
+            if sig_df.iloc[i, j]:
+                ax.text(j, i, sig_stars(q_df.iloc[i, j]),
+                        ha='center', va='center',
+                        fontsize=26, fontweight='bold', color='black')
+
+    cbar = fig.colorbar(im, ax=ax, fraction=0.06, pad=0.02)
+    cbar.set_label("Cohen's d", fontsize=30)
+    cbar.ax.tick_params(labelsize=26)
+
+    ax.set_title(f"{title}\nCohen's d  (Male − Female)\n* FDR<0.05  ** <0.01  *** <0.001",
+                 fontsize=32, fontweight='bold')
+
+    plt.tight_layout()
+    save(fig, path)
 
 
 # ══════════════════════════════════════════════════════════════════════════════

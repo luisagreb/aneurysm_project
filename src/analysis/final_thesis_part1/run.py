@@ -143,6 +143,8 @@ def main():
 
     ss.plot_sex_bars(sex_pt, sex_cell, SEX_DIR / 'L5_sex_effect.png',
                      title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
+    ss.plot_sex_heatmap(df_pt, feat_cols, G1, G2, SEX_DIR / 'L5_sex_heatmap.png',
+                        title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
 
     # ── Summary ───────────────────────────────────────────────────────────────
     print("\n" + "=" * 70)
