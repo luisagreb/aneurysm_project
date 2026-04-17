@@ -1100,3 +1100,170 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
         save(fig, out / f'{prefix}_{fname}.png')
 
     print(f"  Collagen per-feature boxplots saved → {out}/")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PLOT: RESCUE COMPARISON — g1 NoCol | g1 +Col | g2 NoCol | g2 +Col
+# ══════════════════════════════════════════════════════════════════════════════
+def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
+                                     res_pt, res_cell, g1, g2,
+                                     out_dir, prefix='rescue'):
+    """
+    Per-feature boxplots with 4 groups per panel:
+      g1 NoCol | g1 +Col | g2 NoCol | g2 +Col
+    Left panel = patient-level, right panel = cell-level.
+    Significance brackets (only drawn when significant):
+      - g1 NoCol vs g2 NoCol : disease effect  (BH-q from res_pt / res_cell)
+      - g1 NoCol vs g1 +Col  : g1 rescue       (Wilcoxon patient / MWU cell)
+      - g2 NoCol vs g2 +Col  : g2 rescue       (Wilcoxon patient / MWU cell)
+    Disease bracket is placed highest; rescue brackets stacked below it.
+    """
+    from scipy.stats import wilcoxon as _wilcoxon
+    import matplotlib.colors as mc
+
+    out = Path(out_dir) / 'per_feature_rescue'
+    out.mkdir(parents=True, exist_ok=True)
+
+    g1_label = GROUP_LABELS[g1]
+    g2_label = GROUP_LABELS[g2]
+    c1 = GROUP_COLORS[g1]
+    c2 = GROUP_COLORS[g2]
+
+    def lighten(hex_color, factor=0.45):
+        rgb = mc.to_rgb(hex_color)
+        return tuple(min(1.0, v + (1 - v) * factor) for v in rgb)
+
+    c1_col = lighten(c1)
+    c2_col = lighten(c2)
+
+    # patient-level per Subject × Disease × Collagen_Status
+    pt_agg = (df.groupby(['Subject', 'Disease', 'Collagen_Status'])[feat_cols]
+              .mean().reset_index())
+
+    rng = np.random.default_rng(42)
+
+    # positions: gap between g1 pair and g2 pair
+    positions  = [1, 2, 3.4, 4.4]
+    colors_box = [c1, c1_col, c2, c2_col]
+    hatches    = [None, '///', None, '///']
+
+    def _rescue_p(is_cell, dis, v_nc, v_col):
+        if is_cell:
+            if len(v_nc) >= 3 and len(v_col) >= 3:
+                try:
+                    _, p = mannwhitneyu(v_nc, v_col, alternative='two-sided')
+                    return p
+                except Exception:
+                    pass
+        else:
+            nc_s  = pt_agg[(pt_agg['Disease'] == dis) &
+                            (pt_agg['Collagen_Status'] == 'NoCollagen')].set_index('Subject')[feat]
+            col_s = pt_agg[(pt_agg['Disease'] == dis) &
+                            (pt_agg['Collagen_Status'] == 'Collagen')].set_index('Subject')[feat]
+            common = nc_s.index.intersection(col_s.index)
+            if len(common) >= 4:
+                try:
+                    _, p = _wilcoxon(col_s.loc[common].values - nc_s.loc[common].values)
+                    return p
+                except Exception:
+                    pass
+        return np.nan
+
+    for feat in feat_cols:
+        fig, axes = plt.subplots(1, 2, figsize=(22, 9))
+        fig.suptitle(feat.replace('_', ' '), fontsize=26, fontweight='bold')
+
+        for ax, is_cell, level_label, res in [
+            (axes[0], False, 'Patient-level', res_pt),
+            (axes[1], True,  'Cell-level',    res_cell),
+        ]:
+            # ── data ──────────────────────────────────────────────────────────
+            if is_cell:
+                v_g1_nc  = df_nc[df_nc['Disease'] == g1][feat].dropna().values
+                v_g1_col = (df[(df['Disease'] == g1) &
+                               (df['Collagen_Status'] == 'Collagen')][feat].dropna().values)
+                v_g2_nc  = df_nc[df_nc['Disease'] == g2][feat].dropna().values
+                v_g2_col = (df[(df['Disease'] == g2) &
+                               (df['Collagen_Status'] == 'Collagen')][feat].dropna().values)
+            else:
+                v_g1_nc  = df_pt[df_pt['Disease'] == g1][feat].dropna().values
+                v_g1_col = (pt_agg[(pt_agg['Disease'] == g1) &
+                                   (pt_agg['Collagen_Status'] == 'Collagen')][feat].dropna().values)
+                v_g2_nc  = df_pt[df_pt['Disease'] == g2][feat].dropna().values
+                v_g2_col = (pt_agg[(pt_agg['Disease'] == g2) &
+                                   (pt_agg['Collagen_Status'] == 'Collagen')][feat].dropna().values)
+
+            data    = [v_g1_nc, v_g1_col, v_g2_nc, v_g2_col]
+            xlabels = [f'{g1_label}\nNoCol', f'{g1_label}\n+Col',
+                       f'{g2_label}\nNoCol', f'{g2_label}\n+Col']
+
+            bp = ax.boxplot(data, positions=positions, patch_artist=True,
+                            medianprops=dict(color='black', lw=2),
+                            whiskerprops=dict(lw=1.2),
+                            capprops=dict(lw=1.2),
+                            flierprops=dict(marker='o', markersize=3, alpha=0.4),
+                            widths=0.65)
+            for bx, color, hatch in zip(bp['boxes'], colors_box, hatches):
+                bx.set_facecolor(color)
+                bx.set_alpha(0.72)
+                if hatch:
+                    bx.set_hatch(hatch)
+
+            for pos, vals, color in zip(positions, data, colors_box):
+                jit = rng.uniform(-0.18, 0.18, len(vals))
+                ax.scatter(np.full(len(vals), pos) + jit, vals,
+                           color=color, alpha=0.55, s=18, zorder=4, edgecolors='none')
+
+            ax.set_xticks(positions)
+            ax.set_xticklabels(xlabels, fontsize=20)
+            ax.set_ylabel(feat.replace('_', ' '), fontsize=20)
+            ax.set_title(level_label, fontsize=22)
+            ax.grid(axis='y', alpha=0.3)
+            ax.set_xlim(0.3, 5.1)
+
+            # ── p-values ───────────────────────────────────────────────────────
+            dis_q = np.nan
+            if res is not None and not res.empty and feat in res['Feature'].values:
+                dis_q = res.loc[res['Feature'] == feat, 'BH_q'].iloc[0]
+
+            p_g1_rescue = _rescue_p(is_cell, g1, v_g1_nc, v_g1_col)
+            p_g2_rescue = _rescue_p(is_cell, g2, v_g2_nc, v_g2_col)
+
+            # build significant bracket list, disease bracket placed last (highest)
+            rescue_brackets = []
+            if not np.isnan(p_g1_rescue) and p_g1_rescue < ALPHA:
+                rescue_brackets.append((positions[0], positions[1], sig_stars(p_g1_rescue)))
+            if not np.isnan(p_g2_rescue) and p_g2_rescue < ALPHA:
+                rescue_brackets.append((positions[2], positions[3], sig_stars(p_g2_rescue)))
+
+            dis_bracket = []
+            if not np.isnan(dis_q) and dis_q < ALPHA:
+                dis_bracket = [(positions[0], positions[2], sig_stars(dis_q))]
+
+            all_brackets = rescue_brackets + dis_bracket  # rescue lower, disease higher
+
+            if all_brackets:
+                ymin, ymax = ax.get_ylim()
+                yr = ymax - ymin
+                ax.set_ylim(ymin, ymax + yr * 0.15 * len(all_brackets))
+                for k, (x1, x2, stars) in enumerate(all_brackets):
+                    b_y = ymax + yr * (0.03 + 0.13 * k)
+                    ax.plot([x1, x1, x2, x2],
+                            [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
+                            'k-', lw=1.5)
+                    ax.text((x1 + x2) / 2, b_y + yr * 0.01, stars,
+                            ha='center', va='bottom', fontsize=24, fontweight='bold')
+
+        patches = [
+            mpatches.Patch(facecolor=c1,    label=f'{g1_label} NoCol'),
+            mpatches.Patch(facecolor=c1_col, label=f'{g1_label} +Col', hatch='///'),
+            mpatches.Patch(facecolor=c2,    label=f'{g2_label} NoCol'),
+            mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Col', hatch='///'),
+        ]
+        fig.legend(handles=patches, loc='lower center', ncol=4,
+                   fontsize=20, bbox_to_anchor=(0.5, -0.04))
+        plt.tight_layout(rect=[0, 0.06, 1, 1])
+        fname = feat.replace('/', '_').replace(' ', '_')
+        save(fig, out / f'{prefix}_{fname}.png')
+
+    print(f"  Rescue comparison boxplots saved → {out}/")
