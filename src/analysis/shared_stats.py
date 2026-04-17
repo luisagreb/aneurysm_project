@@ -102,7 +102,7 @@ def footer(fig, level='patient'):
             else 'Cell-level — exploratory (BH-FDR)')
     fig.text(0.98, 0.005,
              f'* p<0.05  ** p<0.01  *** p<0.001  ({note})',
-             ha='right', fontsize=18, style='italic', color='#555')
+             ha='right', fontsize=22, style='italic', color='#555')
 
 
 def adaptive_test(a, b):
@@ -584,14 +584,15 @@ def plot_cohens_d_bars(res, path, title, g1_label, g2_label, level='patient'):
     sub = res.sort_values('Cohen_d', ascending=True).copy()
     colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
 
-    fig, ax = plt.subplots(figsize=(16, max(10, len(sub) * 0.85)))
+    fig, ax = plt.subplots(figsize=(40, max(20, len(sub) * 2.4)))
     bars = ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
-                   edgecolor='white', height=0.7)
-    ax.axvline(0, color='black', lw=0.9)
+                   edgecolor='white', height=0.85)
+    ax.axvline(0, color='black', lw=1.2)
     ax.set_yticks(range(len(sub)))
-    ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
-    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=24)
-    ax.set_title(title, fontsize=26, fontweight='bold')
+    ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=34)
+    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=28)
+    ax.set_title(title, fontsize=30, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=24)
     ax.grid(axis='x', alpha=0.3)
 
     xlim = ax.get_xlim()
@@ -601,12 +602,13 @@ def plot_cohens_d_bars(res, path, title, g1_label, g2_label, level='patient'):
             x = row['Cohen_d']
             ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
                     va='center', ha='left' if x >= 0 else 'right',
-                    fontsize=22, fontweight='bold')
+                    fontsize=26, fontweight='bold')
 
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, fontsize=20, loc='lower right')
+    ax.legend(handles=patches, fontsize=24, loc='lower right')
     footer(fig, level)
     plt.tight_layout()
+    fig.subplots_adjust(left=0.38)
     save(fig, path)
 
 
@@ -626,7 +628,7 @@ def plot_level_comparison(res_pt, res_cell, path, title):
 
     n = len(merged)
     y = np.arange(n)
-    fig, ax = plt.subplots(figsize=(18, max(10, n * 0.85)))
+    fig, ax = plt.subplots(figsize=(42, max(20, n * 2.4)))
     bw = 0.35
     ax.barh(y - bw/2, merged['-l10_pt'],   height=bw,
             color=LEVEL_COLORS['Patient'], label='Patient-level', alpha=0.85)
@@ -634,12 +636,14 @@ def plot_level_comparison(res_pt, res_cell, path, title):
             color=LEVEL_COLORS['Cell'],    label='Cell-level (exploratory)', alpha=0.85)
     ax.axvline(thr, color='red', ls='--', lw=1.5, label=f'FDR = {ALPHA}')
     ax.set_yticks(y)
-    ax.set_yticklabels([f.replace('_', ' ') for f in merged['Feature']], fontsize=26)
-    ax.set_xlabel('-log₁₀ (BH-FDR q-value)', fontsize=24)
-    ax.set_title(title, fontsize=26, fontweight='bold')
-    ax.legend(fontsize=22)
+    ax.set_yticklabels([f.replace('_', ' ') for f in merged['Feature']], fontsize=34)
+    ax.set_xlabel('-log₁₀ (BH-FDR q-value)', fontsize=28)
+    ax.set_title(title, fontsize=30, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=24)
+    ax.legend(fontsize=24)
     ax.grid(axis='x', alpha=0.3)
     plt.tight_layout()
+    fig.subplots_adjust(left=0.38)
     save(fig, path)
 
 
@@ -668,7 +672,7 @@ def plot_lmm_forest(lmm, path, title='LMM — Forest Plot'):
                     color='#E74C3C' if row['Significant'] else '#CCC', lw=1.5)
         ax.axvline(0, color='black', lw=0.9, ls='--')
         ax.set_yticks(y)
-        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
+        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=30)
         ax.set_xlabel('Coefficient (95% CI)', fontsize=22)
         n_sig = sub['Significant'].sum()
         ax.set_title(f'{term}\n{n_sig}/{len(sub)} sig', fontsize=22, fontweight='bold')
@@ -690,8 +694,9 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
     if pt_res.empty and cell_res.empty:
         return
 
-    fig, axes = plt.subplots(2, 2, figsize=(26, 20))
-    fig.suptitle(title, fontsize=28, fontweight='bold')
+    n_feats_col = max(len(pt_res), len(cell_res), 30) // 2
+    fig, axes = plt.subplots(2, 2, figsize=(42, max(28, n_feats_col * 2.0)))
+    fig.suptitle(title, fontsize=32, fontweight='bold')
 
     for row_i, (level_label, res) in enumerate(levels):
         for col_i, dis in enumerate(groups):
@@ -702,15 +707,16 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                 continue
             org_colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
             ax.barh(range(len(sub)), sub['Cohen_d'], color=org_colors,
-                    edgecolor='white', height=0.7)
-            ax.axvline(0, color='black', lw=0.9)
+                    edgecolor='white', height=0.85)
+            ax.axvline(0, color='black', lw=1.2)
             ax.set_yticks(range(len(sub)))
-            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
-            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=22)
+            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=30)
+            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=26)
+            ax.tick_params(axis='x', labelsize=22)
             n_sig = sub['Significant'].sum()
             ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n'
                          f'{n_sig}/{len(sub)} sig (BH-FDR)',
-                         fontsize=20, fontweight='bold')
+                         fontsize=24, fontweight='bold')
             ax.grid(axis='x', alpha=0.3)
 
             xlim = ax.get_xlim()
@@ -719,12 +725,13 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                 if row.get('Significant', False):
                     x = row['Cohen_d']
                     ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
-                            va='center', ha='left' if x >= 0 else 'right', fontsize=20)
+                            va='center', ha='left' if x >= 0 else 'right', fontsize=24)
 
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
     fig.legend(handles=patches, loc='lower center', ncol=3,
-               fontsize=22, bbox_to_anchor=(0.5, -0.02))
+               fontsize=26, bbox_to_anchor=(0.5, -0.02))
     plt.tight_layout(rect=[0, 0.04, 1, 1])
+    fig.subplots_adjust(left=0.38)
     save(fig, path)
 
 
@@ -738,8 +745,8 @@ def plot_sex_bars(res_pt, res_cell, path, title='L5 — Sex Effect'):
     levels = [('Patient-level', res_pt, 'patient'),
               ('Cell-level',    res_cell, 'cell')]
     n_feats = len(res_pt) if not res_pt.empty else len(res_cell) if not res_cell.empty else 30
-    fig, axes = plt.subplots(1, 2, figsize=(26, max(10, n_feats * 0.85)))
-    fig.suptitle(title, fontsize=26, fontweight='bold')
+    fig, axes = plt.subplots(1, 2, figsize=(42, max(20, n_feats * 2.4)))
+    fig.suptitle(title, fontsize=30, fontweight='bold')
     for ax, (label, res, lvl) in zip(axes, levels):
         if res.empty:
             ax.set_visible(False)
@@ -747,16 +754,18 @@ def plot_sex_bars(res_pt, res_cell, path, title='L5 — Sex Effect'):
         sub    = res.sort_values('Cohen_d', ascending=True)
         colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
         ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
-                edgecolor='white', height=0.7)
-        ax.axvline(0, color='black', lw=0.9)
+                edgecolor='white', height=0.85)
+        ax.axvline(0, color='black', lw=1.2)
         ax.set_yticks(range(len(sub)))
-        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
-        ax.set_xlabel("Cohen's d  (Female → Male)", fontsize=24)
+        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=34)
+        ax.set_xlabel("Cohen's d  (Female → Male)", fontsize=28)
+        ax.tick_params(axis='x', labelsize=24)
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{label}\n{n_sig}/{len(sub)} sig (BH-FDR)', fontsize=22)
+        ax.set_title(f'{label}\n{n_sig}/{len(sub)} sig (BH-FDR)', fontsize=26)
         ax.grid(axis='x', alpha=0.3)
         footer(fig, lvl)
     plt.tight_layout()
+    fig.subplots_adjust(left=0.38)
     save(fig, path)
 
 
@@ -909,10 +918,10 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
             ax.set_title(level_label, fontsize=22)
             ax.grid(axis='y', alpha=0.3)
 
-            # collagen rescue p-values (bracket between NoCol and +Col for each group)
-            for gi, (dis, pos_nc, pos_col) in enumerate(
-                    [(g1, positions[0], positions[1]),
-                     (g2, positions[2], positions[3])]):
+            # collagen rescue p-values — compute all first, then draw with stable ylim
+            p_vals = {}
+            for dis, pos_nc, pos_col in [(g1, positions[0], positions[1]),
+                                          (g2, positions[2], positions[3])]:
                 if is_cell:
                     d1 = df_src[(df_src['Disease'] == dis) &
                                 (df_src['Collagen_Status'] == 'NoCollagen')][feat].dropna().values
@@ -939,16 +948,24 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                             p = np.nan
                     else:
                         p = np.nan
+                p_vals[(dis, pos_nc, pos_col)] = p
 
-                if not np.isnan(p):
-                    ymin, ymax = ax.get_ylim()
-                    yr = ymax - ymin
-                    bracket_y = ymax + yr * 0.03
-                    ax.set_ylim(ymin, ymax + yr * 0.18)
+            # only draw brackets for significant results; extend ylim once
+            sig_pairs = [(dis, pos_nc, pos_col, p)
+                         for (dis, pos_nc, pos_col), p in p_vals.items()
+                         if not np.isnan(p) and p < ALPHA]
+            if sig_pairs:
+                ymin, ymax = ax.get_ylim()
+                yr = ymax - ymin
+                # reserve enough space for all brackets (stack them if both sig)
+                n_brackets = len(sig_pairs)
+                ax.set_ylim(ymin, ymax + yr * 0.15 * n_brackets)
+                for k, (dis, pos_nc, pos_col, p) in enumerate(sig_pairs):
+                    b_y = ymax + yr * (0.03 + 0.13 * k)
                     ax.plot([pos_nc, pos_nc, pos_col, pos_col],
-                            [ymax + yr * 0.01, bracket_y, bracket_y, ymax + yr * 0.01],
+                            [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
                             'k-', lw=1.1)
-                    ax.text((pos_nc + pos_col) / 2, bracket_y + yr * 0.01,
+                    ax.text((pos_nc + pos_col) / 2, b_y + yr * 0.01,
                             sig_stars(p), ha='center', va='bottom', fontsize=22,
                             fontweight='bold', color='black')
 
