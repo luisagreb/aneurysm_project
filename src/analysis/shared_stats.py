@@ -687,6 +687,166 @@ def plot_lmm_forest(lmm, path, title='LMM — Forest Plot'):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# LMM FULL MODEL  (Disease × Collagen + Age + Sex)
+# ══════════════════════════════════════════════════════════════════════════════
+def _abbrev_feature(feat):
+    """Actin_Volume_µm³ → Act_Vol  (short label for heatmap y-axis)"""
+    if feat.startswith('Actin_'):     prefix = 'Act'
+    elif feat.startswith('Mito_'):    prefix = 'Mit'
+    elif feat.startswith('Nucleus_'): prefix = 'Nuc'
+    else:                              prefix = feat[:3]
+    name = re.sub(r'^(Actin_|Mito_|Nucleus_)', '', feat)
+    name = re.sub(r'[_]?(µm[²³]?|ratio|_n)$', '', name)
+    abbrevs = {
+        'Volume': 'Vol', 'Surface_Area': 'SurfArea',
+        'Skeleton_Length': 'SkelLen', 'Total_Network_Length': 'NetLen',
+        'Mean_Branch_Length': 'BranchLen', 'Branch_Count': 'BranchCnt',
+        'Fragment_Count': 'FragCnt', 'Mean_Fragment_Volume': 'FragVol',
+        'Mean_Fragment_Sphericity': 'Spher', 'Min_Fragment_Sphericity': 'MinSpher',
+        'Max_Fragment_Sphericity': 'MaxSpher', 'Std_Fragment_Sphericity': 'StdSpher',
+        'Sphericity': 'Spher', 'Cyclomatic_Number': 'Cyclomatic',
+        'Junction_Count': 'JunctionCnt', 'Mean_Tortuosity': 'Tortuosity',
+        'Solidity': 'Solid', 'Circularity': 'Circ', 'Elongation': 'Elong',
+        'Flatness': 'Flat', 'Convex_Hull_Volume': 'ConvexHull',
+        'Extent': 'Extent', 'Fractional_Anisotropy': 'FA',
+        'Major_Axis': 'MajorAx', 'Minor_Axis': 'MinorAx',
+        'Intermediate_Axis': 'InterAx',
+    }
+    return f"{prefix}_{abbrevs.get(name, name)}"
+
+
+def run_lmm_full(df, g1, g2, feat_cols, label=''):
+    """
+    Full LMM: Y ~ Disease_bin * Coll_bin + Age + Sex_bin, Subject random intercept.
+    Includes Collagen as fixed effect + Disease×Collagen interaction.
+    Used to build the heatmap showing all effects simultaneously.
+    """
+    if not HAS_STATSMODELS:
+        return None
+
+    df2 = df[df['Disease'].isin([g1, g2])].copy()
+    df2['Disease_bin'] = (df2['Disease'] == g2).astype(float)
+    df2['Coll_bin']    = (df2['Collagen_Status'] == 'Collagen').astype(float)
+    df2['Sex_bin']     = (df2['Gender'] == 'Male').astype(float)
+
+    print(f"  {label}: full LMM on {len(feat_cols)} features")
+
+    term_map = {
+        'Disease':     'Disease_bin',
+        'Collagen':    'Coll_bin',
+        'Interaction': 'Disease_bin:Coll_bin',
+        'Age':         'Age',
+        'Sex':         'Sex_bin',
+    }
+
+    records = []
+    for feat in feat_cols:
+        needed = ['Subject', 'Disease_bin', 'Coll_bin', 'Age', 'Sex_bin', feat]
+        sub = df2[needed].rename(columns={feat: 'Y'}).dropna()
+        if sub['Subject'].nunique() < 5:
+            continue
+        try:
+            res = smf.mixedlm(
+                'Y ~ Disease_bin * Coll_bin + Age + Sex_bin',
+                data=sub, groups=sub['Subject']
+            ).fit(reml=True, method='lbfgs')
+            for term_label, param in term_map.items():
+                if param in res.params:
+                    records.append({
+                        'Feature':   feat,
+                        'Organelle': get_organelle(feat),
+                        'Term':      term_label,
+                        'Coef':      res.params[param],
+                        'p':         res.pvalues[param],
+                    })
+        except Exception:
+            pass
+
+    if not records:
+        print(f"  {label}: no results")
+        return None
+
+    lmm = pd.DataFrame(records)
+    for term in lmm['Term'].unique():
+        mask = lmm['Term'] == term
+        lmm.loc[mask, 'BH_q'] = bh_fdr(lmm.loc[mask, 'p'].values)
+    lmm['Significant'] = lmm['BH_q'] < ALPHA
+
+    print(f"  {label}: {lmm['Significant'].sum()} significant term-feature pairs")
+    for term in lmm['Term'].unique():
+        sig = lmm[(lmm['Term'] == term) & lmm['Significant']]['Feature'].tolist()
+        if sig:
+            print(f"    {term:15s}: {len(sig)} — {sig[:3]}{'...' if len(sig)>3 else ''}")
+    return lmm
+
+
+def plot_lmm_heatmap(lmm, path, title='LMM — All Effects'):
+    """
+    Heatmap of full LMM results.
+    Color = -log10(BH_q) × sign(Coef)  (red = positive, blue = negative).
+    * marks cells with BH_q < 0.05.
+    Dashed lines on colorbar at ±log10(0.05).
+    """
+    if lmm is None or lmm.empty:
+        return
+
+    term_order = ['Disease', 'Collagen', 'Interaction', 'Age', 'Sex']
+    term_order = [t for t in term_order if t in lmm['Term'].unique()]
+
+    lmm = lmm.copy()
+    lmm['score'] = -np.log10(lmm['BH_q'].clip(1e-10)) * np.sign(lmm['Coef'])
+
+    feat_order = (lmm.drop_duplicates('Feature')
+                     .sort_values(['Organelle', 'Feature'])['Feature'].tolist())
+
+    pivot = (lmm.pivot(index='Feature', columns='Term', values='score')
+                .reindex(index=feat_order, columns=term_order).fillna(0))
+    sig_pv = (lmm.pivot(index='Feature', columns='Term', values='Significant')
+                 .reindex(index=feat_order, columns=term_order).fillna(False))
+
+    y_labels = [_abbrev_feature(f) for f in feat_order]
+    n_feat, n_term = len(feat_order), len(term_order)
+
+    vmax = max(3.0, float(np.abs(pivot.values).max()))
+
+    fig, ax = plt.subplots(figsize=(max(9, n_term * 2.0), max(12, n_feat * 0.52)))
+
+    im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r',
+                   vmin=-vmax, vmax=vmax)
+
+    ax.set_xticks(np.arange(n_term))
+    ax.set_xticklabels(term_order, fontsize=20)
+    ax.set_yticks(np.arange(n_feat))
+    ax.set_yticklabels(y_labels, fontsize=15)
+    ax.set_ylabel('Feature', fontsize=18)
+
+    ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
+    ax.grid(which='minor', color='white', linewidth=1.0)
+    ax.tick_params(which='minor', bottom=False, left=False)
+
+    for i in range(n_feat):
+        for j in range(n_term):
+            if sig_pv.iloc[i, j]:
+                ax.text(j, i, '*', ha='center', va='center',
+                        fontsize=18, fontweight='bold', color='black')
+
+    cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.03)
+    cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$',
+                   fontsize=15)
+    thr = -np.log10(ALPHA)
+    for sgn in [1, -1]:
+        cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=1.5)
+        cbar.ax.text(1.1, sgn * thr, 'p=0.05', va='center', fontsize=12,
+                     transform=cbar.ax.get_yaxis_transform())
+
+    ax.set_title(f'{title}\nColor = -log10(p_FDR) × sign(coef)  |  * = FDR < 0.05',
+                 fontsize=18, fontweight='bold')
+    plt.tight_layout()
+    save(fig, path)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # PLOT: LMM CATERPILLAR (random effects per subject)
 # ══════════════════════════════════════════════════════════════════════════════
 def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):

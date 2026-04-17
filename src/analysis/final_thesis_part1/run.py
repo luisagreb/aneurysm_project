@@ -105,6 +105,12 @@ def main():
                                 LMM_DIR / 'L3_lmm_caterpillar.png',
                                 title=f'LMM Random Effects — {best_feat.replace("_", " ")}')
 
+    lmm_full = ss.run_lmm_full(df, G1, G2, feat_cols, label='LMM-full')
+    if lmm_full is not None:
+        lmm_full.to_csv(LMM_DIR / 'L3_lmm_full_results.csv', index=False)
+        ss.plot_lmm_heatmap(lmm_full, LMM_DIR / 'L3_lmm_heatmap.png',
+                            title=f'L3 LMM — {G1_LABEL} vs {G2_LABEL}')
+
     # ── L4 Collagen rescue ────────────────────────────────────────────────────
     print("\n" + "=" * 70)
     print("L4 — COLLAGEN RESCUE")
@@ -119,6 +125,9 @@ def main():
                           title=f'L4 Collagen Rescue — {G1_LABEL} vs {G2_LABEL}')
     ss.plot_boxplots_collagen_per_feature(df, feat_cols, G1, G2,
                                           COL_DIR, prefix='L4')
+    ss.plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
+                                        res_pt, res_cell,
+                                        G1, G2, COL_DIR, prefix='L4_rescue')
 
     # ── L5 Sex effect ─────────────────────────────────────────────────────────
     print("\n" + "=" * 70)
