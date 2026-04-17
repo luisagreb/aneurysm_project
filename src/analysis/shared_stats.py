@@ -969,9 +969,15 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
     if pt_res.empty and cell_res.empty:
         return
 
-    n_feats_col = max(len(pt_res), len(cell_res), 30) // 2
-    fig, axes = plt.subplots(2, 2, figsize=(42, max(28, n_feats_col * 2.0)))
-    fig.suptitle(title, fontsize=32, fontweight='bold')
+    # actual features per panel (each disease × level combination)
+    n_per_panel = max(
+        *(len(res[res['Disease'] == d]) for res in [pt_res, cell_res]
+          if not res.empty for d in groups),
+        15
+    )
+    fig_h = max(30, n_per_panel * 1.5 * 2 + 8)   # 1.5 in/feature × 2 rows + margins
+    fig, axes = plt.subplots(2, 2, figsize=(44, fig_h))
+    fig.suptitle(title, fontsize=32, fontweight='bold', y=0.995)
 
     for row_i, (level_label, res) in enumerate(levels):
         for col_i, dis in enumerate(groups):
@@ -985,13 +991,13 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                     edgecolor='white', height=0.85)
             ax.axvline(0, color='black', lw=1.2)
             ax.set_yticks(range(len(sub)))
-            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=30)
-            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=26)
-            ax.tick_params(axis='x', labelsize=22)
+            ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=26)
+            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=24)
+            ax.tick_params(axis='x', labelsize=20)
             n_sig = sub['Significant'].sum()
             ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n'
                          f'{n_sig}/{len(sub)} sig (BH-FDR)',
-                         fontsize=24, fontweight='bold')
+                         fontsize=22, fontweight='bold', pad=10)
             ax.grid(axis='x', alpha=0.3)
 
             xlim = ax.get_xlim()
@@ -1000,13 +1006,14 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                 if row.get('Significant', False):
                     x = row['Cohen_d']
                     ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
-                            va='center', ha='left' if x >= 0 else 'right', fontsize=24)
+                            va='center', ha='left' if x >= 0 else 'right', fontsize=22)
 
     patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
     fig.legend(handles=patches, loc='lower center', ncol=3,
-               fontsize=26, bbox_to_anchor=(0.5, -0.02))
-    plt.tight_layout(rect=[0, 0.04, 1, 1])
-    fig.subplots_adjust(left=0.38)
+               fontsize=24, bbox_to_anchor=(0.5, 0.005))
+    # single subplots_adjust — avoids tight_layout conflict
+    fig.subplots_adjust(left=0.34, right=0.97, top=0.97, bottom=0.05,
+                        hspace=0.40, wspace=0.55)
     save(fig, path)
 
 
