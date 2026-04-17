@@ -377,12 +377,22 @@ def analyze_cell():
 
                 df_pred = df_pred.fillna(0)
 
-                proba     = float(clf.predict_proba(df_pred)[0][1])
-                pred_cls  = int(proba >= threshold)
+                probas      = clf.predict_proba(df_pred)[0]
+                label_names = bundle.get('label_names', ['Healthy', 'TAA']) if isinstance(bundle, dict) else ['Healthy', 'TAA']
 
-                prediction = "Diseased (TAA)" if pred_cls == 1 else "Healthy"
-                confidence = proba
-                print(f"[INFO] TAA prob={proba:.3f} threshold={threshold} → {prediction}")
+                if len(label_names) == 3:
+                    # 3-class: Healthy / TAA / BAV — pick argmax
+                    pred_idx   = int(probas.argmax())
+                    prediction = label_names[pred_idx]
+                    confidence = float(probas[pred_idx])
+                    print(f"[INFO] probas={dict(zip(label_names, probas.round(3)))} → {prediction}")
+                else:
+                    # Binary fallback with threshold
+                    proba      = float(probas[1])
+                    pred_cls   = int(proba >= threshold)
+                    prediction = "Diseased (TAA)" if pred_cls == 1 else "Healthy"
+                    confidence = proba
+                    print(f"[INFO] TAA prob={proba:.3f} threshold={threshold} → {prediction}")
 
             except Exception as e:
                 err_msg = str(e)
@@ -594,4 +604,4 @@ if __name__ == '__main__':
     print("=" * 50)
     print("\nOpen: http://localhost:5051")
     print("=" * 50 + "\n")
-    app.run(host='0.0.0.0', port=5051, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0', port=8765, debug=False, use_reloader=False)
