@@ -1207,12 +1207,9 @@ def plot_diameter_spearman(res, path):
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: SEX EFFECT HEATMAP (Cohen's d per group)
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path, title='Sex Effect'):
-    """
-    Heatmap of Cohen's d (Male − Female) within each group.
-    One column per group; features sorted by mean |Cohen's d|.
-    Stars for BH-FDR < 0.05 within each group.
-    """
+def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path):
+    """Heatmap of Cohen's d (Male − Female) within each group."""
+    _paper_rc()
     groups = [g1, g2]
     d_cols, q_cols, col_labels = [], [], []
 
@@ -1241,46 +1238,41 @@ def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path, title='Sex Effect'):
         d_cols.append(ds)
         q_cols.append(qs)
 
-    d_df  = pd.DataFrame(np.column_stack(d_cols), index=feat_cols, columns=col_labels)
-    q_df  = pd.DataFrame(np.column_stack(q_cols), index=feat_cols, columns=col_labels)
+    d_df   = pd.DataFrame(np.column_stack(d_cols), index=feat_cols, columns=col_labels)
+    q_df   = pd.DataFrame(np.column_stack(q_cols), index=feat_cols, columns=col_labels)
     sig_df = q_df < ALPHA
 
-    order = d_df.abs().mean(axis=1).sort_values().index
-    d_df  = d_df.loc[order]
-    q_df  = q_df.loc[order]
+    order  = d_df.abs().mean(axis=1).sort_values().index
+    d_df   = d_df.loc[order]
+    q_df   = q_df.loc[order]
     sig_df = sig_df.loc[order]
 
-    n_feat = len(d_df)
-    n_col  = len(groups)
-    vmax   = max(4.0, float(d_df.abs().values.max()))
+    y_labels = [_abbrev_feature(f) for f in d_df.index]
+    n_feat, n_col = len(d_df), len(groups)
+    vmax = max(2.0, float(d_df.abs().values.max()))
 
-    fig, ax = plt.subplots(figsize=(max(16, n_col * 7), max(24, n_feat * 0.9)))
-
+    fig, ax = plt.subplots(figsize=(max(3.5, n_col * 0.9), max(4.0, n_feat * 0.28)))
     im = ax.imshow(d_df.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(range(n_col))
-    ax.set_xticklabels(col_labels, fontsize=32)
+    ax.set_xticklabels(col_labels, fontsize=8)
     ax.set_yticks(range(n_feat))
-    ax.set_yticklabels(d_df.index, fontsize=28)
+    ax.set_yticklabels(y_labels, fontsize=7.5)
 
     ax.set_xticks(np.arange(-0.5, n_col, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
-    ax.grid(which='minor', color='white', linewidth=1.8)
+    ax.grid(which='minor', color='white', linewidth=0.6)
     ax.tick_params(which='minor', bottom=False, left=False)
 
     for i in range(n_feat):
         for j in range(n_col):
             if sig_df.iloc[i, j]:
                 ax.text(j, i, sig_stars(q_df.iloc[i, j]),
-                        ha='center', va='center',
-                        fontsize=26, fontweight='bold', color='black')
+                        ha='center', va='center', fontsize=8, color='black')
 
-    cbar = fig.colorbar(im, ax=ax, fraction=0.06, pad=0.02)
-    cbar.set_label("Cohen's d", fontsize=30)
-    cbar.ax.tick_params(labelsize=26)
-
-    ax.set_title(f"{title}\nCohen's d  (Male − Female)\n* FDR<0.05  ** <0.01  *** <0.001",
-                 fontsize=32, fontweight='bold')
+    cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
+    cbar.set_label("Cohen's d  (Male − Female)", fontsize=7.5)
+    cbar.ax.tick_params(labelsize=7)
 
     plt.tight_layout()
     save(fig, path)
@@ -1327,57 +1319,49 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
         (g2, 'Collagen',   f'{g2_label}\n+Coll',   c2_col, True),
     ]
 
+    rng = np.random.default_rng(42)
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(40, 18))
-        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
+        _paper_rc()
+        fig, axes = plt.subplots(1, 2, figsize=(5.5, 3.5))
+        feat_title = feat.split('_', 1)[1].replace('_', ' ') if '_' in feat else feat.replace('_', ' ')
+        fig.suptitle(feat_title, fontsize=9, y=1.01)
 
         for ax, df_src, level_label, is_cell in [
-            (axes[0], pt_agg, 'Patient-level', False),
-            (axes[1], df,     'Cell-level',    True),
+            (axes[0], pt_agg, 'Patient', False),
+            (axes[1], df,     'Cell',    True),
         ]:
-
             data_groups = []
             for dis, col_status, xlbl, color, hatched in groups_def:
-                if is_cell:
-                    vals = (df_src[(df_src['Disease'] == dis) &
-                                   (df_src['Collagen_Status'] == col_status)][feat]
-                            .dropna().values)
-                else:
-                    vals = (df_src[(df_src['Disease'] == dis) &
-                                   (df_src['Collagen_Status'] == col_status)][feat]
-                            .dropna().values)
+                vals = (df_src[(df_src['Disease'] == dis) &
+                               (df_src['Collagen_Status'] == col_status)][feat]
+                        .dropna().values)
                 data_groups.append((vals, xlbl, color, hatched))
 
-            positions = [1, 2, 3.6, 4.6]
+            positions = [1, 2, 3.4, 4.4]
             bp = ax.boxplot([d[0] for d in data_groups],
-                            positions=positions,
-                            patch_artist=True,
-                            medianprops=dict(color='black', lw=2),
-                            whiskerprops=dict(lw=1.2),
-                            capprops=dict(lw=1.2),
-                            flierprops=dict(marker='o', markersize=3, alpha=0.4),
-                            widths=0.65)
+                            positions=positions, patch_artist=True,
+                            medianprops=dict(color='black', lw=1.2),
+                            whiskerprops=dict(lw=0.8),
+                            capprops=dict(lw=0.8),
+                            flierprops=dict(marker='o', markersize=2, alpha=0.4),
+                            widths=0.55)
 
-            rng = np.random.default_rng(42)
             for i, (bx, (vals, xlbl, color, hatched)) in enumerate(
                     zip(bp['boxes'], data_groups)):
                 bx.set_facecolor(color)
                 bx.set_alpha(0.72)
                 if hatched:
                     bx.set_hatch('///')
-                # jitter
-                jit = rng.uniform(-0.18, 0.18, len(vals))
+                jit = rng.uniform(-0.12, 0.12, len(vals))
                 ax.scatter(np.full(len(vals), positions[i]) + jit, vals,
-                           color=color, alpha=0.55, s=16, zorder=4, edgecolors='none')
+                           color=color, alpha=0.55, s=8, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels([d[1] for d in data_groups], fontsize=34)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
-            ax.tick_params(axis='y', labelsize=28)
-            ax.set_title(level_label, fontsize=36)
-            ax.grid(axis='y', alpha=0.3)
+            ax.set_xticklabels([d[1] for d in data_groups], fontsize=7)
+            ax.set_title(level_label, fontsize=8, pad=3)
+            _despine(ax)
+            _grid(ax, 'y')
 
-            # collagen rescue p-values — compute all first, then draw with stable ylim
             p_vals = {}
             for dis, pos_nc, pos_col in [(g1, positions[0], positions[1]),
                                           (g2, positions[2], positions[3])]:
@@ -1386,59 +1370,51 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                                 (df_src['Collagen_Status'] == 'NoCollagen')][feat].dropna().values
                     d2 = df_src[(df_src['Disease'] == dis) &
                                 (df_src['Collagen_Status'] == 'Collagen')][feat].dropna().values
+                    p = np.nan
                     if len(d1) >= 3 and len(d2) >= 3:
                         try:
                             _, p = mannwhitneyu(d1, d2, alternative='two-sided')
                         except Exception:
-                            p = np.nan
-                    else:
-                        p = np.nan
+                            pass
                 else:
                     nc_s  = pt_agg[(pt_agg['Disease'] == dis) &
                                    (pt_agg['Collagen_Status'] == 'NoCollagen')].set_index('Subject')[feat]
                     col_s = pt_agg[(pt_agg['Disease'] == dis) &
                                    (pt_agg['Collagen_Status'] == 'Collagen')].set_index('Subject')[feat]
                     common = nc_s.index.intersection(col_s.index)
+                    p = np.nan
                     if len(common) >= 4:
-                        diff = col_s.loc[common].values - nc_s.loc[common].values
                         try:
-                            _, p = _wilcoxon(diff)
+                            _, p = _wilcoxon(col_s.loc[common].values - nc_s.loc[common].values)
                         except Exception:
-                            p = np.nan
-                    else:
-                        p = np.nan
+                            pass
                 p_vals[(dis, pos_nc, pos_col)] = p
 
-            # only draw brackets for significant results; extend ylim once
-            sig_pairs = [(dis, pos_nc, pos_col, p)
-                         for (dis, pos_nc, pos_col), p in p_vals.items()
+            sig_pairs = [(pos_nc, pos_col, p)
+                         for (_, pos_nc, pos_col), p in p_vals.items()
                          if not np.isnan(p) and p < ALPHA]
             if sig_pairs:
                 ymin, ymax = ax.get_ylim()
                 yr = ymax - ymin
-                # reserve enough space for all brackets (stack them if both sig)
-                n_brackets = len(sig_pairs)
-                ax.set_ylim(ymin, ymax + yr * 0.15 * n_brackets)
-                for k, (dis, pos_nc, pos_col, p) in enumerate(sig_pairs):
+                ax.set_ylim(ymin, ymax + yr * 0.15 * len(sig_pairs))
+                for k, (pos_nc, pos_col, p) in enumerate(sig_pairs):
                     b_y = ymax + yr * (0.03 + 0.13 * k)
                     ax.plot([pos_nc, pos_nc, pos_col, pos_col],
                             [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
-                            'k-', lw=1.1)
+                            'k-', lw=0.9)
                     ax.text((pos_nc + pos_col) / 2, b_y + yr * 0.01,
-                            sig_stars(p), ha='center', va='bottom', fontsize=34,
-                            fontweight='bold', color='black')
+                            sig_stars(p), ha='center', va='bottom',
+                            fontsize=8, fontweight='bold')
 
-        # legend
-        import matplotlib.patches as mpatches
         patches = [
-            mpatches.Patch(facecolor=c1,     label=f'{g1_label} No Coll'),
-            mpatches.Patch(facecolor=c1_col, label=f'{g1_label} +Coll',  hatch='///'),
-            mpatches.Patch(facecolor=c2,     label=f'{g2_label} No Coll'),
-            mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Coll',  hatch='///'),
+            mpatches.Patch(facecolor=c1,     label=f'{g1_label} NoColl'),
+            mpatches.Patch(facecolor=c1_col, label=f'{g1_label} +Coll', hatch='///'),
+            mpatches.Patch(facecolor=c2,     label=f'{g2_label} NoColl'),
+            mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Coll', hatch='///'),
         ]
         fig.legend(handles=patches, loc='lower center', ncol=4,
-                   fontsize=30, bbox_to_anchor=(0.5, -0.04))
-        plt.tight_layout(rect=[0, 0.06, 1, 1])
+                   frameon=False, fontsize=7, bbox_to_anchor=(0.5, -0.05))
+        plt.tight_layout(rect=[0, 0.08, 1, 1])
 
         fname = feat.replace('/', '_').replace(' ', '_')
         save(fig, out / f'{prefix}_{fname}.png')
@@ -1514,14 +1490,15 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
         return np.nan
 
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(40, 18))
-        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
+        _paper_rc()
+        fig, axes = plt.subplots(1, 2, figsize=(5.5, 3.5))
+        feat_title = feat.split('_', 1)[1].replace('_', ' ') if '_' in feat else feat.replace('_', ' ')
+        fig.suptitle(feat_title, fontsize=9, y=1.01)
 
         for ax, is_cell, level_label, res in [
-            (axes[0], False, 'Patient-level', res_pt),
-            (axes[1], True,  'Cell-level',    res_cell),
+            (axes[0], False, 'Patient', res_pt),
+            (axes[1], True,  'Cell',   res_cell),
         ]:
-            # ── data ──────────────────────────────────────────────────────────
             if is_cell:
                 v_g1_nc  = df_nc[df_nc['Disease'] == g1][feat].dropna().values
                 v_g1_col = (df[(df['Disease'] == g1) &
@@ -1542,11 +1519,11 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                        f'{g2_label}\nNoCol', f'{g2_label}\n+Col']
 
             bp = ax.boxplot(data, positions=positions, patch_artist=True,
-                            medianprops=dict(color='black', lw=2),
-                            whiskerprops=dict(lw=1.2),
-                            capprops=dict(lw=1.2),
-                            flierprops=dict(marker='o', markersize=3, alpha=0.4),
-                            widths=0.65)
+                            medianprops=dict(color='black', lw=1.2),
+                            whiskerprops=dict(lw=0.8),
+                            capprops=dict(lw=0.8),
+                            flierprops=dict(marker='o', markersize=2, alpha=0.4),
+                            widths=0.55)
             for bx, color, hatch in zip(bp['boxes'], colors_box, hatches):
                 bx.set_facecolor(color)
                 bx.set_alpha(0.72)
@@ -1554,19 +1531,17 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                     bx.set_hatch(hatch)
 
             for pos, vals, color in zip(positions, data, colors_box):
-                jit = rng.uniform(-0.18, 0.18, len(vals))
+                jit = rng.uniform(-0.12, 0.12, len(vals))
                 ax.scatter(np.full(len(vals), pos) + jit, vals,
                            color=color, alpha=0.55, s=18, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels(xlabels, fontsize=34)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
-            ax.tick_params(axis='y', labelsize=28)
-            ax.set_title(level_label, fontsize=36)
-            ax.grid(axis='y', alpha=0.3)
-            ax.set_xlim(0.3, 5.1)
+            ax.set_xticklabels(xlabels, fontsize=7)
+            ax.set_title(level_label, fontsize=8, pad=3)
+            ax.set_xlim(0.3, 4.9)
+            _despine(ax)
+            _grid(ax, 'y')
 
-            # ── p-values ───────────────────────────────────────────────────────
             dis_q = np.nan
             if res is not None and not res.empty and feat in res['Feature'].values:
                 dis_q = res.loc[res['Feature'] == feat, 'BH_q'].iloc[0]
@@ -1574,7 +1549,6 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
             p_g1_rescue = _rescue_p(is_cell, g1, v_g1_nc, v_g1_col)
             p_g2_rescue = _rescue_p(is_cell, g2, v_g2_nc, v_g2_col)
 
-            # build significant bracket list, disease bracket placed last (highest)
             rescue_brackets = []
             if not np.isnan(p_g1_rescue) and p_g1_rescue < ALPHA:
                 rescue_brackets.append((positions[0], positions[1], sig_stars(p_g1_rescue)))
@@ -1585,7 +1559,7 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
             if not np.isnan(dis_q) and dis_q < ALPHA:
                 dis_bracket = [(positions[0], positions[2], sig_stars(dis_q))]
 
-            all_brackets = rescue_brackets + dis_bracket  # rescue lower, disease higher
+            all_brackets = rescue_brackets + dis_bracket
 
             if all_brackets:
                 ymin, ymax = ax.get_ylim()
@@ -1595,19 +1569,19 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                     b_y = ymax + yr * (0.03 + 0.13 * k)
                     ax.plot([x1, x1, x2, x2],
                             [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
-                            'k-', lw=1.5)
+                            'k-', lw=0.9)
                     ax.text((x1 + x2) / 2, b_y + yr * 0.01, stars,
-                            ha='center', va='bottom', fontsize=36, fontweight='bold')
+                            ha='center', va='bottom', fontsize=8, fontweight='bold')
 
         patches = [
-            mpatches.Patch(facecolor=c1,    label=f'{g1_label} NoCol'),
+            mpatches.Patch(facecolor=c1,     label=f'{g1_label} NoCol'),
             mpatches.Patch(facecolor=c1_col, label=f'{g1_label} +Col', hatch='///'),
-            mpatches.Patch(facecolor=c2,    label=f'{g2_label} NoCol'),
+            mpatches.Patch(facecolor=c2,     label=f'{g2_label} NoCol'),
             mpatches.Patch(facecolor=c2_col, label=f'{g2_label} +Col', hatch='///'),
         ]
         fig.legend(handles=patches, loc='lower center', ncol=4,
-                   fontsize=30, bbox_to_anchor=(0.5, -0.04))
-        plt.tight_layout(rect=[0, 0.06, 1, 1])
+                   frameon=False, fontsize=7, bbox_to_anchor=(0.5, -0.05))
+        plt.tight_layout(rect=[0, 0.08, 1, 1])
         fname = feat.replace('/', '_').replace(' ', '_')
         save(fig, out / f'{prefix}_{fname}.png')
 

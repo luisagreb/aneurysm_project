@@ -27,7 +27,7 @@ Healthy,Nucleus_Circularity_ratio,Nucleus,0.0,,10,1.0,False
 Healthy,Nucleus_Elongation_ratio,Nucleus,0.24315982257637578,0.556640625,10,1.0,False
 Healthy,Nucleus_Flatness_ratio,Nucleus,-0.4079404546726586,0.275390625,10,1.0,False
 Healthy,Nucleus_Solidity_ratio,Nucleus,0.06839951598972918,1.0,10,1.0,False
-Healthy,Nucleus_Sphericity_ratio,Nucleus,0.0024083548549104976,1.0,10,1.0,False
+Healthy,Nucleus_Sphericity_ratio,Nucleus,0.0024083548549104976,0.9527650219907529,10,1.0,False
 Healthy,Nucleus_Volume_µm³,Nucleus,-0.22673424166534395,0.048828125,10,0.966796875,False
 TAA,Actin_Convex_Hull_Volume_µm³,Actin,-0.15775394720591512,0.375,10,0.8035714285714286,False
 TAA,Actin_Extent_ratio,Actin,0.9577652036291732,0.02734375,10,0.38671875,False
@@ -37,10 +37,10 @@ TAA,Actin_Major_Axis_µm,Actin,0.22978155738395525,0.375,10,0.8035714285714286,F
 TAA,Actin_Minor_Axis_µm,Actin,-0.24816719480662094,0.4921875,10,0.8685661764705882,False
 TAA,Actin_Skeleton_Length_µm,Actin,0.11364721505379345,0.921875,10,1.0,False
 TAA,Actin_Solidity_ratio,Actin,0.7435366371877797,0.048828125,10,0.38671875,False
-TAA,Actin_Volume_µm³,Actin,0.08574682640157198,0.625,10,0.9375,False
+TAA,Actin_Volume_µm³,Actin,0.08574682640157198,0.625,10,0.8928571428571429,False
 TAA,Mito_Branch_Count_n,Mitochondria,-0.20214717326293388,0.193359375,10,0.697265625,False
 TAA,Mito_Cyclomatic_Number_n,Mitochondria,0.2130988540554705,0.064453125,10,0.38671875,False
-TAA,Mito_Fragment_Count_n,Mitochondria,0.4940596460268097,0.30078125,10,0.8035714285714286,False
+TAA,Mito_Fragment_Count_n,Mitochondria,0.4940596460268097,0.26039294361048326,10,0.7101625734831363,False
 TAA,Mito_Junction_Count_n,Mitochondria,-0.21111608182215344,0.064453125,10,0.38671875,False
 TAA,Mito_Max_Fragment_Sphericity_ratio,Mitochondria,-0.12804203160269215,0.6953125,10,0.9481534090909092,False
 TAA,Mito_Mean_Branch_Length_µm,Mitochondria,0.14718400507602986,0.130859375,10,0.5608258928571428,False
@@ -52,10 +52,10 @@ TAA,Mito_Sphericity_ratio,Mitochondria,-0.1795073078727856,0.76953125,10,0.96191
 TAA,Mito_Std_Fragment_Sphericity_ratio,Mitochondria,-0.23131388480648002,0.4921875,10,0.8685661764705882,False
 TAA,Mito_Surface_Area_µm²,Mitochondria,-0.14145520816823418,0.431640625,10,0.86328125,False
 TAA,Mito_Total_Network_Length_µm,Mitochondria,-0.19900361369395908,0.232421875,10,0.697265625,False
-TAA,Mito_Volume_µm³,Mitochondria,-0.14518162944471683,0.625,10,0.9375,False
+TAA,Mito_Volume_µm³,Mitochondria,-0.14518162944471683,0.625,10,0.8928571428571429,False
 TAA,Nucleus_Circularity_ratio,Nucleus,0.0,,10,1.0,False
 TAA,Nucleus_Elongation_ratio,Nucleus,0.6093974851234669,0.322265625,10,0.8035714285714286,False
-TAA,Nucleus_Flatness_ratio,Nucleus,0.215195247402924,0.556640625,10,0.927734375,False
+TAA,Nucleus_Flatness_ratio,Nucleus,0.215195247402924,0.556640625,10,0.8928571428571429,False
 TAA,Nucleus_Solidity_ratio,Nucleus,-0.1420042236564268,0.76953125,10,0.9619140625,False
-TAA,Nucleus_Sphericity_ratio,Nucleus,-0.10394536130517275,0.6875,10,0.9481534090909092,False
+TAA,Nucleus_Sphericity_ratio,Nucleus,-0.10394536130517275,0.6001794871405538,10,0.8928571428571429,False
 TAA,Nucleus_Volume_µm³,Nucleus,-0.0163037380832888,1.0,10,1.0,False

@@ -167,17 +167,10 @@ def main():
     if not diam_pt.empty:
         diam_pt.to_csv(DIAM_DIR / 'L7_diameter_pt.csv', index=False)
         n_subj = df_pt['AortaDiam_mm'].notna().sum()
-        ss.plot_diameter_spearman(
-            diam_pt, DIAM_DIR / 'L7_diameter_pt.png',
-            title=f'Aortic diameter ↔ morphology\n{G1_LABEL} + {G2_LABEL} combined'
-                  f'  (N={n_subj} specimens)\nSolid = FDR<0.05, faded = ns')
+        ss.plot_diameter_spearman(diam_pt, DIAM_DIR / 'L7_diameter_pt.png')
     if not diam_cell.empty:
         diam_cell.to_csv(DIAM_DIR / 'L7_diameter_cell.csv', index=False)
-        n_cells = df_nc['AortaDiam_mm'].notna().sum()
-        ss.plot_diameter_spearman(
-            diam_cell, DIAM_DIR / 'L7_diameter_cell.png',
-            title=f'Aortic diameter ↔ morphology (cell-level)\n{G1_LABEL} + {G2_LABEL}'
-                  f'  (N={n_cells} cells)\nSolid = FDR<0.05, faded = ns')
+        ss.plot_diameter_spearman(diam_cell, DIAM_DIR / 'L7_diameter_cell.png')
 
     # ── Summary ───────────────────────────────────────────────────────────────
     print("\n" + "=" * 70)
