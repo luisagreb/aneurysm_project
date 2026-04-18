@@ -53,13 +53,10 @@ def main():
     res_cell.to_csv(CELL_DIR / 'L1_pairwise.csv', index=False)
 
     ss.plot_cohens_d_bars(res_pt,   PT_DIR   / 'L1_cohens_d.png',
-                          f'L1 Disease Effect — {G1_LABEL} vs {G2_LABEL} (Patient)',
                           G1_LABEL, G2_LABEL, level='patient')
     ss.plot_cohens_d_bars(res_cell, CELL_DIR / 'L1_cohens_d.png',
-                          f'L1 Disease Effect — {G1_LABEL} vs {G2_LABEL} (Cell)',
                           G1_LABEL, G2_LABEL, level='cell')
-    ss.plot_level_comparison(res_pt, res_cell, COMP_DIR / 'L1_patient_vs_cell.png',
-                             f'L1 — {G1_LABEL} vs {G2_LABEL}: Patient vs Cell Level')
+    ss.plot_level_comparison(res_pt, res_cell, COMP_DIR / 'L1_patient_vs_cell.png')
     ss.plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                                   G1, G2, COMP_DIR / 'boxplots', prefix='L1')
 
@@ -77,13 +74,10 @@ def main():
     res_cell2.to_csv(CELL_DIR / 'L2_age_corrected.csv', index=False)
 
     ss.plot_cohens_d_bars(res_pt2,   PT_DIR   / 'L2_age_corrected_cohens_d.png',
-                          f'L2 Age-Corrected — {G1_LABEL} vs {G2_LABEL} (Patient)',
                           G1_LABEL, G2_LABEL, level='patient')
     ss.plot_cohens_d_bars(res_cell2, CELL_DIR / 'L2_age_corrected_cohens_d.png',
-                          f'L2 Age-Corrected — {G1_LABEL} vs {G2_LABEL} (Cell)',
                           G1_LABEL, G2_LABEL, level='cell')
-    ss.plot_level_comparison(res_pt2, res_cell2, COMP_DIR / 'L2_patient_vs_cell.png',
-                             f'L2 Age-Corrected — {G1_LABEL} vs {G2_LABEL}: Patient vs Cell')
+    ss.plot_level_comparison(res_pt2, res_cell2, COMP_DIR / 'L2_patient_vs_cell.png')
 
     for level_label, r1, r2 in [('Patient', res_pt, res_pt2),
                                    ('Cell',    res_cell, res_cell2)]:
@@ -96,13 +90,10 @@ def main():
     print("\n" + "=" * 70)
     print("L3 — LMM CONFIRMATORY")
     print("=" * 70)
-    sig_feats = (res_pt.loc[res_pt['Significant'], 'Feature'].tolist()
-                 if not res_pt.empty else feat_cols)
-    lmm = ss.run_lmm(df, G1, G2, feat_cols, sig_feats=sig_feats, label='LMM')
+    lmm = ss.run_lmm(df, G1, G2, feat_cols, sig_feats=None, label='LMM')
     if lmm is not None:
         lmm.to_csv(LMM_DIR / 'L3_lmm_results.csv', index=False)
-        ss.plot_lmm_forest(lmm, LMM_DIR / 'L3_lmm_forest.png',
-                           title=f'LMM — {G1_LABEL} vs {G2_LABEL}')
+        ss.plot_lmm_forest(lmm, LMM_DIR / 'L3_lmm_forest.png')
         dis_rows = lmm[lmm['Term'] == f'{G2_LABEL} vs {G1_LABEL}']
         best_feat = (dis_rows.sort_values('p').iloc[0]['Feature']
                      if not dis_rows.empty else feat_cols[0])
@@ -113,8 +104,7 @@ def main():
     lmm_full = ss.run_lmm_full(df, G1, G2, feat_cols, label='LMM-full')
     if lmm_full is not None:
         lmm_full.to_csv(LMM_DIR / 'L3_lmm_full_results.csv', index=False)
-        ss.plot_lmm_heatmap(lmm_full, LMM_DIR / 'L3_lmm_heatmap.png',
-                            title=f'L3 LMM — {G1_LABEL} vs {G2_LABEL}')
+        ss.plot_lmm_heatmap(lmm_full, LMM_DIR / 'L3_lmm_heatmap.png')
 
     # ── L4 Collagen rescue ────────────────────────────────────────────────────
     print("\n" + "=" * 70)
@@ -126,8 +116,7 @@ def main():
         out_dir=COL_DIR
     )
     ss.plot_collagen_bars(pt_coll, cell_coll, G1, G2,
-                          COL_DIR / 'L4_collagen_rescue.png',
-                          title=f'L4 Collagen Rescue — {G1_LABEL} vs {G2_LABEL}')
+                          COL_DIR / 'L4_collagen_rescue.png')
     ss.plot_boxplots_collagen_per_feature(df, feat_cols, G1, G2,
                                           COL_DIR, prefix='L4')
     ss.plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
@@ -146,10 +135,8 @@ def main():
     if not sex_cell.empty:
         sex_cell.to_csv(SEX_DIR / 'L5_sex_cell.csv', index=False)
 
-    ss.plot_sex_bars(sex_pt, sex_cell, SEX_DIR / 'L5_sex_effect.png',
-                     title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
-    ss.plot_sex_heatmap(df_pt, feat_cols, G1, G2, SEX_DIR / 'L5_sex_heatmap.png',
-                        title=f'L5 Sex Effect — {G1_LABEL} vs {G2_LABEL}')
+    ss.plot_sex_bars(sex_pt, sex_cell, SEX_DIR / 'L5_sex_effect.png')
+    ss.plot_sex_heatmap(df_pt, feat_cols, G1, G2, SEX_DIR / 'L5_sex_heatmap.png')
 
     # ── L6 Hypertension ───────────────────────────────────────────────────────
     print("\n" + "=" * 70)
@@ -165,12 +152,10 @@ def main():
 
     if not ht_pt.empty:
         ss.plot_cohens_d_bars(ht_pt, HT_DIR / 'L6_hypertension_pt.png',
-                              f'L6 Hypertension — Patient-level', 'No-HT', 'HT',
-                              level='patient')
+                              'No-HT', 'HT', level='patient')
     if not ht_cell.empty:
         ss.plot_cohens_d_bars(ht_cell, HT_DIR / 'L6_hypertension_cell.png',
-                              f'L6 Hypertension — Cell-level', 'No-HT', 'HT',
-                              level='cell')
+                              'No-HT', 'HT', level='cell')
 
     # ── L7 Aorta diameter ─────────────────────────────────────────────────────
     print("\n" + "=" * 70)

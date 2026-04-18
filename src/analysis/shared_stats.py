@@ -7,7 +7,6 @@ Import this module in final_thesis_part1/run.py and final_thesis_part2/run.py.
 """
 
 import re
-import sys
 import warnings
 import numpy as np
 import pandas as pd
@@ -15,7 +14,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import seaborn as sns
 from pathlib import Path
 from scipy.stats import mannwhitneyu, shapiro, ttest_ind, spearmanr, wilcoxon
 from sklearn.linear_model import LinearRegression
@@ -92,7 +90,7 @@ def norm_id(s):
 
 
 def save(fig, path):
-    fig.savefig(path, dpi=300, bbox_inches='tight')
+    fig.savefig(path, dpi=300, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
     print(f"  Saved: {path.name}")
 
@@ -102,7 +100,42 @@ def footer(fig, level='patient'):
             else 'Cell-level — exploratory (BH-FDR)')
     fig.text(0.98, 0.005,
              f'* p<0.05  ** p<0.01  *** p<0.001  ({note})',
-             ha='right', fontsize=56, style='italic', color='#555')
+             ha='right', fontsize=7, style='italic', color='#555')
+
+
+def _paper_rc():
+    plt.rcParams.update({
+        'font.family':        'sans-serif',
+        'font.sans-serif':    ['Arial', 'Helvetica', 'DejaVu Sans'],
+        'font.size':          9,
+        'axes.labelsize':     9,
+        'axes.titlesize':     9,
+        'xtick.labelsize':    8,
+        'ytick.labelsize':    8,
+        'legend.fontsize':    8,
+        'axes.linewidth':     0.8,
+        'xtick.major.width':  0.8,
+        'ytick.major.width':  0.8,
+        'xtick.major.size':   3,
+        'ytick.major.size':   3,
+        'axes.spines.top':    False,
+        'axes.spines.right':  False,
+        'axes.grid':          False,
+        'savefig.dpi':        300,
+    })
+
+
+def _despine(ax):
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+
+def _grid(ax, axis='x'):
+    if axis == 'x':
+        ax.xaxis.grid(True, color='#CCCCCC', linewidth=0.5, zorder=0)
+    else:
+        ax.yaxis.grid(True, color='#CCCCCC', linewidth=0.5, zorder=0)
+    ax.set_axisbelow(True)
 
 
 def adaptive_test(a, b):
@@ -494,79 +527,70 @@ def diameter_correlation(df_input, feat_cols, label=''):
 # ══════════════════════════════════════════════════════════════════════════════
 def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                                g1, g2, out_dir, prefix='L1'):
-    """
-    For every feature: one figure with two panels.
-      Left:  patient-level boxplot with individual points
-      Right: cell-level boxplot with individual points
-    Annotated with Cohen's d and BH-FDR q-value.
-    Saves one PNG per feature into out_dir/per_feature/.
-    """
+    _paper_rc()
     out = Path(out_dir) / 'per_feature'
     out.mkdir(parents=True, exist_ok=True)
 
     g1_label = GROUP_LABELS[g1]
     g2_label = GROUP_LABELS[g2]
-    c1       = GROUP_COLORS[g1]
-    c2       = GROUP_COLORS[g2]
+    c1, c2   = GROUP_COLORS[g1], GROUP_COLORS[g2]
 
     feat_cols = res_pt['Feature'].tolist() if not res_pt.empty else []
     if not feat_cols:
         feat_cols = res_cell['Feature'].tolist() if not res_cell.empty else []
 
+    rng = np.random.default_rng(42)
+    bp_kw = dict(patch_artist=True,
+                 medianprops=dict(color='#333333', lw=1.2),
+                 whiskerprops=dict(lw=0.8, color='#555555'),
+                 capprops=dict(lw=0.8, color='#555555'),
+                 flierprops=dict(marker='o', markersize=2.5, alpha=0.35,
+                                 markeredgecolor='none'))
+
     for feat in feat_cols:
-        fig, axes = plt.subplots(1, 2, figsize=(36, 18))
-        fig.suptitle(feat.replace('_', ' '), fontsize=42, fontweight='bold')
+        fig, axes = plt.subplots(1, 2, figsize=(5.5, 3.2))
+        parts = feat.split('_', 1)
+        title_str = parts[1].replace('_', ' ') if len(parts) > 1 else feat.replace('_', ' ')
+        fig.suptitle(title_str, fontsize=9)
 
         for ax, df_use, res, level in [
-            (axes[0], df_pt,  res_pt,   'Patient-level'),
-            (axes[1], df_nc,  res_cell, 'Cell-level'),
+            (axes[0], df_pt,  res_pt,   'Patient'),
+            (axes[1], df_nc,  res_cell, 'Cell'),
         ]:
             vals_g1 = df_use[df_use['Disease'] == g1][feat].dropna().values
             vals_g2 = df_use[df_use['Disease'] == g2][feat].dropna().values
 
-            # boxplot
-            bp = ax.boxplot([vals_g1, vals_g2], patch_artist=True,
-                            medianprops=dict(color='black', lw=2),
-                            whiskerprops=dict(lw=1.2),
-                            capprops=dict(lw=1.2),
-                            flierprops=dict(marker='o', markersize=3, alpha=0.4))
+            bp = ax.boxplot([vals_g1, vals_g2], **bp_kw)
             bp['boxes'][0].set_facecolor(c1); bp['boxes'][0].set_alpha(0.65)
             bp['boxes'][1].set_facecolor(c2); bp['boxes'][1].set_alpha(0.65)
 
-            # jitter
-            rng = np.random.default_rng(42)
             for xi, vals, c in [(1, vals_g1, c1), (2, vals_g2, c2)]:
-                jit = rng.uniform(-0.15, 0.15, len(vals))
+                jit = rng.uniform(-0.12, 0.12, len(vals))
                 ax.scatter(np.full(len(vals), xi) + jit, vals,
-                           color=c, alpha=0.55, s=18, zorder=4, edgecolors='none')
+                           color=c, alpha=0.5, s=8, zorder=4, edgecolors='none')
 
             ax.set_xticks([1, 2])
-            ax.set_xticklabels([g1_label, g2_label], fontsize=36)
-            ax.set_ylabel(feat.replace('_', ' '), fontsize=32)
-            ax.set_title(level, fontsize=34)
-            ax.tick_params(axis='y', labelsize=28)
-            ax.grid(axis='y', alpha=0.3)
+            ax.set_xticklabels([g1_label, g2_label], fontsize=7.5)
+            ax.set_title(level, fontsize=8, pad=3)
+            if ax == axes[0]:
+                ax.set_ylabel(title_str, fontsize=8)
+            _despine(ax)
+            _grid(ax, 'y')
 
-            # annotation
             if not res.empty and feat in res['Feature'].values:
                 row = res[res['Feature'] == feat].iloc[0]
-                d   = row.get('Cohen_d', np.nan)
-                q   = row.get('BH_q',    1.0)
+                d, q = row.get('Cohen_d', np.nan), row.get('BH_q', 1.0)
                 stars = sig_stars(q)
-                ax.set_title(f"{level}\nd={d:.2f}  q={q:.3f}  {stars}", fontsize=32)
-
-                # significance bar — anchored to matplotlib's current ylim
+                ax.set_title(f"{level}  d={d:.2f}  {stars}", fontsize=7.5, pad=3)
                 if q < ALPHA and len(vals_g1) > 0 and len(vals_g2) > 0:
                     ymin, ymax = ax.get_ylim()
                     yr = ymax - ymin
-                    bracket_y  = ymax + yr * 0.03
-                    new_top    = ymax + yr * 0.18
-                    ax.set_ylim(ymin, new_top)
-                    ax.plot([1, 1, 2, 2],
-                            [ymax + yr * 0.01, bracket_y, bracket_y, ymax + yr * 0.01],
-                            'k-', lw=1.5)
-                    ax.text(1.5, bracket_y + yr * 0.01, stars,
-                            ha='center', va='bottom', fontsize=36, fontweight='bold')
+                    by = ymax + yr * 0.03
+                    ax.set_ylim(ymin, ymax + yr * 0.18)
+                    ax.plot([1, 1, 2, 2], [ymax + yr*0.01, by, by, ymax + yr*0.01],
+                            'k-', lw=0.9)
+                    ax.text(1.5, by + yr*0.01, stars, ha='center', va='bottom',
+                            fontsize=8, fontweight='bold')
 
         plt.tight_layout()
         fname = feat.replace('/', '_').replace(' ', '_')
@@ -578,50 +602,50 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: COHEN'S D BAR CHART
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_cohens_d_bars(res, path, title, g1_label, g2_label, level='patient'):
-    """Horizontal bar chart of Cohen's d, coloured by organelle, stars on sig."""
+def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
+    _paper_rc()
     if res.empty:
         return
     sub = res.sort_values('Cohen_d', ascending=True).copy()
     colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
+    n = len(sub)
 
-    fig_side = max(40, len(sub) * 2.4)
-    fig, ax = plt.subplots(figsize=(fig_side, fig_side))
-    bars = ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
-                   edgecolor='white', height=0.85)
-    ax.axvline(0, color='black', lw=1.2)
-    ax.set_yticks(range(len(sub)))
-    ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=100)
-    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=80)
-    ax.set_title(title, fontsize=90, fontweight='bold')
-    ax.tick_params(axis='x', labelsize=70)
-    ax.grid(axis='x', alpha=0.3)
+    fig, ax = plt.subplots(figsize=(5.5, max(3.5, n * 0.28)))
+    ax.barh(range(n), sub['Cohen_d'], color=colors,
+            edgecolor='white', linewidth=0, height=0.72, alpha=0.85)
+    ax.axvline(0, color='#333333', lw=0.8)
+
+    labels = []
+    for f in sub['Feature']:
+        parts = f.split('_', 1)
+        labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(labels, fontsize=7.5)
+    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})")
 
     xlim = ax.get_xlim()
-    x_range = xlim[1] - xlim[0]
-    ax.set_xlim(xlim[0] - x_range * 0.08, xlim[1] + x_range * 0.08)
-    xlim = ax.get_xlim()
-    pad  = (xlim[1] - xlim[0]) * 0.03
+    pad  = (xlim[1] - xlim[0]) * 0.025
     for i, (_, row) in enumerate(sub.iterrows()):
         if row.get('Significant', False):
             x = row['Cohen_d']
             ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
-                    va='center', ha='left' if x >= 0 else 'right',
-                    fontsize=76, fontweight='bold')
+                    va='center', ha='left' if x >= 0 else 'right', fontsize=7.5)
 
-    patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, fontsize=70, loc='lower right')
+    patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
+               for o, c in ORGANELLE_COLORS.items()]
+    ax.legend(handles=patches, frameon=False, loc='lower right', fontsize=7.5)
     footer(fig, level)
+    _despine(ax)
+    _grid(ax, 'x')
     plt.tight_layout()
-    fig.subplots_adjust(left=0.40)
     save(fig, path)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: PATIENT vs CELL COMPARISON (dual -log10 q bars)
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_level_comparison(res_pt, res_cell, path, title):
-    """Side-by-side -log10(q) comparing patient-level and cell-level."""
+def plot_level_comparison(res_pt, res_cell, path):
+    _paper_rc()
     if res_pt.empty or res_cell.empty:
         return
     merged = (res_pt[['Feature', 'BH_q', 'Organelle']]
@@ -633,55 +657,65 @@ def plot_level_comparison(res_pt, res_cell, path, title):
 
     n = len(merged)
     y = np.arange(n)
-    fig, ax = plt.subplots(figsize=(50, max(24, n * 3.0)))
+    fig, ax = plt.subplots(figsize=(5.5, max(3.5, n * 0.28)))
     bw = 0.35
     ax.barh(y - bw/2, merged['-l10_pt'],   height=bw,
-            color=LEVEL_COLORS['Patient'], label='Patient-level', alpha=0.85)
+            color=LEVEL_COLORS['Patient'], label='Patient', alpha=0.85,
+            edgecolor='white', linewidth=0)
     ax.barh(y + bw/2, merged['-l10_cell'], height=bw,
-            color=LEVEL_COLORS['Cell'],    label='Cell-level (exploratory)', alpha=0.85)
-    ax.axvline(thr, color='red', ls='--', lw=2.0, label=f'FDR = {ALPHA}')
+            color=LEVEL_COLORS['Cell'],    label='Cell', alpha=0.85,
+            edgecolor='white', linewidth=0)
+    ax.axvline(thr, color='#C0392B', ls='--', lw=0.9, label='FDR=0.05')
+
+    labels = []
+    for f in merged['Feature']:
+        parts = f.split('_', 1)
+        labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
     ax.set_yticks(y)
-    ax.set_yticklabels([f.replace('_', ' ') for f in merged['Feature']], fontsize=52)
-    ax.set_xlabel('-log₁₀ (BH-FDR q-value)', fontsize=44)
-    ax.set_title(title, fontsize=46, fontweight='bold')
-    ax.tick_params(axis='x', labelsize=38)
-    ax.legend(fontsize=38, loc='lower right')
-    ax.grid(axis='x', alpha=0.3)
-    fig.subplots_adjust(left=0.44, right=0.97, top=0.95, bottom=0.06)
+    ax.set_yticklabels(labels, fontsize=7.5)
+    ax.set_xlabel(r'$-\log_{10}$(BH-FDR $q$)')
+    ax.legend(frameon=False, loc='lower right')
+    _despine(ax)
+    _grid(ax, 'x')
+    plt.tight_layout()
     save(fig, path)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: LMM FOREST PLOT
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_lmm_forest(lmm, path, title='LMM — Forest Plot'):
-    """Forest plot of LMM coefficients with 95% CI, one panel per term."""
+def plot_lmm_forest(lmm, path):
+    _paper_rc()
     if lmm is None or lmm.empty:
         return
     terms = lmm['Term'].unique().tolist()
     max_feats = max((len(lmm[lmm['Term'] == t]) for t in terms), default=6)
     fig, axes = plt.subplots(1, len(terms),
-                             figsize=(len(terms) * 18, max(20, max_feats * 1.6)))
+                             figsize=(len(terms) * 2.8, max(3.5, max_feats * 0.28)))
     if len(terms) == 1:
         axes = [axes]
-    fig.suptitle(title, fontsize=40, fontweight='bold')
 
     for ax, term in zip(axes, terms):
         sub = lmm[lmm['Term'] == term].sort_values('Coef')
-        colors_feat = ['#E74C3C' if s else '#AAA' for s in sub['Significant']]
+        colors_feat = ['#C0392B' if s else '#AAAAAA' for s in sub['Significant']]
         y = np.arange(len(sub))
-        ax.scatter(sub['Coef'], y, color=colors_feat, zorder=4, s=120)
+        ax.scatter(sub['Coef'], y, color=colors_feat, zorder=4, s=18)
         for i, (_, row) in enumerate(sub.iterrows()):
             ax.plot([row['CI_low'], row['CI_high']], [i, i],
-                    color='#E74C3C' if row['Significant'] else '#CCC', lw=2.5)
-        ax.axvline(0, color='black', lw=1.2, ls='--')
+                    color='#C0392B' if row['Significant'] else '#CCCCCC', lw=1.2)
+        ax.axvline(0, color='#333333', lw=0.8, ls='--')
+
+        labels = []
+        for f in sub['Feature']:
+            parts = f.split('_', 1)
+            labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
         ax.set_yticks(y)
-        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=42)
-        ax.set_xlabel('Coefficient (95% CI)', fontsize=34)
-        ax.tick_params(axis='x', labelsize=30)
+        ax.set_yticklabels(labels, fontsize=7.5)
+        ax.set_xlabel('Coefficient (95% CI)')
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{term}\n{n_sig}/{len(sub)} sig', fontsize=34, fontweight='bold')
-        ax.grid(axis='x', alpha=0.3)
+        ax.set_title(f'{term}  ({n_sig}/{len(sub)} sig)', fontsize=8, pad=4)
+        _despine(ax)
+        _grid(ax, 'x')
 
     plt.tight_layout()
     save(fig, path)
@@ -781,13 +815,8 @@ def run_lmm_full(df, g1, g2, feat_cols, label=''):
     return lmm
 
 
-def plot_lmm_heatmap(lmm, path, title='LMM — All Effects'):
-    """
-    Heatmap of full LMM results.
-    Color = -log10(BH_q) × sign(Coef)  (red = positive, blue = negative).
-    * marks cells with BH_q < 0.05.
-    Dashed lines on colorbar at ±log10(0.05).
-    """
+def plot_lmm_heatmap(lmm, path):
+    _paper_rc()
     if lmm is None or lmm.empty:
         return
 
@@ -807,43 +836,33 @@ def plot_lmm_heatmap(lmm, path, title='LMM — All Effects'):
 
     y_labels = [_abbrev_feature(f) for f in feat_order]
     n_feat, n_term = len(feat_order), len(term_order)
-
     vmax = max(3.0, float(np.abs(pivot.values).max()))
 
-    fig, ax = plt.subplots(figsize=(max(20, n_term * 5), max(24, n_feat * 0.9)))
-
-    im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r',
-                   vmin=-vmax, vmax=vmax)
+    fig, ax = plt.subplots(figsize=(max(3.5, n_term * 0.9), max(4.0, n_feat * 0.28)))
+    im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(np.arange(n_term))
-    ax.set_xticklabels(term_order, fontsize=34)
+    ax.set_xticklabels(term_order, fontsize=8)
     ax.set_yticks(np.arange(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=28)
-    ax.set_ylabel('Feature', fontsize=30)
+    ax.set_yticklabels(y_labels, fontsize=7.5)
 
     ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
-    ax.grid(which='minor', color='white', linewidth=1.0)
+    ax.grid(which='minor', color='white', linewidth=0.6)
     ax.tick_params(which='minor', bottom=False, left=False)
 
     for i in range(n_feat):
         for j in range(n_term):
             if sig_pv.iloc[i, j]:
-                ax.text(j, i, '*', ha='center', va='center',
-                        fontsize=30, fontweight='bold', color='black')
+                ax.text(j, i, '*', ha='center', va='center', fontsize=8, color='black')
 
-    cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.03)
-    cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$',
-                   fontsize=26)
-    cbar.ax.tick_params(labelsize=22)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
+    cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$', fontsize=7.5)
+    cbar.ax.tick_params(labelsize=7)
     thr = -np.log10(ALPHA)
     for sgn in [1, -1]:
-        cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=1.5)
-        cbar.ax.text(1.1, sgn * thr, 'p=0.05', va='center', fontsize=20,
-                     transform=cbar.ax.get_yaxis_transform())
+        cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=0.8)
 
-    ax.set_title(f'{title}\nColor = -log10(p_FDR) × sign(coef)  |  * = FDR < 0.05',
-                 fontsize=30, fontweight='bold')
     plt.tight_layout()
     save(fig, path)
 
@@ -928,32 +947,31 @@ def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
         panels.append((slp_vals, slp_ses, 'Random Slopes',     'Slope'))
     panels.append(    (int_vals, int_ses, 'Random Intercepts', 'Intercept'))
 
+    _paper_rc()
     n_panels = len(panels)
     fig, axes = plt.subplots(n_panels, 1,
-                             figsize=(28, max(16, n_subj * 1.6) * n_panels))
+                             figsize=(4.5, max(3.0, n_subj * 0.28) * n_panels))
     if n_panels == 1:
         axes = [axes]
 
     for ax, (vals, ses, panel_title, xlabel) in zip(axes, panels):
-        order = np.argsort(vals)           # ascending → highest subject ends up at top
+        order = np.argsort(vals)
         for rank, idx in enumerate(order):
-            ax.errorbar(vals[idx], rank,
-                        xerr=1.96 * ses[idx],
-                        fmt='o', color='black',
-                        markerfacecolor='white', markeredgecolor='black',
-                        markeredgewidth=2.2, markersize=16,
-                        elinewidth=2.5, capsize=0, zorder=3)
-        ax.axvline(0, color='red', ls='--', lw=2.5)
+            ax.errorbar(vals[idx], rank, xerr=1.96 * ses[idx],
+                        fmt='o', color='#333333',
+                        markerfacecolor='white', markeredgecolor='#333333',
+                        markeredgewidth=1.2, markersize=6,
+                        elinewidth=1.0, capsize=0, zorder=3)
+        ax.axvline(0, color='#C0392B', ls='--', lw=0.9)
         ax.set_yticks(range(n_subj))
-        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=34)
-        ax.set_xlabel(xlabel, fontsize=36)
-        ax.set_ylabel('Subject ID', fontsize=36)
-        ax.set_title(panel_title, fontsize=40, fontweight='bold')
-        ax.tick_params(axis='x', labelsize=30)
-        ax.grid(axis='x', alpha=0.3)
+        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=7.5)
+        ax.set_xlabel(xlabel)
+        ax.set_title(panel_title, fontsize=8, pad=3)
+        _despine(ax)
+        _grid(ax, 'x')
 
     if title:
-        fig.suptitle(title, fontsize=44, fontweight='bold')
+        fig.suptitle(title, fontsize=9)
 
     plt.tight_layout()
     save(fig, path)
@@ -962,24 +980,19 @@ def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: COLLAGEN RESCUE BARS
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Rescue'):
-    """2×2 grid: patient/cell × g1/g2, Cohen's d bars coloured by organelle."""
-    groups  = [g1, g2]
-    levels  = [('Patient-level (paired Wilcoxon)', pt_res),
-               ('Cell-level (Mann-Whitney)',        cell_res)]
+def plot_collagen_bars(pt_res, cell_res, g1, g2, path):
+    _paper_rc()
+    groups = [g1, g2]
+    levels = [('Patient', pt_res), ('Cell', cell_res)]
 
     if pt_res.empty and cell_res.empty:
         return
 
-    # actual features per panel (each disease × level combination)
     n_per_panel = max(
         *(len(res[res['Disease'] == d]) for res in [pt_res, cell_res]
-          if not res.empty for d in groups),
-        15
-    )
-    fig_h = max(30, n_per_panel * 1.5 * 2 + 8)   # 1.5 in/feature × 2 rows + margins
-    fig, axes = plt.subplots(2, 2, figsize=(44, fig_h))
-    fig.suptitle(title, fontsize=32, fontweight='bold', y=0.995)
+          if not res.empty for d in groups), 10)
+
+    fig, axes = plt.subplots(2, 2, figsize=(7.5, max(5.0, n_per_panel * 0.30 * 2)))
 
     for row_i, (level_label, res) in enumerate(levels):
         for col_i, dis in enumerate(groups):
@@ -990,49 +1003,52 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path, title='L4 — Collagen Re
                 continue
             org_colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
             ax.barh(range(len(sub)), sub['Cohen_d'], color=org_colors,
-                    edgecolor='white', height=0.85)
-            ax.axvline(0, color='black', lw=1.2)
+                    edgecolor='white', linewidth=0, height=0.72, alpha=0.85)
+            ax.axvline(0, color='#333333', lw=0.8)
             ax.set_yticks(range(len(sub)))
+
+            labels = []
+            for f in sub['Feature']:
+                parts = f.split('_', 1)
+                labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
             if col_i == 0:
-                ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=36)
+                ax.set_yticklabels(labels, fontsize=7)
             else:
                 ax.set_yticklabels([])
-            ax.set_xlabel("Cohen's d  (NoCollagen → +Collagen)", fontsize=32)
-            ax.tick_params(axis='x', labelsize=28)
+            if row_i == 1:
+                ax.set_xlabel("Cohen's d  (NoCol → +Col)")
             n_sig = sub['Significant'].sum()
-            ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n'
-                         f'{n_sig}/{len(sub)} sig (BH-FDR)',
-                         fontsize=30, fontweight='bold', pad=10)
-            ax.grid(axis='x', alpha=0.3)
+            ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n{n_sig}/{len(sub)} sig',
+                         fontsize=8, pad=4)
 
             xlim = ax.get_xlim()
-            pad  = (xlim[1] - xlim[0]) * 0.02
+            pad  = (xlim[1] - xlim[0]) * 0.025
             for i, (_, row) in enumerate(sub.iterrows()):
                 if row.get('Significant', False):
                     x = row['Cohen_d']
                     ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
-                            va='center', ha='left' if x >= 0 else 'right', fontsize=30)
+                            va='center', ha='left' if x >= 0 else 'right', fontsize=7.5)
+            _despine(ax)
+            _grid(ax, 'x')
 
-    patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
+    patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
+               for o, c in ORGANELLE_COLORS.items()]
     fig.legend(handles=patches, loc='lower center', ncol=3,
-               fontsize=30, bbox_to_anchor=(0.5, 0.005))
-    fig.subplots_adjust(left=0.38, right=0.97, top=0.93, bottom=0.06,
-                        hspace=0.55, wspace=0.30)
+               frameon=False, fontsize=7.5, bbox_to_anchor=(0.5, 0.0))
+    plt.tight_layout(rect=[0, 0.04, 1, 1])
     save(fig, path)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: SEX EFFECT BARS
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_sex_bars(res_pt, res_cell, path, title='L5 — Sex Effect'):
-    """Side-by-side Cohen's d bars for sex effect (patient vs cell)."""
+def plot_sex_bars(res_pt, res_cell, path):
+    _paper_rc()
     if res_pt.empty and res_cell.empty:
         return
-    levels = [('Patient-level', res_pt, 'patient'),
-              ('Cell-level',    res_cell, 'cell')]
-    n_feats = len(res_pt) if not res_pt.empty else len(res_cell) if not res_cell.empty else 30
-    fig, axes = plt.subplots(1, 2, figsize=(42, max(20, n_feats * 2.4)))
-    fig.suptitle(title, fontsize=30, fontweight='bold')
+    levels  = [('Patient', res_pt, 'patient'), ('Cell', res_cell, 'cell')]
+    n_feats = len(res_pt) if not res_pt.empty else len(res_cell) if not res_cell.empty else 15
+    fig, axes = plt.subplots(1, 2, figsize=(7.5, max(3.5, n_feats * 0.28)))
     for ax, (label, res, lvl) in zip(axes, levels):
         if res.empty:
             ax.set_visible(False)
@@ -1040,18 +1056,21 @@ def plot_sex_bars(res_pt, res_cell, path, title='L5 — Sex Effect'):
         sub    = res.sort_values('Cohen_d', ascending=True)
         colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
         ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
-                edgecolor='white', height=0.85)
-        ax.axvline(0, color='black', lw=1.2)
+                edgecolor='white', linewidth=0, height=0.72, alpha=0.85)
+        ax.axvline(0, color='#333333', lw=0.8)
         ax.set_yticks(range(len(sub)))
-        ax.set_yticklabels([f.replace('_', ' ') for f in sub['Feature']], fontsize=34)
-        ax.set_xlabel("Cohen's d  (Female → Male)", fontsize=28)
-        ax.tick_params(axis='x', labelsize=24)
+        labels = []
+        for f in sub['Feature']:
+            parts = f.split('_', 1)
+            labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
+        ax.set_yticklabels(labels, fontsize=7.5)
+        ax.set_xlabel("Cohen's d  (Female → Male)")
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{label}\n{n_sig}/{len(sub)} sig (BH-FDR)', fontsize=26)
-        ax.grid(axis='x', alpha=0.3)
+        ax.set_title(f'{label}  ({n_sig}/{len(sub)} sig)', fontsize=8, pad=4)
         footer(fig, lvl)
+        _despine(ax)
+        _grid(ax, 'x')
     plt.tight_layout()
-    fig.subplots_adjust(left=0.38)
     save(fig, path)
 
 
@@ -1060,12 +1079,13 @@ def plot_sex_bars(res_pt, res_cell, path, title='L5 — Sex Effect'):
 # ══════════════════════════════════════════════════════════════════════════════
 def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
     """Z-score heatmap (top features) + PCA scatter at patient level."""
+    _paper_rc()
     out = Path(out_dir)
     sig_feats = (res_pt.loc[res_pt['Significant'], 'Feature'].tolist()
                  if not res_pt.empty else [])
     feats = sig_feats if sig_feats else feat_cols[:15]
 
-    # Heatmap
+    # ── Heatmap ───────────────────────────────────────────────────────────────
     scaler = StandardScaler()
     X_sc   = pd.DataFrame(scaler.fit_transform(df_pt[feat_cols].fillna(0)),
                            columns=feat_cols, index=df_pt.index)
@@ -1076,40 +1096,51 @@ def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
                   for f in feats]
     hm_df.index = row_labels
 
-    fig, ax = plt.subplots(figsize=(14, max(10, len(feats) * 1.0)))
-    sns.heatmap(hm_df, cmap='RdBu_r', center=0, annot=True, fmt='.2f',
-                linewidths=0.5, ax=ax,
-                cbar_kws={'label': 'Z-score (patient mean)'})
-    ax.set_title(f'Summary Heatmap — {GROUP_LABELS[g1]} vs {GROUP_LABELS[g2]}\n'
-                 '* = significant (BH-FDR, patient-level)',
-                 fontsize=24, fontweight='bold')
-    ax.tick_params(axis='x', rotation=15, labelsize=22)
-    ax.tick_params(axis='y', rotation=0,  labelsize=18)
+    n_feat = len(feats)
+    fig, ax = plt.subplots(figsize=(max(3.5, len([g1, g2]) * 0.9),
+                                    max(4.0, n_feat * 0.28)))
+    vmax = max(1.0, float(hm_df.abs().values.max()))
+    im = ax.imshow(hm_df.values, aspect='auto', cmap='RdBu_r',
+                   vmin=-vmax, vmax=vmax)
+    ax.set_xticks(range(len(hm_df.columns)))
+    ax.set_xticklabels(hm_df.columns, fontsize=8)
+    ax.set_yticks(range(n_feat))
+    ax.set_yticklabels(row_labels, fontsize=7.5)
+    ax.set_xticks(np.arange(-0.5, len(hm_df.columns), 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
+    ax.grid(which='minor', color='white', linewidth=0.6)
+    ax.tick_params(which='minor', bottom=False, left=False)
+    for i in range(n_feat):
+        for j in range(len(hm_df.columns)):
+            ax.text(j, i, f'{hm_df.iloc[i, j]:.2f}',
+                    ha='center', va='center', fontsize=7)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
+    cbar.set_label('Z-score (patient mean)', fontsize=7.5)
+    cbar.ax.tick_params(labelsize=7)
+    ax.set_title(f'* = FDR-sig (patient)', fontsize=8, pad=4)
     plt.tight_layout()
     save(fig, out / 'SUMMARY_heatmap.png')
 
-    # PCA
+    # ── PCA ───────────────────────────────────────────────────────────────────
     X  = df_pt[feat_cols].fillna(0).values
     Xs = StandardScaler().fit_transform(X)
     pca = PCA(n_components=min(2, Xs.shape[1]), random_state=42)
     Xp  = pca.fit_transform(Xs)
     ev  = pca.explained_variance_ratio_
 
-    fig, ax = plt.subplots(figsize=(10, 9))
+    fig, ax = plt.subplots(figsize=(4.0, 3.5))
     for g in [g1, g2]:
         mask = df_pt['Disease'].values == g
         ax.scatter(Xp[mask, 0], Xp[mask, 1], c=GROUP_COLORS[g],
-                   label=GROUP_LABELS[g], s=90, alpha=0.8,
-                   edgecolors='white', lw=0.5)
+                   label=GROUP_LABELS[g], s=30, alpha=0.8,
+                   edgecolors='white', lw=0.4)
         ctr = Xp[mask].mean(axis=0)
-        ax.scatter(*ctr, c=GROUP_COLORS[g], s=300, marker='D',
-                   edgecolors='black', lw=2, zorder=6)
-    ax.set_xlabel(f'PC1 ({ev[0]*100:.1f}%)', fontsize=24)
-    ax.set_ylabel(f'PC2 ({ev[1]*100:.1f}%)', fontsize=24)
-    ax.set_title(f'PCA — {GROUP_LABELS[g1]} vs {GROUP_LABELS[g2]}\n'
-                 'Diamonds = group centroids', fontsize=24, fontweight='bold')
-    ax.legend(fontsize=22)
-    ax.grid(True, alpha=0.3)
+        ax.scatter(*ctr, c=GROUP_COLORS[g], s=100, marker='D',
+                   edgecolors='black', lw=1.2, zorder=6)
+    ax.set_xlabel(f'PC1 ({ev[0]*100:.1f}%)')
+    ax.set_ylabel(f'PC2 ({ev[1]*100:.1f}%)')
+    ax.legend(frameon=False)
+    _despine(ax)
     plt.tight_layout()
     save(fig, out / 'SUMMARY_pca.png')
 
@@ -1117,13 +1148,9 @@ def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: AORTA DIAMETER — STYLED SPEARMAN BARS
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_diameter_spearman(res, path, title='L7 — Aorta Diameter'):
-    """
-    Styled Spearman ρ bar chart (reference style).
-    Red = negative ρ, blue = positive ρ.
-    Solid = FDR < 0.05, faded (alpha=0.22) = ns.
-    Features sorted by organelle group then name.
-    """
+def plot_diameter_spearman(res, path):
+    """Spearman ρ bar chart: red = negative, blue = positive; faded = ns."""
+    _paper_rc()
     if res.empty:
         return
 
@@ -1133,9 +1160,7 @@ def plot_diameter_spearman(res, path, title='L7 — Aorta Diameter'):
     sub = sub.sort_values(['_org_rank', 'Feature']).reset_index(drop=True)
     n = len(sub)
 
-    fig, ax = plt.subplots(figsize=(32, max(22, n * 1.4)))
-    ax.set_facecolor('#F4F6F9')
-    fig.patch.set_facecolor('white')
+    fig, ax = plt.subplots(figsize=(5.5, max(3.5, n * 0.28)))
 
     for i, row in sub.iterrows():
         rho = row['Spearman_r']
@@ -1144,37 +1169,38 @@ def plot_diameter_spearman(res, path, title='L7 — Aorta Diameter'):
         col = '#C0392B' if rho < 0 else '#2471A3'
         ax.barh(i, rho, color=col, alpha=alp, height=0.72, edgecolor='none')
 
-    ax.axvline(0, color='#777', ls='--', lw=1.4)
+    ax.axvline(0, color='#555', ls='--', lw=0.8)
     ax.set_xlim(-1.05, 1.05)
     ax.set_xticks(np.arange(-1.0, 1.25, 0.25))
-    ax.set_yticks(range(n))
-    ax.set_yticklabels(sub['Feature'], fontsize=34)
-    ax.set_xlabel('Spearman ρ  (feature vs. aortic diameter)', fontsize=30)
-    ax.set_title(title, fontsize=34, fontweight='bold')
-    ax.tick_params(axis='x', labelsize=28)
-    ax.grid(axis='x', color='white', linewidth=1.8, zorder=0)
 
-    # organelle separator lines
+    labels = []
+    for f in sub['Feature']:
+        parts = f.split('_', 1)
+        labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(labels, fontsize=7.5)
+    ax.set_xlabel(r'Spearman $\rho$  (feature vs. aortic diameter)')
+
     prev_org = None
     for i, row in sub.iterrows():
         if prev_org is not None and row['Organelle'] != prev_org:
-            ax.axhline(i - 0.5, color='#BBBBBB', lw=1.4)
+            ax.axhline(i - 0.5, color='#CCCCCC', lw=0.6)
         prev_org = row['Organelle']
 
-    # significance stars in matching colour
     for i, row in sub.iterrows():
         if row.get('Significant', False):
             x = row['Spearman_r']
             col = '#C0392B' if x < 0 else '#2471A3'
             ax.text(x + (0.03 if x >= 0 else -0.03), i, sig_stars(row['BH_q']),
                     va='center', ha='left' if x >= 0 else 'right',
-                    fontsize=30, fontweight='bold', color=col)
+                    fontsize=7.5, fontweight='bold', color=col)
 
-    solid_p = mpatches.Patch(color='#777', alpha=0.88, label='FDR < 0.05  (solid)')
-    faded_p = mpatches.Patch(color='#777', alpha=0.22, label='ns  (faded)')
-    ax.legend(handles=[solid_p, faded_p], fontsize=26, loc='lower right', framealpha=0.9)
-
-    fig.subplots_adjust(left=0.42, right=0.97, top=0.93, bottom=0.07)
+    solid_p = mpatches.Patch(color='#777', alpha=0.88, label='FDR < 0.05')
+    faded_p = mpatches.Patch(color='#777', alpha=0.22, label='ns')
+    ax.legend(handles=[solid_p, faded_p], frameon=False, loc='lower right', fontsize=7.5)
+    _despine(ax)
+    _grid(ax, 'x')
+    plt.tight_layout()
     save(fig, path)
 
 

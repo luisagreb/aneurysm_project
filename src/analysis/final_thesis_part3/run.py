@@ -36,7 +36,6 @@ Outputs: outputs/classification/
   comparison/ — cross-task summary
 """
 
-import re
 import sys
 import warnings
 import numpy as np
@@ -45,7 +44,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import seaborn as sns
 from pathlib import Path
 from collections import defaultdict
 
@@ -287,13 +285,13 @@ def run_lopo_cv(df, feat_cols, task_name, label_col, class_names, out_dir):
     # ── Plots ─────────────────────────────────────────────────────────────────
     plot_performance_summary(summary, task_name,
                              out_dir / '01_performance_summary.png')
-    plot_confusion_matrices(summary, task_name,
+    plot_confusion_matrices(summary,
                             out_dir / '02_confusion_matrices.png')
-    plot_per_fold_accuracy(fold_results, task_name,
+    plot_per_fold_accuracy(fold_results,
                            out_dir / '03_per_fold_accuracy.png')
-    plot_roc_curves(fold_results, class_names, task_name,
+    plot_roc_curves(fold_results, class_names,
                     out_dir / '04_roc_curves.png')
-    plot_per_class_metrics(summary, task_name,
+    plot_per_class_metrics(summary,
                            out_dir / '05_per_class_metrics.png')
 
     if all_importances['Random Forest']:
@@ -330,82 +328,137 @@ def run_lopo_cv(df, feat_cols, task_name, label_col, class_names, out_dir):
     return summary, fold_results, all_importances
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PUBLICATION STYLE
+# ══════════════════════════════════════════════════════════════════════════════
+def _paper_rc():
+    plt.rcParams.update({
+        'font.family':       'sans-serif',
+        'font.sans-serif':   ['Arial', 'Helvetica', 'DejaVu Sans'],
+        'font.size':         9,
+        'axes.labelsize':    9,
+        'axes.titlesize':    9,
+        'xtick.labelsize':   8,
+        'ytick.labelsize':   8,
+        'legend.fontsize':   8,
+        'axes.linewidth':    0.8,
+        'xtick.major.width': 0.8,
+        'ytick.major.width': 0.8,
+        'xtick.major.size':  3,
+        'ytick.major.size':  3,
+        'axes.spines.top':   False,
+        'axes.spines.right': False,
+        'axes.grid':         False,
+        'figure.dpi':        150,
+        'savefig.dpi':       300,
+        'savefig.bbox':      'tight',
+        'savefig.pad_inches': 0.05,
+    })
+
+def _despine(ax):
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+def _subtick(ax, axis='y'):
+    if axis == 'y':
+        ax.yaxis.grid(True, color='#CCCCCC', linewidth=0.5, linestyle='-', zorder=0)
+        ax.set_axisbelow(True)
+    else:
+        ax.xaxis.grid(True, color='#CCCCCC', linewidth=0.5, linestyle='-', zorder=0)
+        ax.set_axisbelow(True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # PLOT FUNCTIONS
 # ══════════════════════════════════════════════════════════════════════════════
 def plot_performance_summary(summary, task_name, path):
+    _paper_rc()
     clf_names = list(summary.keys())
     x = np.arange(len(clf_names))
-    w = 0.35
+    w = 0.32
 
     bal_means = [summary[c]['bal_acc_mean'] for c in clf_names]
     bal_stds  = [summary[c]['bal_acc_std']  for c in clf_names]
     auc_means = [summary[c]['auc_mean']     for c in clf_names]
     auc_stds  = [summary[c]['auc_std']      for c in clf_names]
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    bars1 = ax.bar(x - w/2, bal_means, w, yerr=bal_stds, capsize=5,
-                   color=[CLF_COLORS[c] for c in clf_names],
-                   alpha=0.92, label='Balanced Accuracy', edgecolor='white')
-    bars2 = ax.bar(x + w/2, auc_means, w, yerr=auc_stds, capsize=5,
-                   color=[CLF_COLORS[c] for c in clf_names],
-                   alpha=0.50, label='AUC-ROC', edgecolor='white', hatch='//')
+    fig, ax = plt.subplots(figsize=(5.5, 3.5))
+    eb_kw = dict(elinewidth=0.8, capthick=0.8, capsize=3)
 
-    ax.axhline(0.5, color='red', ls='--', lw=1.5, label='Random baseline (0.5)')
-    ax.set_ylim(0, 1.18)
+    bars1 = ax.bar(x - w/2, bal_means, w, yerr=bal_stds, error_kw=eb_kw,
+                   color=[CLF_COLORS[c] for c in clf_names],
+                   alpha=0.85, label='Balanced accuracy', edgecolor='white', linewidth=0)
+    ax.bar(x + w/2, auc_means, w, yerr=auc_stds, error_kw=eb_kw,
+           color=[CLF_COLORS[c] for c in clf_names],
+           alpha=0.40, label='AUC-ROC', edgecolor=[CLF_COLORS[c] for c in clf_names],
+           linewidth=0.8, hatch='///')
+
+    ax.axhline(0.5, color='#C0392B', ls='--', lw=0.9, alpha=0.8, label='Chance level')
+    ax.set_ylim(0, 1.12)
     ax.set_xticks(x)
-    ax.set_xticklabels(clf_names, fontsize=12)
-    ax.set_ylabel('Score', fontsize=13)
-    ax.set_title(f'{task_name}\nClassification Performance — LOPO-CV\nMean ± SD across patient folds',
-                 fontsize=13, fontweight='bold')
-    ax.legend(fontsize=11)
-    ax.grid(axis='y', alpha=0.3)
+    ax.set_xticklabels(['LR', 'RF', 'SVM'], fontsize=8)
+    ax.set_ylabel('Score')
+    ax.set_xlabel('Classifier')
+
+    short = task_name.split('—')[-1].strip() if '—' in task_name else task_name
+    ax.set_title(short, pad=6)
 
     for bar, val, std in zip(bars1, bal_means, bal_stds):
         if not np.isnan(val):
             ax.text(bar.get_x() + bar.get_width()/2,
-                    bar.get_height() + std + 0.025,
-                    f'{val:.2f}', ha='center', fontsize=11, fontweight='bold')
-    for bar, val, std in zip(bars2, auc_means, auc_stds):
-        if not np.isnan(val):
-            s = std if not np.isnan(std) else 0
-            ax.text(bar.get_x() + bar.get_width()/2,
-                    bar.get_height() + s + 0.025,
-                    f'{val:.2f}', ha='center', fontsize=11, fontweight='bold')
+                    bar.get_height() + (std or 0) + 0.02,
+                    f'{val:.2f}', ha='center', va='bottom', fontsize=7)
+
+    ax.legend(frameon=False, loc='upper right', ncol=1)
+    _despine(ax)
+    _subtick(ax, 'y')
     plt.tight_layout()
     save(fig, path)
 
 
-def plot_confusion_matrices(summary, task_name, path):
-    clf_names = list(summary.keys())
+def plot_confusion_matrices(summary, path):
+    _paper_rc()
+    clf_names   = list(summary.keys())
+    short_names = {'Logistic Regression': 'LR', 'Random Forest': 'RF', 'SVM (RBF)': 'SVM'}
+
     fig, axes = plt.subplots(1, len(clf_names),
-                             figsize=(len(clf_names)*5, 5))
+                             figsize=(len(clf_names) * 2.6, 2.8))
     if len(clf_names) == 1:
         axes = [axes]
-    fig.suptitle(f'{task_name}\nConfusion Matrices — LOPO-CV (normalised by true class)',
-                 fontsize=13, fontweight='bold')
 
     for ax, clf_name in zip(axes, clf_names):
         cm          = summary[clf_name]['confusion'].astype(float)
         class_names = summary[clf_name]['class_names']
         cm_norm     = np.nan_to_num(cm / cm.sum(axis=1, keepdims=True))
 
-        sns.heatmap(cm_norm, annot=True, fmt='.2f', cmap='Blues',
-                    xticklabels=class_names, yticklabels=class_names,
-                    ax=ax, vmin=0, vmax=1,
-                    annot_kws={'size': 13, 'fontweight': 'bold'},
-                    linewidths=0.5, linecolor='lightgray')
-        ax.set_xlabel('Predicted', fontsize=11)
-        ax.set_ylabel('True', fontsize=11)
-        bal  = summary[clf_name]['bal_acc_mean']
-        auc  = summary[clf_name]['auc_mean']
-        astr = f'  AUC={auc:.2f}' if not np.isnan(auc) else ''
-        ax.set_title(f'{clf_name}\nBal.Acc={bal:.2f}{astr}',
-                     fontsize=11, fontweight='bold')
+        im = ax.imshow(cm_norm, cmap='Blues', vmin=0, vmax=1, aspect='auto')
+        for i in range(len(class_names)):
+            for j in range(len(class_names)):
+                val = cm_norm[i, j]
+                ax.text(j, i, f'{val:.2f}',
+                        ha='center', va='center', fontsize=8,
+                        color='white' if val > 0.6 else '#333333')
+
+        ax.set_xticks(range(len(class_names)))
+        ax.set_yticks(range(len(class_names)))
+        ax.set_xticklabels(class_names, fontsize=8)
+        ax.set_yticklabels(class_names, fontsize=8)
+        ax.set_xlabel('Predicted', fontsize=8)
+        if ax == axes[0]:
+            ax.set_ylabel('True', fontsize=8)
+
+        bal = summary[clf_name]['bal_acc_mean']
+        auc = summary[clf_name]['auc_mean']
+        astr = f', AUC={auc:.2f}' if not np.isnan(auc) else ''
+        ax.set_title(f'{short_names.get(clf_name, clf_name)}\nBal.Acc={bal:.2f}{astr}',
+                     fontsize=8, pad=4)
+
+    fig.colorbar(im, ax=axes[-1], fraction=0.046, pad=0.04, label='Recall')
     plt.tight_layout()
     save(fig, path)
 
 
-def plot_per_fold_accuracy(fold_results, task_name, path):
+def plot_per_fold_accuracy(fold_results, path):
+    _paper_rc()
     rows = []
     for clf_name, folds in fold_results.items():
         for f in folds:
@@ -415,16 +468,17 @@ def plot_per_fold_accuracy(fold_results, task_name, path):
     if df_plot.empty:
         return
 
-    clf_names = list(fold_results.keys())
-    x_pos     = {c: i for i, c in enumerate(clf_names)}
-    rng       = np.random.RandomState(42)
+    clf_names   = list(fold_results.keys())
+    short_names = {'Logistic Regression': 'LR', 'Random Forest': 'RF', 'SVM (RBF)': 'SVM'}
+    x_pos       = {c: i for i, c in enumerate(clf_names)}
+    rng         = np.random.RandomState(42)
 
-    fig, ax = plt.subplots(figsize=(11, 6))
+    fig, ax = plt.subplots(figsize=(5.5, 3.8))
 
     disease_markers = [('Healthy', 'o'), ('TAA', 's'), ('BAV', '^')]
     for clf_name in clf_names:
         sub    = df_plot[df_plot['Classifier'] == clf_name]
-        jitter = rng.uniform(-0.18, 0.18, len(sub))
+        jitter = rng.uniform(-0.15, 0.15, len(sub))
         for dis, marker in disease_markers:
             mask = sub['Disease'] == dis
             if not mask.any():
@@ -433,45 +487,43 @@ def plot_per_fold_accuracy(fold_results, task_name, path):
             ax.scatter(x_pos[clf_name] + jitter[idx],
                        sub.loc[mask, 'Bal_Acc'].values,
                        c=DISEASE_COLORS.get(dis, '#AAA'),
-                       marker=marker, s=90, alpha=0.85,
-                       edgecolors='white', lw=0.5,
-                       label=dis if clf_name == clf_names[0] else '_nolegend_')
+                       marker=marker, s=30, alpha=0.75,
+                       edgecolors='white', linewidths=0.3,
+                       label=dis if clf_name == clf_names[0] else '_nolegend_',
+                       zorder=3)
         mean_acc = sub['Bal_Acc'].mean()
-        ax.plot([x_pos[clf_name]-0.3, x_pos[clf_name]+0.3],
+        ax.plot([x_pos[clf_name] - 0.28, x_pos[clf_name] + 0.28],
                 [mean_acc, mean_acc],
-                color=CLF_COLORS[clf_name], lw=3.5, zorder=5)
-        ax.text(x_pos[clf_name], mean_acc + 0.04,
-                f'{mean_acc:.2f}', ha='center', fontsize=10,
-                fontweight='bold', color=CLF_COLORS[clf_name])
+                color='#333333', lw=1.8, zorder=5)
+        ax.text(x_pos[clf_name] + 0.31, mean_acc,
+                f'{mean_acc:.2f}', va='center', fontsize=7, color='#333333')
 
-    ax.axhline(0.5, color='red', ls='--', lw=1.5, alpha=0.7,
-               label='Random baseline (0.5)')
+    ax.axhline(0.5, color='#C0392B', ls='--', lw=0.9, alpha=0.8, label='Chance level')
     ax.set_xticks(range(len(clf_names)))
-    ax.set_xticklabels(clf_names, fontsize=12)
-    ax.set_ylabel('Balanced Accuracy (per patient fold)', fontsize=12)
-    ax.set_ylim(-0.05, 1.18)
-    ax.set_title(f'{task_name} — Per-Patient Fold Accuracy\n'
-                 'Each point = one held-out patient  |  Horizontal bar = mean',
-                 fontsize=13, fontweight='bold')
-    ax.grid(axis='y', alpha=0.3)
+    ax.set_xticklabels([short_names.get(c, c) for c in clf_names])
+    ax.set_ylabel('Balanced accuracy (per patient fold)')
+    ax.set_xlabel('Classifier')
+    ax.set_ylim(-0.05, 1.15)
 
     handles = [plt.scatter([], [], c=DISEASE_COLORS.get(d, '#AAA'),
-                           marker=m, s=70, label=d, edgecolors='white')
-               for d, m in disease_markers
-               if d in df_plot['Disease'].values]
-    handles.append(plt.Line2D([0], [0], color='red', ls='--',
-                               label='Random baseline (0.5)'))
-    ax.legend(handles=handles, fontsize=10, loc='lower right')
+                           marker=m, s=25, label=d, edgecolors='white')
+               for d, m in disease_markers if d in df_plot['Disease'].values]
+    handles.append(plt.Line2D([0], [0], color='#C0392B', ls='--', lw=0.9,
+                               label='Chance level'))
+    ax.legend(handles=handles, frameon=False, loc='lower right', handletextpad=0.4)
+    _despine(ax)
+    _subtick(ax, 'y')
     plt.tight_layout()
     save(fig, path)
 
 
-def plot_roc_curves(fold_results, class_names, task_name, path):
+def plot_roc_curves(fold_results, class_names, path):
     if len(class_names) != 2:
         return
+    _paper_rc()
 
-    fig, ax = plt.subplots(figsize=(8, 7))
-    ax.plot([0, 1], [0, 1], 'k--', lw=1, alpha=0.5, label='Random (AUC=0.50)')
+    fig, ax = plt.subplots(figsize=(3.5, 3.5))
+    ax.plot([0, 1], [0, 1], color='#AAAAAA', ls='--', lw=0.8, label='Chance (AUC=0.50)')
 
     for clf_name, folds in fold_results.items():
         folds_with_prob = [f for f in folds if f.get('y_prob') is not None]
@@ -483,62 +535,64 @@ def plot_roc_curves(fold_results, class_names, task_name, path):
         try:
             fpr, tpr, _ = roc_curve(y_bin, y_prob_all)
             auc_val = roc_auc_score(y_bin, y_prob_all)
-            ax.plot(fpr, tpr, color=CLF_COLORS[clf_name], lw=2.5,
-                    label=f'{clf_name}  (AUC={auc_val:.2f})')
+            short = {'Logistic Regression': 'LR', 'Random Forest': 'RF',
+                     'SVM (RBF)': 'SVM'}.get(clf_name, clf_name)
+            ax.plot(fpr, tpr, color=CLF_COLORS[clf_name], lw=1.6,
+                    label=f'{short} (AUC={auc_val:.2f})')
         except Exception as e:
             print(f"  ROC failed for {clf_name}: {e}")
 
-    ax.set_xlabel('False Positive Rate', fontsize=13)
-    ax.set_ylabel('True Positive Rate', fontsize=13)
-    ax.set_title(f'{task_name} — ROC Curves\nAggregated across all LOPO folds',
-                 fontsize=13, fontweight='bold')
-    ax.legend(fontsize=11, loc='lower right')
-    ax.grid(True, alpha=0.3)
-    ax.set_xlim(-0.02, 1.02)
-    ax.set_ylim(-0.02, 1.05)
+    ax.set_xlabel('False positive rate')
+    ax.set_ylabel('True positive rate')
+    ax.legend(frameon=False, loc='lower right')
+    ax.set_xlim(-0.01, 1.01)
+    ax.set_ylim(-0.01, 1.04)
+    _despine(ax)
     plt.tight_layout()
     save(fig, path)
 
 
-def plot_per_class_metrics(summary, task_name, path):
+def plot_per_class_metrics(summary, path):
+    _paper_rc()
     clf_names   = list(summary.keys())
     class_names = summary[clf_names[0]]['class_names']
+    short_clf   = {'Logistic Regression': 'LR', 'Random Forest': 'RF', 'SVM (RBF)': 'SVM'}
     metrics     = ['precision', 'recall', 'f1']
-    metric_labels = {'precision': 'Precision', 'recall': 'Recall', 'f1': 'F1'}
+    metric_labels  = {'precision': 'Precision', 'recall': 'Recall', 'f1': 'F1'}
+    metric_colors  = {'precision': '#2980B9', 'recall': '#C0392B', 'f1': '#27AE60'}
 
     ncols = len(class_names)
-    fig, axes = plt.subplots(1, ncols, figsize=(ncols*5.5, 5), sharey=True)
+    fig, axes = plt.subplots(1, ncols, figsize=(ncols * 2.8, 3.2), sharey=True)
     if ncols == 1:
         axes = [axes]
-    fig.suptitle(f'{task_name} — Per-Class Metrics (LOPO-CV)',
-                 fontsize=13, fontweight='bold')
 
-    x  = np.arange(len(clf_names))
-    w  = 0.25
-    metric_colors = {'precision': '#3498DB', 'recall': '#E74C3C', 'f1': '#2ECC71'}
+    x = np.arange(len(clf_names))
+    w = 0.22
 
     for ax, cls in zip(axes, class_names):
         for i, metric in enumerate(metrics):
             vals = [summary[c][metric][cls] for c in clf_names]
-            ax.bar(x + (i-1)*w, vals, w,
-                   color=metric_colors[metric],
-                   alpha=0.85, label=metric_labels[metric],
-                   edgecolor='white')
+            ax.bar(x + (i - 1) * w, vals, w,
+                   color=metric_colors[metric], alpha=0.82,
+                   label=metric_labels[metric], edgecolor='white', linewidth=0)
         ax.set_xticks(x)
-        ax.set_xticklabels(clf_names, fontsize=10, rotation=10)
-        ax.set_title(f'Class: {cls}', fontsize=12, fontweight='bold')
-        ax.set_ylim(0, 1.15)
-        ax.set_ylabel('Score', fontsize=11)
-        ax.axhline(0.5, color='grey', ls=':', lw=1, alpha=0.5)
-        ax.grid(axis='y', alpha=0.3)
+        ax.set_xticklabels([short_clf.get(c, c) for c in clf_names])
+        ax.set_title(cls, pad=4)
+        ax.set_ylim(0, 1.12)
         if ax == axes[0]:
-            ax.legend(fontsize=10)
+            ax.set_ylabel('Score')
+            ax.legend(frameon=False, loc='lower left', fontsize=7)
+        ax.axhline(0.5, color='#AAAAAA', ls=':', lw=0.8)
+        _despine(ax)
+        _subtick(ax, 'y')
+
     plt.tight_layout()
     save(fig, path)
 
 
 def plot_feature_importance(feat_cols, values, stds, title, path,
-                            signed=False, top_n=20):
+                            signed=False, top_n=15):
+    _paper_rc()
     feat_arr = np.array(feat_cols)
     val_arr  = np.array(values)
     std_arr  = np.array(stds)
@@ -554,36 +608,48 @@ def plot_feature_importance(feat_cols, values, stds, title, path,
     stds_s = std_arr[idx]
     colors = [ORGANELLE_COLORS.get(get_organelle(f), '#AAA') for f in feats]
 
-    fig, ax = plt.subplots(figsize=(11, max(6, len(feats)*0.52)))
-    ax.barh(range(len(feats)), vals, xerr=stds_s, color=colors,
-            edgecolor='white', height=0.7, capsize=3, alpha=0.88)
+    fig, ax = plt.subplots(figsize=(5.5, max(3.5, len(feats) * 0.30)))
+    eb_kw = dict(elinewidth=0.7, capthick=0.7, capsize=2, ecolor='#555555')
+    ax.barh(range(len(feats)), vals, xerr=stds_s, error_kw=eb_kw,
+            color=colors, edgecolor='white', linewidth=0, height=0.65, alpha=0.85)
     if signed:
-        ax.axvline(0, color='black', lw=0.9)
+        ax.axvline(0, color='#333333', lw=0.8)
+
+    labels = []
+    for f in feats:
+        parts = f.split('_', 1)
+        label = parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' ')
+        labels.append(label)
+
     ax.set_yticks(range(len(feats)))
-    ax.set_yticklabels([f.replace('_', ' ') for f in feats], fontsize=11)
-    ax.set_xlabel('Importance / Coefficient  (mean ± SD across LOPO folds)', fontsize=12)
-    ax.set_title(title, fontsize=12, fontweight='bold')
-    ax.grid(axis='x', alpha=0.3)
-    patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, fontsize=10, loc='lower right')
+    ax.set_yticklabels(labels, fontsize=7.5)
+    xlabel = ('Coefficient (mean ± SD, LOPO folds)' if signed
+              else 'Importance (mean ± SD, LOPO folds)')
+    ax.set_xlabel(xlabel)
+    ax.set_title(title, pad=5)
+    _despine(ax)
+    _subtick(ax, 'x')
+
+    patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
+               for o, c in ORGANELLE_COLORS.items()]
+    ax.legend(handles=patches, frameon=False, loc='lower right', fontsize=7)
     plt.tight_layout()
     save(fig, path)
 
 
 def plot_task_comparison(summary_t1, summary_t2, path):
+    _paper_rc()
     tasks = {
-        'Task 1\nHealthy vs Diseased': summary_t1,
-        'Task 2\nBAV vs TAV-ATAA':     summary_t2,
+        'Task 1: Healthy vs Diseased': summary_t1,
+        'Task 2: BAV vs TAV-ATAA':     summary_t2,
     }
-    clf_names = list(next(iter(tasks.values())).keys())
+    clf_names   = list(next(iter(tasks.values())).keys())
+    short_clf   = {'Logistic Regression': 'LR', 'Random Forest': 'RF', 'SVM (RBF)': 'SVM'}
     x = np.arange(len(clf_names))
-    w = 0.35
+    w = 0.32
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
-    fig.suptitle('Classification Performance — Both Tasks (LOPO-CV)\n'
-                 'Solid = Balanced Accuracy  |  Hatched = AUC-ROC  |  '
-                 'Red dashed = random baseline',
-                 fontsize=13, fontweight='bold')
+    fig, axes = plt.subplots(1, 2, figsize=(7.5, 3.5), sharey=True)
+    eb_kw = dict(elinewidth=0.8, capthick=0.8, capsize=3)
 
     for ax, (task_label, summary) in zip(axes, tasks.items()):
         bal_means = [summary[c]['bal_acc_mean'] for c in clf_names]
@@ -591,37 +657,44 @@ def plot_task_comparison(summary_t1, summary_t2, path):
         auc_means = [summary[c]['auc_mean']     for c in clf_names]
         auc_stds  = [summary[c]['auc_std']      for c in clf_names]
 
-        ax.bar(x - w/2, bal_means, w, yerr=bal_stds, capsize=5,
+        ax.bar(x - w/2, bal_means, w, yerr=bal_stds, error_kw=eb_kw,
                color=[CLF_COLORS[c] for c in clf_names],
-               alpha=0.92, edgecolor='white')
-        ax.bar(x + w/2, auc_means, w, yerr=auc_stds, capsize=5,
+               alpha=0.85, edgecolor='white', linewidth=0, label='Balanced accuracy')
+        ax.bar(x + w/2, auc_means, w, yerr=auc_stds, error_kw=eb_kw,
                color=[CLF_COLORS[c] for c in clf_names],
-               alpha=0.50, edgecolor='white', hatch='//')
+               alpha=0.38, edgecolor=[CLF_COLORS[c] for c in clf_names],
+               linewidth=0.8, hatch='///', label='AUC-ROC')
 
-        ax.axhline(0.5, color='red', ls='--', lw=1.5, alpha=0.7)
-        ax.set_ylim(0, 1.18)
+        ax.axhline(0.5, color='#C0392B', ls='--', lw=0.9, alpha=0.8)
+        ax.set_ylim(0, 1.12)
         ax.set_xticks(x)
-        ax.set_xticklabels(clf_names, fontsize=11, rotation=10)
-        ax.set_title(task_label, fontsize=13, fontweight='bold')
-        ax.set_ylabel('Score', fontsize=12)
-        ax.grid(axis='y', alpha=0.3)
+        ax.set_xticklabels([short_clf.get(c, c) for c in clf_names])
+        ax.set_title(task_label, pad=5)
+        if ax == axes[0]:
+            ax.set_ylabel('Score')
+        ax.set_xlabel('Classifier')
 
         for i, (val, std) in enumerate(zip(bal_means, bal_stds)):
             if not np.isnan(val):
-                ax.text(x[i] - w/2, val + std + 0.03,
-                        f'{val:.2f}', ha='center', fontsize=10, fontweight='bold')
+                ax.text(x[i] - w/2, val + (std or 0) + 0.02,
+                        f'{val:.2f}', ha='center', va='bottom', fontsize=7)
+        _despine(ax)
+        _subtick(ax, 'y')
 
-    handles = ([mpatches.Patch(color=CLF_COLORS[c], label=c) for c in clf_names] +
-               [mpatches.Patch(facecolor='grey', alpha=0.9, label='Balanced Accuracy'),
-                mpatches.Patch(facecolor='grey', alpha=0.5, hatch='//', label='AUC-ROC'),
-                plt.Line2D([0], [0], color='red', ls='--', label='Random baseline')])
-    fig.legend(handles=handles, loc='lower center', ncol=4,
-               fontsize=10, bbox_to_anchor=(0.5, -0.03))
-    plt.tight_layout(rect=[0, 0.07, 1, 1])
+    handles = ([mpatches.Patch(color=CLF_COLORS[c], label=short_clf.get(c, c))
+                for c in clf_names] +
+               [mpatches.Patch(facecolor='#888888', alpha=0.85, label='Balanced accuracy'),
+                mpatches.Patch(facecolor='#888888', alpha=0.38, hatch='///', label='AUC-ROC'),
+                plt.Line2D([0], [0], color='#C0392B', ls='--', lw=0.9, label='Chance level')])
+    fig.legend(handles=handles, loc='lower center', ncol=len(handles),
+               frameon=False, fontsize=7.5, bbox_to_anchor=(0.5, -0.06))
+    plt.tight_layout(rect=[0, 0.08, 1, 1])
     save(fig, path)
 
 
 def plot_feature_overlap(feat_cols, imp_t1, imp_t2, path):
+    _paper_rc()
+
     def norm01(x):
         r = np.abs(x) - np.abs(x).min()
         return r / r.max() if r.max() > 0 else r
@@ -630,26 +703,27 @@ def plot_feature_overlap(feat_cols, imp_t1, imp_t2, path):
     i2 = norm01(imp_t2)
     colors = [ORGANELLE_COLORS.get(get_organelle(f), '#AAA') for f in feat_cols]
 
-    fig, ax = plt.subplots(figsize=(9, 8))
-    ax.scatter(i1, i2, c=colors, s=80, alpha=0.82, edgecolors='white', lw=0.5)
+    fig, ax = plt.subplots(figsize=(4.5, 4.0))
+    ax.scatter(i1, i2, c=colors, s=22, alpha=0.75,
+               edgecolors='white', linewidths=0.3, zorder=3)
 
     threshold = 0.55
     for f, x, y in zip(feat_cols, i1, i2):
         if x > threshold or y > threshold:
-            ax.annotate(f.replace('_', ' '), (x, y),
-                        fontsize=8, alpha=0.85,
-                        xytext=(5, 5), textcoords='offset points')
+            parts = f.split('_', 1)
+            label = parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' ')
+            ax.annotate(label, (x, y), fontsize=6.5, alpha=0.9,
+                        xytext=(4, 3), textcoords='offset points')
 
-    ax.axhline(threshold, color='grey', ls=':', lw=1, alpha=0.5)
-    ax.axvline(threshold, color='grey', ls=':', lw=1, alpha=0.5)
-    ax.set_xlabel('Normalised Importance — Task 1 (Healthy vs Diseased)', fontsize=12)
-    ax.set_ylabel('Normalised Importance — Task 2 (BAV vs TAV)', fontsize=12)
-    ax.set_title('Feature Importance Overlap Across Tasks\n'
-                 'Top-right = discriminative for both tasks',
-                 fontsize=13, fontweight='bold')
-    ax.grid(True, alpha=0.3)
-    patches = [mpatches.Patch(color=c, label=o) for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, fontsize=10)
+    ax.axhline(threshold, color='#AAAAAA', ls=':', lw=0.8)
+    ax.axvline(threshold, color='#AAAAAA', ls=':', lw=0.8)
+    ax.set_xlabel('Normalised importance — Task 1 (Healthy vs Diseased)')
+    ax.set_ylabel('Normalised importance — Task 2 (BAV vs TAV-ATAA)')
+
+    patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
+               for o, c in ORGANELLE_COLORS.items()]
+    ax.legend(handles=patches, frameon=False, fontsize=7.5)
+    _despine(ax)
     plt.tight_layout()
     save(fig, path)
 
@@ -687,7 +761,7 @@ def main():
     df_t1 = df.copy()
     df_t1['label'] = df_t1['Disease'].map(
         {'Healthy': 'Healthy', 'TAA': 'Diseased', 'BAV': 'Diseased'})
-    summary_t1, folds_t1, imp_t1 = run_lopo_cv(
+    summary_t1, _, imp_t1 = run_lopo_cv(
         df_t1, feat_cols,
         task_name   = 'Task 1 — Healthy vs Diseased (TAV + BAV pooled)',
         label_col   = 'label',
@@ -697,7 +771,7 @@ def main():
     # ── TASK 2: BAV vs TAV-ATAA ───────────────────────────────────────────────
     df_t2 = df[df['Disease'].isin(['TAA', 'BAV'])].copy()
     df_t2['label'] = df_t2['Disease']
-    summary_t2, folds_t2, imp_t2 = run_lopo_cv(
+    summary_t2, _, imp_t2 = run_lopo_cv(
         df_t2, feat_cols,
         task_name   = 'Task 2 — BAV vs TAV-ATAA (subtype discrimination)',
         label_col   = 'label',
