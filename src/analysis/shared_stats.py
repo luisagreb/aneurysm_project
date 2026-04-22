@@ -48,9 +48,9 @@ GROUP_LABELS = {
     'BAV':     'BAV-ATAA',
 }
 ORGANELLE_COLORS = {
-    'Nucleus':      '#4C9BE8',
-    'Actin':        '#E74C3C',
-    'Mitochondria': '#2ECC71',
+    'Nucleus':      '#1558A0',  # dark blue
+    'Actin':        '#2ECC71',  # green
+    'Mitochondria': '#E74C3C',  # red
 }
 LEVEL_COLORS = {'Patient': '#8E44AD', 'Cell': '#E67E22'}
 
@@ -105,8 +105,8 @@ def footer(fig, level='patient'):
 
 def _paper_rc():
     plt.rcParams.update({
-        'font.family':        'sans-serif',
-        'font.sans-serif':    ['Arial', 'Helvetica', 'DejaVu Sans'],
+        'font.family':        'Arial',
+        'font.sans-serif':    ['Arial'],
         'font.size':          9,
         'axes.labelsize':     9,
         'axes.titlesize':     9,

@@ -75,9 +75,9 @@ DISEASE_COLORS = {
     'Diseased': '#C0392B',
 }
 ORGANELLE_COLORS = {
-    'Nucleus':      '#4C9BE8',
-    'Actin':        '#E74C3C',
-    'Mitochondria': '#2ECC71',
+    'Nucleus':      '#1558A0',  # dark blue
+    'Actin':        '#2ECC71',  # green
+    'Mitochondria': '#E74C3C',  # red
 }
 CLF_COLORS = {
     'Logistic Regression': '#8E44AD',
@@ -332,8 +332,8 @@ def run_lopo_cv(df, feat_cols, task_name, label_col, class_names, out_dir):
 # ══════════════════════════════════════════════════════════════════════════════
 def _paper_rc():
     plt.rcParams.update({
-        'font.family':       'sans-serif',
-        'font.sans-serif':   ['Arial', 'Helvetica', 'DejaVu Sans'],
+        'font.family':       'Arial',
+        'font.sans-serif':   ['Arial'],
         'font.size':         9,
         'axes.labelsize':    9,
         'axes.titlesize':    9,
