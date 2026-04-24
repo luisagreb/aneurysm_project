@@ -624,12 +624,22 @@ def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
     ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})")
 
     xlim = ax.get_xlim()
-    pad  = (xlim[1] - xlim[0]) * 0.025
+    pad  = (xlim[1] - xlim[0]) * 0.04
+    star_positions = []
     for i, (_, row) in enumerate(sub.iterrows()):
         if row.get('Significant', False):
             x = row['Cohen_d']
-            ax.text(x + (pad if x >= 0 else -pad), i, sig_stars(row['BH_q']),
+            sx = x + (pad if x >= 0 else -pad)
+            star_positions.append(sx)
+            ax.text(sx, i, sig_stars(row['BH_q']),
                     va='center', ha='left' if x >= 0 else 'right', fontsize=7.5)
+
+    # expand xlim so stars are never clipped by the axis boundary
+    if star_positions:
+        extra = (xlim[1] - xlim[0]) * 0.08
+        new_left  = min(xlim[0], min(star_positions)) - extra
+        new_right = max(xlim[1], max(star_positions)) + extra
+        ax.set_xlim(new_left, new_right)
 
     patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
                for o, c in ORGANELLE_COLORS.items()]
