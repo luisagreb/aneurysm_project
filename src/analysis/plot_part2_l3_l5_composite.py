@@ -92,10 +92,10 @@ plt.rcParams.update({
 
 # ── figure layout ─────────────────────────────────────────────────────────────
 n_feat = len(feat_cols)
-fig = plt.figure(figsize=(14, n_feat * 0.30 + 2.0))
+fig = plt.figure(figsize=(18, n_feat * 0.62 + 2.5))
 gs  = fig.add_gridspec(1, 3, width_ratios=[2.2, 1.0, 3.2],
-                        left=0.08, right=0.97, top=0.93, bottom=0.05,
-                        wspace=0.70)
+                        left=0.08, right=0.97, top=0.93, bottom=0.04,
+                        wspace=0.75)
 ax_lmm  = fig.add_subplot(gs[0])
 ax_sexh = fig.add_subplot(gs[1])
 gs_bars = gs[2].subgridspec(1, 2, wspace=0.55)
@@ -222,7 +222,7 @@ def draw_sex_bars(ax, res, panel_letter, sublabel):
     sub    = res.sort_values('Cohen_d', ascending=True).copy()
     colors = [ORGANELLE_COLORS.get(get_organelle(f), '#AAA') for f in sub['Feature']]
     ax.barh(range(len(sub)), sub['Cohen_d'], color=colors,
-            edgecolor='white', linewidth=0, height=0.72, alpha=0.85)
+            edgecolor='white', linewidth=0, height=0.78, alpha=0.85)
     ax.axvline(0, color='#333333', lw=0.8)
 
     labels = []

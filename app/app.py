@@ -59,6 +59,101 @@ def viewer():
 def segmentation():
     return render_template('segmentation.html')
 
+@app.route('/classifier')
+def classifier_page():
+    return render_template('classifier.html')
+
+@app.route('/api/classify_subtypes', methods=['POST'])
+def classify_subtypes():
+    """Run TAV-ATAA vs BAV-ATAA classifier on current cell's features."""
+    if viewer_state["data"] is None:
+        return jsonify({"error": "No cell loaded. Go to Segmentation first."})
+    if not viewer_state["masks"]:
+        return jsonify({"error": "No segmentation masks. Run segmentation first."})
+
+    try:
+        spacing = viewer_state["spacing"]
+        features = {}
+
+        if 0 in viewer_state["masks"]:
+            nuc = analyze_nucleus(viewer_state["masks"][0], spacing)
+            if nuc:
+                features["Nucleus_Volume_µm³"]        = nuc.get('Volume', 0)
+                features["Nucleus_Sphericity_ratio"]   = nuc.get('Sphericity', 0)
+                features["Nucleus_Elongation_ratio"]   = nuc.get('Elongation', 0)
+                features["Nucleus_Flatness_ratio"]     = nuc.get('Flatness', 0)
+                features["Nucleus_Solidity_ratio"]     = nuc.get('Solidity', 0)
+                features["Nucleus_Circularity_ratio"]  = nuc.get('Circularity', 0)
+
+        if 1 in viewer_state["masks"]:
+            act = analyze_actin(viewer_state["masks"][1], spacing)
+            if act:
+                features["Actin_Volume_µm³"]                   = act.get('Volume', 0)
+                features["Actin_Skeleton_Length_µm"]           = act.get('Skeleton_Length', 0)
+                features["Actin_Convex_Hull_Volume_µm³"]       = act.get('Convex_Hull_Volume', 0)
+                features["Actin_Solidity_ratio"]               = act.get('Solidity', 0)
+                features["Actin_Extent_ratio"]                 = act.get('Extent', 0)
+                features["Actin_Fractional_Anisotropy_ratio"]  = act.get('Fractional_Anisotropy', 0)
+                features["Actin_Major_Axis_µm"]                = act.get('Major_Axis', 0)
+                features["Actin_Intermediate_Axis_µm"]         = act.get('Intermediate_Axis', 0)
+                features["Actin_Minor_Axis_µm"]                = act.get('Minor_Axis', 0)
+
+        if 2 in viewer_state["masks"]:
+            mit = analyze_mito(viewer_state["masks"][2], spacing)
+            if mit:
+                features["Mito_Volume_µm³"]                    = mit.get('Volume', 0)
+                features["Mito_Surface_Area_µm²"]              = mit.get('Surface_Area', 0)
+                features["Mito_Sphericity_ratio"]              = mit.get('Sphericity', 0)
+                features["Mito_Fragment_Count_n"]              = mit.get('Fragment_Count', 0)
+                features["Mito_Mean_Fragment_Sphericity_ratio"]= mit.get('Mean_Fragment_Sphericity', 0)
+                features["Mito_Std_Fragment_Sphericity_ratio"] = mit.get('Std_Fragment_Sphericity', 0)
+                features["Mito_Min_Fragment_Sphericity_ratio"] = mit.get('Min_Fragment_Sphericity', 0)
+                features["Mito_Max_Fragment_Sphericity_ratio"] = mit.get('Max_Fragment_Sphericity', 0)
+                features["Mito_Mean_Fragment_Volume_µm³"]      = mit.get('Mean_Fragment_Volume', 0)
+                features["Mito_Junction_Count_n"]              = mit.get('Junction_Count', 0)
+                features["Mito_Branch_Count_n"]                = mit.get('Branch_Count', 0)
+                features["Mito_Mean_Branch_Length_µm"]         = mit.get('Mean_Branch_Length', 0)
+                features["Mito_Total_Network_Length_µm"]       = mit.get('Total_Network_Length', 0)
+                features["Mito_Mean_Tortuosity_ratio"]         = mit.get('Mean_Tortuosity', 0)
+                features["Mito_Cyclomatic_Number_n"]           = mit.get('Cyclomatic_Number', 0)
+
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'tav_bav_classifier.joblib')
+        if not os.path.exists(model_path):
+            return jsonify({"error": "TAV/BAV classifier model not found."})
+
+        bundle    = joblib.load(model_path)
+        pipe      = bundle['pipeline']
+        feat_list = bundle['features']
+        labels    = bundle['label_names']
+
+        df_pred = pd.DataFrame([features])
+        for col in feat_list:
+            if col not in df_pred.columns:
+                df_pred[col] = 0.0
+        df_pred = df_pred[feat_list].fillna(0)
+
+        probas    = pipe.predict_proba(df_pred)[0]
+        # align probas with label_names order
+        clf_classes = list(pipe.classes_)
+        prob_dict = {cls: float(probas[i]) for i, cls in enumerate(clf_classes)}
+        pred      = max(prob_dict, key=prob_dict.get)
+        confidence= prob_dict[pred]
+
+        return jsonify({
+            "status":     "success",
+            "prediction": pred,
+            "confidence": round(confidence * 100, 1),
+            "probabilities": {
+                "TAV-ATAA": round(prob_dict.get("TAV-ATAA", 0) * 100, 1),
+                "BAV-ATAA": round(prob_dict.get("BAV-ATAA", 0) * 100, 1),
+            },
+            "features": {k: round(v, 4) for k, v in features.items()},
+        })
+
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({"error": str(e)})
+
 @app.route('/mesh/<int:c>')
 def get_mesh(c):
     """
@@ -140,38 +235,45 @@ def load_oir():
 
         print(f"[INFO] Loading file: {file.filename}")
 
-        # Read with AICSImage (uses BioFormats for .oir)
-        img = AICSImage(temp_file)
+        # Read OIR via Java subprocess (avoids JPype/JVM crash on ARM64)
+        BF_DIR = os.path.expanduser(
+            "~/.jgo/ome/formats-gpl/LATEST/"
+            "a2636a97ad34ecd06cc988e7b7979037cef5dcedcee036fc3307ab9af368c011"
+        )
+        JAVA_CLS = os.path.join(os.path.dirname(__file__), "java")
+        classpath = f"{BF_DIR}/*:{JAVA_CLS}"
+        out_bin = "/tmp/oir_data.bin"
 
-        # Get data in CZYX order
-        data = img.get_image_data("CZYX")
-        data = data.astype(np.float32)
+        result = subprocess.run(
+            ["java", "-cp", classpath, "OirReader", temp_file, out_bin],
+            capture_output=True, text=True, timeout=120
+        )
+        # Last stdout line: "OK C Z Y X pz py px"
+        ok_line = [l for l in result.stdout.strip().splitlines() if l.startswith("OK")]
+        if not ok_line:
+            raise RuntimeError(f"OirReader failed: {result.stderr[-500:]}")
+        parts = ok_line[-1].split()
+        c, z, h, w = int(parts[1]), int(parts[2]), int(parts[3]), int(parts[4])
+        pz, py, px = float(parts[5]), float(parts[6]), float(parts[7])
 
+        # Parse raw binary: header already consumed by Java, just raw pixel bytes
+        with open(out_bin, "rb") as f:
+            # skip header: 5 ints (20 bytes) + 3 doubles (24 bytes)
+            f.seek(20 + 24)
+            raw = np.frombuffer(f.read(), dtype=np.uint16)
+
+        data = raw.reshape(c, z, h, w).astype(np.float32)
         raw_shape = str(data.shape)
-        c, z, h, w = data.shape
         print(f"[INFO] Shape (C,Z,Y,X): ({c}, {z}, {h}, {w})")
 
-        # Store in global state
         viewer_state["data"] = data
         viewer_state["channels"] = c
         viewer_state["slices"] = z
         viewer_state["width"] = w
         viewer_state["height"] = h
         viewer_state["masks"] = {}
-
-        # Get Physical Pixel Sizes (Z, Y, X)
-        try:
-            # AICSImage uses (Z, Y, X) order for physical_pixel_sizes
-            phys = img.physical_pixel_sizes
-            # Handle potential None values safely
-            sz = phys.Z if phys.Z else 1.0
-            sy = phys.Y if phys.Y else 1.0
-            sx = phys.X if phys.X else 1.0
-            viewer_state["spacing"] = (sz, sy, sx)
-            print(f"[INFO] Physical Spacing (Z, Y, X): {viewer_state['spacing']}")
-        except Exception as e:
-            print(f"[WARN] Could not read physical pixel sizes: {e}. Defaulting to 1.0")
-            viewer_state["spacing"] = (1.0, 1.0, 1.0)
+        viewer_state["spacing"] = (pz if pz > 0 else 1.0, py if py > 0 else 1.0, px if px > 0 else 1.0)
+        print(f"[INFO] Physical Spacing (Z, Y, X): {viewer_state['spacing']}")
 
         return jsonify({
             "channels": c,

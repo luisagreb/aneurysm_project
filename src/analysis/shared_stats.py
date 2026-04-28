@@ -844,17 +844,25 @@ def plot_lmm_heatmap(lmm, path):
     sig_pv = (lmm.pivot(index='Feature', columns='Term', values='Significant')
                  .reindex(index=feat_order, columns=term_order).fillna(False))
 
-    y_labels = [_abbrev_feature(f) for f in feat_order]
+    def _full_label(feat):
+        """Return clean feature name without organelle prefix."""
+        for prefix in ('Actin_', 'Mito_', 'Nucleus_'):
+            if feat.startswith(prefix):
+                feat = feat[len(prefix):]
+                break
+        return feat.replace('_', ' ')
+
+    y_labels = [_full_label(f) for f in feat_order]
     n_feat, n_term = len(feat_order), len(term_order)
     vmax = max(3.0, float(np.abs(pivot.values).max()))
 
-    fig, ax = plt.subplots(figsize=(max(3.5, n_term * 0.9), max(4.0, n_feat * 0.28)))
+    fig, ax = plt.subplots(figsize=(max(5.0, n_term * 1.3), max(6.0, n_feat * 0.42)))
     im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(np.arange(n_term))
-    ax.set_xticklabels(term_order, fontsize=8)
+    ax.set_xticklabels(term_order, fontsize=13, fontfamily='Arial')
     ax.set_yticks(np.arange(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=7.5)
+    ax.set_yticklabels(y_labels, fontsize=12, fontfamily='Arial')
 
     ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
@@ -864,11 +872,13 @@ def plot_lmm_heatmap(lmm, path):
     for i in range(n_feat):
         for j in range(n_term):
             if sig_pv.iloc[i, j]:
-                ax.text(j, i, '*', ha='center', va='center', fontsize=8, color='black')
+                ax.text(j, i, '*', ha='center', va='center', fontsize=13,
+                        fontfamily='Arial', color='black')
 
     cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
-    cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$', fontsize=7.5)
-    cbar.ax.tick_params(labelsize=7)
+    cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$',
+                   fontsize=11, fontfamily='Arial')
+    cbar.ax.tick_params(labelsize=10)
     thr = -np.log10(ALPHA)
     for sgn in [1, -1]:
         cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=0.8)
