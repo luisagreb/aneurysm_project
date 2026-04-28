@@ -236,10 +236,14 @@ def load_oir():
         print(f"[INFO] Loading file: {file.filename}")
 
         # Read OIR via Java subprocess (avoids JPype/JVM crash on ARM64)
-        BF_DIR = os.path.expanduser(
-            "~/.jgo/ome/formats-gpl/LATEST/"
-            "a2636a97ad34ecd06cc988e7b7979037cef5dcedcee036fc3307ab9af368c011"
-        )
+        import glob as _glob
+        _bf_candidates = _glob.glob(os.path.expanduser("~/.jgo/ome/formats-gpl/LATEST/*/"))
+        if not _bf_candidates:
+            raise RuntimeError(
+                "BioFormats JARs not found. On this machine run: "
+                "pip install bioformats_jar && python -c 'import bioformats_jar'"
+            )
+        BF_DIR = _bf_candidates[0].rstrip('/')
         JAVA_CLS = os.path.join(os.path.dirname(__file__), "java")
         classpath = f"{BF_DIR}/*:{JAVA_CLS}"
         out_bin = "/tmp/oir_data.bin"
