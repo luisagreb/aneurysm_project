@@ -235,38 +235,46 @@ def load_oir():
 
         print(f"[INFO] Loading file: {file.filename}")
 
-        # Read OIR via Java subprocess (avoids JPype/JVM crash on ARM64)
-        import glob as _glob
-        _bf_candidates = _glob.glob(os.path.expanduser("~/.jgo/ome/formats-gpl/LATEST/*/"))
-        if not _bf_candidates:
-            raise RuntimeError(
-                "BioFormats JARs not found. On this machine run: "
-                "pip install bioformats_jar && python -c 'import bioformats_jar'"
+        import platform as _platform
+        if _platform.machine() == 'arm64':
+            # Mac ARM64: JPype crashes → use Java subprocess with BioFormats JARs
+            import glob as _glob
+            _bf_candidates = _glob.glob(os.path.expanduser("~/.jgo/ome/formats-gpl/LATEST/*/"))
+            if not _bf_candidates:
+                raise RuntimeError(
+                    "BioFormats JARs not found. Run: "
+                    "pip install bioformats_jar && python -c 'import bioformats_jar'"
+                )
+            BF_DIR = _bf_candidates[0].rstrip('/')
+            JAVA_CLS = os.path.join(os.path.dirname(__file__), "java")
+            classpath = f"{BF_DIR}/*:{JAVA_CLS}"
+            out_bin = "/tmp/oir_data.bin"
+
+            result = subprocess.run(
+                ["java", "-cp", classpath, "OirReader", temp_file, out_bin],
+                capture_output=True, text=True, timeout=120
             )
-        BF_DIR = _bf_candidates[0].rstrip('/')
-        JAVA_CLS = os.path.join(os.path.dirname(__file__), "java")
-        classpath = f"{BF_DIR}/*:{JAVA_CLS}"
-        out_bin = "/tmp/oir_data.bin"
+            ok_line = [l for l in result.stdout.strip().splitlines() if l.startswith("OK")]
+            if not ok_line:
+                raise RuntimeError(f"OirReader failed: {result.stderr[-500:]}")
+            parts = ok_line[-1].split()
+            c, z, h, w = int(parts[1]), int(parts[2]), int(parts[3]), int(parts[4])
+            pz, py, px = float(parts[5]), float(parts[6]), float(parts[7])
 
-        result = subprocess.run(
-            ["java", "-cp", classpath, "OirReader", temp_file, out_bin],
-            capture_output=True, text=True, timeout=120
-        )
-        # Last stdout line: "OK C Z Y X pz py px"
-        ok_line = [l for l in result.stdout.strip().splitlines() if l.startswith("OK")]
-        if not ok_line:
-            raise RuntimeError(f"OirReader failed: {result.stderr[-500:]}")
-        parts = ok_line[-1].split()
-        c, z, h, w = int(parts[1]), int(parts[2]), int(parts[3]), int(parts[4])
-        pz, py, px = float(parts[5]), float(parts[6]), float(parts[7])
-
-        # Parse raw binary: header already consumed by Java, just raw pixel bytes
-        with open(out_bin, "rb") as f:
-            # skip header: 5 ints (20 bytes) + 3 doubles (24 bytes)
-            f.seek(20 + 24)
-            raw = np.frombuffer(f.read(), dtype=np.uint16)
-
-        data = raw.reshape(c, z, h, w).astype(np.float32)
+            with open(out_bin, "rb") as f:
+                f.seek(20 + 24)
+                raw = np.frombuffer(f.read(), dtype=np.uint16)
+            data = raw.reshape(c, z, h, w).astype(np.float32)
+        else:
+            # Linux x86_64: AICSImage + bioformats_jar works fine via jpype
+            from aicsimageio import AICSImage
+            img = AICSImage(temp_file)
+            data = img.get_image_data("CZYX", S=0, T=0).astype(np.float32)
+            c, z, h, w = data.shape
+            ps = img.physical_pixel_sizes
+            pz = ps.Z if ps.Z else 1.0
+            py = ps.Y if ps.Y else 1.0
+            px = ps.X if ps.X else 1.0
         raw_shape = str(data.shape)
         print(f"[INFO] Shape (C,Z,Y,X): ({c}, {z}, {h}, {w})")
 
