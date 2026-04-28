@@ -726,7 +726,7 @@
                     subtypeConf.textContent = subData.error;
                 } else {
                     const isTAV = subData.prediction === 'TAV-ATAA';
-                    subtypeEl.textContent   = subData.prediction;
+                    subtypeEl.textContent   = isTAV ? 'TAV' : 'BAV';
                     subtypeEl.style.color   = isTAV ? '#e74c3c' : '#f39c12';
                     subtypeConf.textContent = `Confidence: ${subData.confidence}%`;
                 }
