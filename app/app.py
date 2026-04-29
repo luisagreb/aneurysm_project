@@ -147,7 +147,7 @@ def classify_subtypes():
                 "TAV-ATAA": round(prob_dict.get("TAV-ATAA", 0) * 100, 1),
                 "BAV-ATAA": round(prob_dict.get("BAV-ATAA", 0) * 100, 1),
             },
-            "features": {k: round(v, 4) for k, v in features.items()},
+            "features": {k: round(float(v), 4) for k, v in features.items()},
         })
 
     except Exception as e:
