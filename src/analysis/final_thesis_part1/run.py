@@ -115,7 +115,7 @@ def main():
     ss.plot_collagen_bars(pt_coll, cell_coll, G1, G2,
                           COL_DIR / 'L4_collagen_rescue.png')
     ss.plot_boxplots_collagen_per_feature(df, feat_cols, G1, G2,
-                                          COL_DIR, prefix='L4')
+                                          COL_DIR, prefix='L4', res_pt=res_pt, res_cell=res_cell)
     ss.plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                                         res_pt, res_cell,
                                         G1, G2, COL_DIR, prefix='L4_rescue')

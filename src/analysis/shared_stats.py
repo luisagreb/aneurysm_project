@@ -1301,12 +1301,14 @@ def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path):
 # ══════════════════════════════════════════════════════════════════════════════
 # PLOT: PER-FEATURE 4-GROUP BOXPLOTS (NoCollagen vs +Collagen × 2 groups)
 # ══════════════════════════════════════════════════════════════════════════════
-def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='col'):
+def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='col',
+                                       res_pt=None, res_cell=None):
     """
     For every feature: two panels (patient-level left, cell-level right).
     Each panel has 4 groups:
       g1 NoCollagen | g1 +Collagen | g2 NoCollagen | g2 +Collagen
     Collagen rescue p-value (paired Wilcoxon patient / MWU cell) annotated.
+    If res_pt/res_cell provided, L1 pairwise significance also annotated.
     Saves one PNG per feature into out_dir/per_feature_collagen/.
     """
     from scipy.stats import wilcoxon as _wilcoxon
@@ -1413,10 +1415,21 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
             sig_pairs = [(pos_nc, pos_col, p)
                          for (_, pos_nc, pos_col), p in p_vals.items()
                          if not np.isnan(p) and p < ALPHA]
-            if sig_pairs:
+
+            # L1 pairwise significance (g1 vs g2, NoColl condition)
+            l1_q = None
+            res_src = res_cell if is_cell else res_pt
+            if res_src is not None:
+                row = res_src[res_src['Feature'] == feat]
+                if not row.empty and bool(row.iloc[0]['Significant']):
+                    l1_q = float(row.iloc[0]['BH_q'])
+
+            n_rescue = len(sig_pairs)
+            n_bars   = n_rescue + (1 if l1_q is not None else 0)
+            if n_bars:
                 ymin, ymax = ax.get_ylim()
                 yr = ymax - ymin
-                ax.set_ylim(ymin, ymax + yr * 0.15 * len(sig_pairs))
+                ax.set_ylim(ymin, ymax + yr * 0.15 * n_bars)
                 for k, (pos_nc, pos_col, p) in enumerate(sig_pairs):
                     b_y = ymax + yr * (0.03 + 0.13 * k)
                     ax.plot([pos_nc, pos_nc, pos_col, pos_col],
@@ -1425,6 +1438,14 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                     ax.text((pos_nc + pos_col) / 2, b_y + yr * 0.01,
                             sig_stars(p), ha='center', va='bottom',
                             fontsize=8, fontweight='bold')
+                if l1_q is not None:
+                    b_y = ymax + yr * (0.03 + 0.13 * n_rescue)
+                    ax.plot([positions[0], positions[0], positions[2], positions[2]],
+                            [ymax + yr * 0.01, b_y, b_y, ymax + yr * 0.01],
+                            'k-', lw=0.9)
+                    ax.text((positions[0] + positions[2]) / 2, b_y + yr * 0.01,
+                            sig_stars(l1_q), ha='center', va='bottom',
+                            fontsize=8, fontweight='bold', color='#1a1a1a')
 
         patches = [
             mpatches.Patch(facecolor=c1,     label=f'{g1_label} NoColl'),

@@ -132,6 +132,10 @@ def classify_subtypes():
                 df_pred[col] = 0.0
         df_pred = df_pred[feat_list].fillna(0)
 
+        print("[DEBUG TAV/BAV] Features sent to classifier:")
+        for col in feat_list:
+            print(f"  {col}: {df_pred[col].values[0]:.2f}")
+
         probas    = pipe.predict_proba(df_pred)[0]
         # align probas with label_names order
         clf_classes = list(pipe.classes_)
