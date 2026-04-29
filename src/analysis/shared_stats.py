@@ -107,12 +107,15 @@ def _paper_rc():
     plt.rcParams.update({
         'font.family':        'Arial',
         'font.sans-serif':    ['Arial'],
-        'font.size':          9,
-        'axes.labelsize':     9,
-        'axes.titlesize':     9,
-        'xtick.labelsize':    8,
-        'ytick.labelsize':    8,
-        'legend.fontsize':    8,
+        'font.size':          11,
+        'font.weight':        'bold',
+        'axes.labelsize':     12,
+        'axes.labelweight':   'bold',
+        'axes.titlesize':     11,
+        'axes.titleweight':   'bold',
+        'xtick.labelsize':    10,
+        'ytick.labelsize':    10,
+        'legend.fontsize':    10,
         'axes.linewidth':     0.8,
         'xtick.major.width':  0.8,
         'ytick.major.width':  0.8,
@@ -570,10 +573,10 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                            color=c, alpha=0.5, s=8, zorder=4, edgecolors='none')
 
             ax.set_xticks([1, 2])
-            ax.set_xticklabels([g1_label, g2_label], fontsize=7.5)
-            ax.set_title(level, fontsize=8, pad=3)
+            ax.set_xticklabels([g1_label, g2_label], fontsize=10, fontweight='bold')
+            ax.set_title(level, fontsize=10, pad=3, fontweight='bold')
             if ax == axes[0]:
-                ax.set_ylabel(title_str, fontsize=8)
+                ax.set_ylabel(title_str, fontsize=11, fontweight='bold')
             _despine(ax)
             _grid(ax, 'y')
 
@@ -581,7 +584,7 @@ def plot_boxplots_per_feature(df_pt, df_nc, res_pt, res_cell,
                 row = res[res['Feature'] == feat].iloc[0]
                 d, q = row.get('Cohen_d', np.nan), row.get('BH_q', 1.0)
                 stars = sig_stars(q)
-                ax.set_title(f"{level}  d={d:.2f}  {stars}", fontsize=7.5, pad=3)
+                ax.set_title(f"{level}  d={d:.2f}  {stars}", fontsize=10, pad=3, fontweight='bold')
                 if q < ALPHA and len(vals_g1) > 0 and len(vals_g2) > 0:
                     ymin, ymax = ax.get_ylim()
                     yr = ymax - ymin
@@ -610,7 +613,7 @@ def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
     colors = [ORGANELLE_COLORS.get(o, '#AAA') for o in sub['Organelle']]
     n = len(sub)
 
-    fig, ax = plt.subplots(figsize=(5.5, max(3.5, n * 0.28)))
+    fig, ax = plt.subplots(figsize=(7.0, max(4.5, n * 0.36)))
     ax.barh(range(n), sub['Cohen_d'], color=colors,
             edgecolor='white', linewidth=0, height=0.72, alpha=0.85)
     ax.axvline(0, color='#333333', lw=0.8)
@@ -620,8 +623,8 @@ def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
         parts = f.split('_', 1)
         labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
     ax.set_yticks(range(n))
-    ax.set_yticklabels(labels, fontsize=7.5)
-    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})")
+    ax.set_yticklabels(labels, fontsize=11, fontweight='bold')
+    ax.set_xlabel(f"Cohen's d  ({g2_label} − {g1_label})", fontsize=12, fontweight='bold')
 
     xlim = ax.get_xlim()
     pad  = (xlim[1] - xlim[0]) * 0.04
@@ -632,7 +635,7 @@ def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
             sx = x + (pad if x >= 0 else -pad)
             star_positions.append(sx)
             ax.text(sx, i, sig_stars(row['BH_q']),
-                    va='center', ha='left' if x >= 0 else 'right', fontsize=7.5)
+                    va='center', ha='left' if x >= 0 else 'right', fontsize=11)
 
     # expand xlim so stars are never clipped by the axis boundary
     if star_positions:
@@ -643,7 +646,7 @@ def plot_cohens_d_bars(res, path, g1_label, g2_label, level='patient'):
 
     patches = [mpatches.Patch(color=c, label=o, alpha=0.85)
                for o, c in ORGANELLE_COLORS.items()]
-    ax.legend(handles=patches, frameon=False, loc='lower right', fontsize=7.5)
+    ax.legend(handles=patches, frameon=False, loc='lower right', fontsize=11)
     footer(fig, level)
     _despine(ax)
     _grid(ax, 'x')
@@ -682,8 +685,8 @@ def plot_level_comparison(res_pt, res_cell, path):
         parts = f.split('_', 1)
         labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=7.5)
-    ax.set_xlabel(r'$-\log_{10}$(BH-FDR $q$)')
+    ax.set_yticklabels(labels, fontsize=10, fontweight='bold')
+    ax.set_xlabel(r'$-\log_{10}$(BH-FDR $q$)', fontsize=12, fontweight='bold')
     ax.legend(frameon=False, loc='lower right')
     _despine(ax)
     _grid(ax, 'x')
@@ -720,10 +723,10 @@ def plot_lmm_forest(lmm, path):
             parts = f.split('_', 1)
             labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
         ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=7.5)
-        ax.set_xlabel('Coefficient (95% CI)')
+        ax.set_yticklabels(labels, fontsize=10, fontweight='bold')
+        ax.set_xlabel('Coefficient (95% CI)', fontsize=12, fontweight='bold')
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{term}  ({n_sig}/{len(sub)} sig)', fontsize=8, pad=4)
+        ax.set_title(f'{term}  ({n_sig}/{len(sub)} sig)', fontsize=10, pad=4, fontweight='bold')
         _despine(ax)
         _grid(ax, 'x')
 
@@ -860,9 +863,9 @@ def plot_lmm_heatmap(lmm, path):
     im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(np.arange(n_term))
-    ax.set_xticklabels(term_order, fontsize=13, fontfamily='Arial')
+    ax.set_xticklabels(term_order, fontsize=13, fontfamily='Arial', fontweight='bold')
     ax.set_yticks(np.arange(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=12, fontfamily='Arial')
+    ax.set_yticklabels(y_labels, fontsize=12, fontfamily='Arial', fontweight='bold')
 
     ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
@@ -984,9 +987,9 @@ def plot_lmm_caterpillar(df, g1, g2, feat_col, path, title=None):
                         elinewidth=1.0, capsize=0, zorder=3)
         ax.axvline(0, color='#C0392B', ls='--', lw=0.9)
         ax.set_yticks(range(n_subj))
-        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=7.5)
-        ax.set_xlabel(xlabel)
-        ax.set_title(panel_title, fontsize=8, pad=3)
+        ax.set_yticklabels([str(subjects[i]) for i in order], fontsize=10, fontweight='bold')
+        ax.set_xlabel(xlabel, fontsize=12, fontweight='bold')
+        ax.set_title(panel_title, fontsize=10, pad=3, fontweight='bold')
         _despine(ax)
         _grid(ax, 'x')
 
@@ -1032,14 +1035,14 @@ def plot_collagen_bars(pt_res, cell_res, g1, g2, path):
                 parts = f.split('_', 1)
                 labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
             if col_i == 0:
-                ax.set_yticklabels(labels, fontsize=7)
+                ax.set_yticklabels(labels, fontsize=9, fontweight='bold')
             else:
                 ax.set_yticklabels([])
             if row_i == 1:
-                ax.set_xlabel("Cohen's d  (NoCol → +Col)")
+                ax.set_xlabel("Cohen's d  (NoCol → +Col)", fontsize=12, fontweight='bold')
             n_sig = sub['Significant'].sum()
             ax.set_title(f'{GROUP_LABELS[dis]} — {level_label}\n{n_sig}/{len(sub)} sig',
-                         fontsize=8, pad=4)
+                         fontsize=10, pad=4, fontweight='bold')
 
             xlim = ax.get_xlim()
             pad  = (xlim[1] - xlim[0]) * 0.025
@@ -1083,10 +1086,10 @@ def plot_sex_bars(res_pt, res_cell, path):
         for f in sub['Feature']:
             parts = f.split('_', 1)
             labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
-        ax.set_yticklabels(labels, fontsize=7.5)
-        ax.set_xlabel("Cohen's d  (Female → Male)")
+        ax.set_yticklabels(labels, fontsize=10, fontweight='bold')
+        ax.set_xlabel("Cohen's d  (Female → Male)", fontsize=12, fontweight='bold')
         n_sig = sub['Significant'].sum()
-        ax.set_title(f'{label}  ({n_sig}/{len(sub)} sig)', fontsize=8, pad=4)
+        ax.set_title(f'{label}  ({n_sig}/{len(sub)} sig)', fontsize=10, pad=4, fontweight='bold')
         footer(fig, lvl)
         _despine(ax)
         _grid(ax, 'x')
@@ -1123,9 +1126,9 @@ def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
     im = ax.imshow(hm_df.values, aspect='auto', cmap='RdBu_r',
                    vmin=-vmax, vmax=vmax)
     ax.set_xticks(range(len(hm_df.columns)))
-    ax.set_xticklabels(hm_df.columns, fontsize=8)
+    ax.set_xticklabels(hm_df.columns, fontsize=10, fontweight='bold')
     ax.set_yticks(range(n_feat))
-    ax.set_yticklabels(row_labels, fontsize=7.5)
+    ax.set_yticklabels(row_labels, fontsize=10, fontweight='bold')
     ax.set_xticks(np.arange(-0.5, len(hm_df.columns), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
     ax.grid(which='minor', color='white', linewidth=0.6)
@@ -1157,8 +1160,8 @@ def plot_summary(df_pt, feat_cols, res_pt, g1, g2, out_dir):
         ctr = Xp[mask].mean(axis=0)
         ax.scatter(*ctr, c=GROUP_COLORS[g], s=100, marker='D',
                    edgecolors='black', lw=1.2, zorder=6)
-    ax.set_xlabel(f'PC1 ({ev[0]*100:.1f}%)')
-    ax.set_ylabel(f'PC2 ({ev[1]*100:.1f}%)')
+    ax.set_xlabel(f'PC1 ({ev[0]*100:.1f}%)', fontsize=12, fontweight='bold')
+    ax.set_ylabel(f'PC2 ({ev[1]*100:.1f}%)', fontsize=12, fontweight='bold')
     ax.legend(frameon=False)
     _despine(ax)
     plt.tight_layout()
@@ -1198,8 +1201,8 @@ def plot_diameter_spearman(res, path):
         parts = f.split('_', 1)
         labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
     ax.set_yticks(range(n))
-    ax.set_yticklabels(labels, fontsize=7.5)
-    ax.set_xlabel(r'Spearman $\rho$  (feature vs. aortic diameter)')
+    ax.set_yticklabels(labels, fontsize=10, fontweight='bold')
+    ax.set_xlabel(r'Spearman $\rho$  (feature vs. aortic diameter)', fontsize=12, fontweight='bold')
 
     prev_org = None
     for i, row in sub.iterrows():
@@ -1275,9 +1278,9 @@ def plot_sex_heatmap(df_pt, feat_cols, g1, g2, path):
     im = ax.imshow(d_df.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
     ax.set_xticks(range(n_col))
-    ax.set_xticklabels(col_labels, fontsize=8)
+    ax.set_xticklabels(col_labels, fontsize=10, fontweight='bold')
     ax.set_yticks(range(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=7.5)
+    ax.set_yticklabels(y_labels, fontsize=10, fontweight='bold')
 
     ax.set_xticks(np.arange(-0.5, n_col, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
@@ -1379,8 +1382,8 @@ def plot_boxplots_collagen_per_feature(df, feat_cols, g1, g2, out_dir, prefix='c
                            color=color, alpha=0.55, s=8, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels([d[1] for d in data_groups], fontsize=7)
-            ax.set_title(level_label, fontsize=8, pad=3)
+            ax.set_xticklabels([d[1] for d in data_groups], fontsize=9, fontweight='bold')
+            ax.set_title(level_label, fontsize=10, pad=3, fontweight='bold')
             _despine(ax)
             _grid(ax, 'y')
 
@@ -1577,8 +1580,8 @@ def plot_boxplots_rescue_per_feature(df_pt, df_nc, df, feat_cols,
                            color=color, alpha=0.55, s=18, zorder=4, edgecolors='none')
 
             ax.set_xticks(positions)
-            ax.set_xticklabels(xlabels, fontsize=7)
-            ax.set_title(level_label, fontsize=8, pad=3)
+            ax.set_xticklabels(xlabels, fontsize=9, fontweight='bold')
+            ax.set_title(level_label, fontsize=10, pad=3, fontweight='bold')
             ax.set_xlim(0.3, 4.9)
             _despine(ax)
             _grid(ax, 'y')
