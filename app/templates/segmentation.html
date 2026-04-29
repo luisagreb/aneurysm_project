@@ -553,11 +553,6 @@
                     <div id="pred-prob" class="pred-value" style="color:#a78bfa;">—</div>
                     <div class="pred-sub">(&gt;30% = Diseased)</div>
                 </div>
-                <div class="pred-card">
-                    <h4>Valve Subtype</h4>
-                    <div id="pred-subtype" class="pred-value">—</div>
-                    <div id="pred-subtype-conf" class="pred-sub"></div>
-                </div>
             </div>
 
             <div class="section-title" style="margin-bottom:14px;">Extracted Features</div>
@@ -696,13 +691,8 @@
         async function analyzeCell() {
             showStatus("Analyzing (10s)...");
             try {
-                // Run both classifiers in parallel
-                const [res, subRes] = await Promise.all([
-                    fetch('/analyze_cell',          { method: 'POST' }),
-                    fetch('/api/classify_subtypes', { method: 'POST' }),
-                ]);
-                const data    = await res.json();
-                const subData = await subRes.json();
+                const res  = await fetch('/analyze_cell', { method: 'POST' });
+                const data = await res.json();
                 if (data.error) throw new Error(data.error);
 
                 currentAnalysisData = data;
@@ -717,19 +707,6 @@
 
                 const prob = (data.confidence * 100).toFixed(1);
                 document.getElementById('pred-prob').textContent = `${prob}%`;
-
-                // Valve subtype prediction
-                const subtypeEl   = document.getElementById('pred-subtype');
-                const subtypeConf = document.getElementById('pred-subtype-conf');
-                if (subData.error) {
-                    subtypeEl.textContent   = 'N/A';
-                    subtypeConf.textContent = subData.error;
-                } else {
-                    const isTAV = subData.prediction === 'TAV-ATAA';
-                    subtypeEl.textContent   = isTAV ? 'TAV' : 'BAV';
-                    subtypeEl.style.color   = isTAV ? '#e74c3c' : '#f39c12';
-                    subtypeConf.textContent = `Confidence: ${subData.confidence}%`;
-                }
 
                 const tbody = document.querySelector('#feature-table tbody');
                 tbody.innerHTML = '';
