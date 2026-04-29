@@ -97,20 +97,21 @@ plt.rcParams.update({
 })
 
 # ── figure layout ─────────────────────────────────────────────────────────────
-# A (LMM heatmap) | B (Sex heatmap) | C (Sex bars: patient + cell)
+# Top:    A — LMM heatmap (full width, horizontal: features=cols, terms=rows)
+# Bottom: B — Sex heatmap | C — Sex bars (patient + cell)
 n_feat = len(feat_cols)
-fig = plt.figure(figsize=(18, n_feat * 0.62 + 2.5))
-gs  = fig.add_gridspec(1, 3, width_ratios=[2.2, 1.0, 3.2],
-                        left=0.08, right=0.97, top=0.93, bottom=0.04,
-                        wspace=0.75)
-ax_lmm  = fig.add_subplot(gs[0])
-ax_sexh = fig.add_subplot(gs[1])
-gs_bars = gs[2].subgridspec(1, 2, wspace=0.55)
-ax_pt   = fig.add_subplot(gs_bars[0])
-ax_cell = fig.add_subplot(gs_bars[1])
+fig = plt.figure(figsize=(20, n_feat * 0.42 + 8))
+gs  = fig.add_gridspec(2, 1, height_ratios=[1, 2.5],
+                        left=0.06, right=0.97, top=0.95, bottom=0.04,
+                        hspace=0.55)
+ax_lmm   = fig.add_subplot(gs[0])
+gs_bot   = gs[1].subgridspec(1, 3, width_ratios=[1.0, 3.2, 3.2], wspace=0.55)
+ax_sexh  = fig.add_subplot(gs_bot[0])
+ax_pt    = fig.add_subplot(gs_bot[1])
+ax_cell  = fig.add_subplot(gs_bot[2])
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PANEL A — LMM heatmap
+# PANEL A — LMM heatmap (horizontal: terms=rows, features=columns)
 # ══════════════════════════════════════════════════════════════════════════════
 lmm = lmm_full.copy()
 term_order = [t for t in ['Disease', 'Age', 'Sex'] if t in lmm['Term'].unique()]
@@ -124,37 +125,41 @@ pivot   = (lmm.pivot(index='Feature', columns='Term', values='score')
 sig_piv = (lmm.pivot(index='Feature', columns='Term', values='Significant')
               .reindex(index=feat_order_lmm, columns=term_order).fillna(False))
 
-y_labels_lmm = [abbrev(f) for f in feat_order_lmm]
+x_labels_lmm = [abbrev(f) for f in feat_order_lmm]
 n_f, n_t = len(feat_order_lmm), len(term_order)
 vmax_lmm = max(3.0, float(np.abs(pivot.values).max()))
 
-im_lmm = ax_lmm.imshow(pivot.values, aspect='auto',
+# Transpose: rows=terms, cols=features
+data_lmm = pivot.T.values
+sig_lmm  = sig_piv.T.values
+
+im_lmm = ax_lmm.imshow(data_lmm, aspect='auto',
                         cmap='RdBu_r', vmin=-vmax_lmm, vmax=vmax_lmm)
-ax_lmm.set_xticks(np.arange(n_t))
-ax_lmm.set_xticklabels(term_order, fontsize=10, fontweight='bold')
-ax_lmm.set_yticks(np.arange(n_f))
-ax_lmm.set_yticklabels(y_labels_lmm, fontsize=10, fontweight='bold')
-ax_lmm.set_xticks(np.arange(-0.5, n_t, 1), minor=True)
-ax_lmm.set_yticks(np.arange(-0.5, n_f, 1), minor=True)
+ax_lmm.set_yticks(np.arange(n_t))
+ax_lmm.set_yticklabels(term_order, fontsize=11, fontweight='bold')
+ax_lmm.set_xticks(np.arange(n_f))
+ax_lmm.set_xticklabels(x_labels_lmm, fontsize=9, fontweight='bold',
+                        rotation=45, ha='right', rotation_mode='anchor')
+ax_lmm.set_xticks(np.arange(-0.5, n_f, 1), minor=True)
+ax_lmm.set_yticks(np.arange(-0.5, n_t, 1), minor=True)
 ax_lmm.grid(which='minor', color='white', linewidth=0.6)
 ax_lmm.tick_params(which='minor', bottom=False, left=False)
 
 sig_map = (lmm.pivot(index='Feature', columns='Term', values='BH_q')
               .reindex(index=feat_order_lmm, columns=term_order).fillna(1.0))
-for i in range(n_f):
-    for j in range(n_t):
-        if sig_piv.iloc[i, j]:
-            ax_lmm.text(j, i, sig_stars(sig_map.iloc[i, j]),
-                        ha='center', va='center', fontsize=8, color='black')
+for i in range(n_t):
+    for j in range(n_f):
+        if sig_lmm[i, j]:
+            ax_lmm.text(j, i, sig_stars(sig_map.iloc[j, i]),
+                        ha='center', va='center', fontsize=9, color='black')
 
-cbar_lmm = fig.colorbar(im_lmm, ax=ax_lmm, fraction=0.04, pad=0.03)
+cbar_lmm = fig.colorbar(im_lmm, ax=ax_lmm, fraction=0.02, pad=0.01)
 cbar_lmm.set_label(r'$-\log_{10}(q)\times\mathrm{sign(\beta)}$', fontsize=10, fontweight='bold')
 cbar_lmm.ax.tick_params(labelsize=9)
-# no dashed threshold lines
 
-ax_lmm.text(-0.18, 1.02, 'A', transform=ax_lmm.transAxes,
+ax_lmm.text(-0.04, 1.08, 'A', transform=ax_lmm.transAxes,
             fontsize=13, fontweight='bold', va='bottom')
-ax_lmm.set_title('LMM — fixed effects', fontsize=10, pad=4, loc='left', fontweight='bold')
+ax_lmm.set_title('LMM — fixed effects', fontsize=10, pad=6, loc='left', fontweight='bold')
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PANEL B — Sex heatmap (Cohen's d Male−Female within each group)

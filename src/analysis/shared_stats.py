@@ -848,40 +848,44 @@ def plot_lmm_heatmap(lmm, path):
                  .reindex(index=feat_order, columns=term_order).fillna(False))
 
     def _full_label(feat):
-        """Return clean feature name without organelle prefix."""
         for prefix in ('Actin_', 'Mito_', 'Nucleus_'):
             if feat.startswith(prefix):
                 feat = feat[len(prefix):]
                 break
         return feat.replace('_', ' ')
 
-    y_labels = [_full_label(f) for f in feat_order]
+    x_labels = [_full_label(f) for f in feat_order]
     n_feat, n_term = len(feat_order), len(term_order)
     vmax = max(3.0, float(np.abs(pivot.values).max()))
 
-    fig, ax = plt.subplots(figsize=(max(5.0, n_term * 1.3), max(6.0, n_feat * 0.42)))
-    im = ax.imshow(pivot.values, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
+    # Horizontal layout: terms = rows (y), features = columns (x)
+    data = pivot.T.values   # shape: (n_term, n_feat)
+    sig  = sig_pv.T.values
 
-    ax.set_xticks(np.arange(n_term))
-    ax.set_xticklabels(term_order, fontsize=13, fontfamily='Arial', fontweight='bold')
-    ax.set_yticks(np.arange(n_feat))
-    ax.set_yticklabels(y_labels, fontsize=12, fontfamily='Arial', fontweight='bold')
+    fig, ax = plt.subplots(figsize=(max(8.0, n_feat * 0.42), max(2.5, n_term * 1.1)))
+    im = ax.imshow(data, aspect='auto', cmap='RdBu_r', vmin=-vmax, vmax=vmax)
 
-    ax.set_xticks(np.arange(-0.5, n_term, 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, n_feat, 1), minor=True)
+    ax.set_yticks(np.arange(n_term))
+    ax.set_yticklabels(term_order, fontsize=12, fontfamily='Arial', fontweight='bold')
+    ax.set_xticks(np.arange(n_feat))
+    ax.set_xticklabels(x_labels, fontsize=10, fontfamily='Arial', fontweight='bold',
+                        rotation=45, ha='right', rotation_mode='anchor')
+
+    ax.set_xticks(np.arange(-0.5, n_feat, 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, n_term, 1), minor=True)
     ax.grid(which='minor', color='white', linewidth=0.6)
     ax.tick_params(which='minor', bottom=False, left=False)
 
-    for i in range(n_feat):
-        for j in range(n_term):
-            if sig_pv.iloc[i, j]:
+    for i in range(n_term):
+        for j in range(n_feat):
+            if sig[i, j]:
                 ax.text(j, i, '*', ha='center', va='center', fontsize=13,
                         fontfamily='Arial', color='black')
 
-    cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
     cbar.set_label(r'$-\log_{10}(p_\mathrm{FDR})\times\mathrm{sign(coef)}$',
-                   fontsize=11, fontfamily='Arial')
-    cbar.ax.tick_params(labelsize=10)
+                   fontsize=10, fontfamily='Arial', fontweight='bold')
+    cbar.ax.tick_params(labelsize=9)
     thr = -np.log10(ALPHA)
     for sgn in [1, -1]:
         cbar.ax.axhline(sgn * thr, color='black', ls='--', lw=0.8)
