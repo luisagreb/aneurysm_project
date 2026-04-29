@@ -90,11 +90,14 @@ res_pt = res_pt.set_index('Feature')
 plt.rcParams.update({
     'font.family':        'Arial',
     'font.sans-serif':    ['Arial'],
-    'font.size':          10,
-    'axes.labelsize':     10,
-    'axes.titlesize':     11,
-    'xtick.labelsize':    8.5,
-    'ytick.labelsize':    9,
+    'font.size':          11,
+    'font.weight':        'bold',
+    'axes.labelsize':     12,
+    'axes.labelweight':   'bold',
+    'axes.titlesize':     12,
+    'axes.titleweight':   'bold',
+    'xtick.labelsize':    10,
+    'ytick.labelsize':    10,
     'axes.linewidth':     0.8,
     'xtick.major.width':  0.8,
     'ytick.major.width':  0.8,
@@ -206,9 +209,9 @@ for idx, (organelle, col, name, unit) in enumerate(FEATURES):
 
     # ── axes labels ───────────────────────────────────────────────────────────
     y_label = name if unit == 'ratio' else f'{name} ({unit})'
-    ax.set_ylabel(y_label, fontsize=9)
+    ax.set_ylabel(y_label, fontsize=11, fontweight='bold')
     ax.set_xticks(positions)
-    ax.set_xticklabels(xtick_lbls, fontsize=8)
+    ax.set_xticklabels(xtick_lbls, fontsize=10, fontweight='bold')
     ax.set_xlim(-0.6, 4.0)
 
     ax.set_title(name, fontsize=11, fontweight='bold', pad=4, color=org_color)

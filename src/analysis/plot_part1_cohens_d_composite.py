@@ -50,11 +50,14 @@ def sig_stars(q):
 plt.rcParams.update({
     'font.family':       'Arial',
     'font.sans-serif':   ['Arial'],
-    'font.size':         9,
-    'axes.labelsize':    9,
-    'axes.titlesize':    10,
-    'xtick.labelsize':   8,
-    'ytick.labelsize':   8,
+    'font.size':         11,
+    'font.weight':       'bold',
+    'axes.labelsize':    12,
+    'axes.labelweight':  'bold',
+    'axes.titlesize':    11,
+    'axes.titleweight':  'bold',
+    'xtick.labelsize':   10,
+    'ytick.labelsize':   10,
     'axes.linewidth':    0.8,
     'xtick.major.width': 0.8,
     'ytick.major.width': 0.8,
@@ -125,14 +128,14 @@ for ax, df, panel_label, title, footer_txt in PANELS:
     ax.xaxis.grid(True, color='#dddddd', linewidth=0.5, linestyle='--')
 
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(ylabels, fontsize=8)
-    ax.set_xlabel("Cohen's $d$  (TAV-ATAA − TAV-NA)", fontsize=8.5)
+    ax.set_yticklabels(ylabels, fontsize=10, fontweight='bold')
+    ax.set_xlabel("Cohen's $d$  (TAV-ATAA − TAV-NA)", fontsize=12, fontweight='bold')
 
     # panel label + title
     ax.text(-0.22, 1.02, panel_label,
             transform=ax.transAxes,
             fontsize=13, fontweight='bold', va='bottom', ha='left')
-    ax.set_title(title, fontsize=9, pad=4, loc='left', color='#333333')
+    ax.set_title(title, fontsize=10, pad=4, loc='left', color='#333333', fontweight='bold')
 
 
     ax.spines['top'].set_visible(False)
