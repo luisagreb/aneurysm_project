@@ -1,0 +1,28 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S10 — nnU-Net Training Details}
+Three nnU-Net~v2 (3D full-resolution) models were trained independently for nucleus,
+F-actin, and mitochondria segmentation. Training was performed on the analysis server
+(NVIDIA GPU). Key parameters from \texttt{nnUNetPlans.json} are summarised below;
+the full configuration files are available in the project repository.
+
+\begin{longtable}{lp{3cm}p{3cm}p{3cm}}
+\toprule
+Parameter & Nucleus & F-actin & Mitochondria \\
+\midrule\endfirsthead\toprule Parameter & Nucleus & F-actin & Mitochondria \\\midrule\endhead
+\bottomrule\endfoot
+Dataset ID & 1 & 2 & 3 \\
+Configuration & 3d\_fullres & 3d\_fullres & 3d\_fullres \\
+Patch size & \multicolumn{3}{l}{\textit{see nnUNetPlans.json on server}} \\
+Batch size & \multicolumn{3}{l}{\textit{see nnUNetPlans.json on server}} \\
+Optimizer & SGD & SGD & SGD \\
+Loss & DC $+$ CE & DC $+$ CE & DC $+$ CE \\
+LR schedule & Poly & Poly & Poly \\
+Folds & 5 & 5 & 5 \\
+\bottomrule
+\multicolumn{4}{l}{\footnotesize DC: Dice; CE: cross-entropy; Poly: polynomial decay.} \\
+\end{longtable}
+\end{document}

@@ -100,13 +100,6 @@ def get_mesh(c):
         verts[:, 1] *= spacing[1] # Scale Y
         verts[:, 2] *= spacing[2] # Scale X
 
-        # REORDER FOR THREE.JS (X, Y, Z)
-        # Currently it is (Z, Y, X). 
-        # We want Three.js X = Image X, Three.js Y = Image Y, Three.js Z = Image Z
-        # So we swap columns: (Z, Y, X) -> (X, Y, Z)
-        # New Column 0 = Old Column 2
-        # New Column 1 = Old Column 1
-        # New Column 2 = Old Column 0
         verts_xyz = np.zeros_like(verts)
         verts_xyz[:, 0] = verts[:, 2] # X
         verts_xyz[:, 1] = verts[:, 1] # Y

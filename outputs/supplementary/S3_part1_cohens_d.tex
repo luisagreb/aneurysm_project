@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S3 — Full Cohen's~$d$ Table: Part~1: Healthy vs.\ TAA}
+All 30 features for healthy vs.\ diseased (TAA), at both cell and patient level,
+raw and age-residualised. $q$: BH-FDR adjusted $p$-value. $^{*}$: $q < 0.05$.
+\vspace{1em}
+\begin{longtable}{lrrrrrrrr}
+\toprule
+ & \multicolumn{2}{c}{Cell (raw)} & \multicolumn{2}{c}{Cell (age-corr.)} & \multicolumn{2}{c}{Patient (raw)} & \multicolumn{2}{c}{Patient (age-corr.)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+Feature & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ \\
+\midrule\endfirsthead
+\toprule Feature & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{9}{l}{\textit{Actin}} \\
+  Convex Hull Volume $\mu$m$^{3}$ & +0.24 & 0.260 & +0.33 & 0.145 & +0.35 & 0.549 & +0.48 & 0.638 \\
+  Extent ratio & -1.00$^{*}$ & $<$0.001 & -0.87$^{*}$ & $<$0.001 & -1.25 & 0.084 & -1.10 & 0.191 \\
+  Fractional Anisotropy ratio & -0.13 & 0.545 & -0.11 & 0.688 & -0.19 & 0.714 & -0.16 & 0.720 \\
+  Intermediate Axis $\mu$m & +0.09 & 0.370 & +0.18 & 0.241 & +0.14 & 0.549 & +0.25 & 0.666 \\
+  Major Axis $\mu$m & +0.00 & 0.980 & +0.11 & 0.688 & +0.08 & 0.608 & +0.24 & 0.666 \\
+  Minor Axis $\mu$m & -0.26 & 0.265 & -0.28 & 0.239 & -0.27 & 0.635 & -0.30 & 0.666 \\
+  Skeleton Length $\mu$m & +0.69$^{*}$ & $<$0.001 & +0.49$^{*}$ & 0.003 & +0.95 & 0.290 & +0.86 & 0.300 \\
+  Solidity ratio & -1.15$^{*}$ & $<$0.001 & -1.04$^{*}$ & $<$0.001 & -1.62$^{*}$ & 0.038 & -1.46 & 0.095 \\
+  Volume $\mu$m$^{3}$ & -0.48 & 0.085 & -0.36 & 0.241 & -0.44 & 0.524 & -0.28 & 0.666 \\
+\midrule
+\multicolumn{9}{l}{\textit{Mito}} \\
+  Branch Count n & +0.64$^{*}$ & 0.002 & +0.53 & 0.087 & +0.68 & 0.185 & +0.55 & 0.666 \\
+  Cyclomatic Number n & -0.60$^{*}$ & 0.016 & -0.48 & 0.099 & -0.64 & 0.290 & -0.50 & 0.666 \\
+  Fragment Count n & +0.54$^{*}$ & 0.002 & +0.49$^{*}$ & 0.015 & +0.73 & 0.183 & +0.66 & 0.406 \\
+  Junction Count n & +0.64$^{*}$ & 0.002 & +0.52 & 0.078 & +0.67 & 0.290 & +0.54 & 0.666 \\
+  Max Fragment Sphericity ratio & +0.26 & 0.139 & +0.21 & 0.823 & +0.53 & 0.460 & +0.45 & 0.638 \\
+  Mean Branch Length $\mu$m & -0.37 & 0.110 & -0.20 & 0.689 & -0.34 & 0.778 & -0.16 & 0.720 \\
+  Mean Fragment Sphericity ratio & -0.25 & 0.286 & -0.20 & 0.374 & -0.22 & 0.687 & -0.16 & 0.720 \\
+  Mean Fragment Volume $\mu$m$^{3}$ & +0.37 & 0.335 & +0.41 & 0.203 & +0.52 & 0.608 & +0.58 & 0.638 \\
+  Mean Tortuosity ratio & -0.01 & 0.487 & -0.22 & 0.200 & -0.05 & 0.608 & -0.29 & 0.666 \\
+  Min Fragment Sphericity ratio & -0.96$^{*}$ & $<$0.001 & -0.90$^{*}$ & $<$0.001 & -1.32 & 0.084 & -1.23 & 0.154 \\
+  Sphericity ratio & -0.86$^{*}$ & $<$0.001 & -0.76$^{*}$ & $<$0.001 & -1.09 & 0.183 & -0.97 & 0.268 \\
+  Std Fragment Sphericity ratio & +0.05 & 0.335 & +0.10 & 0.241 & +0.09 & 0.524 & +0.15 & 0.638 \\
+  Surface Area $\mu$m$^{2}$ & +0.46$^{*}$ & 0.005 & +0.43$^{*}$ & 0.024 & +0.53 & 0.290 & +0.49 & 0.615 \\
+  Total Network Length $\mu$m & +0.63$^{*}$ & $<$0.001 & +0.53 & 0.087 & +0.68 & 0.183 & +0.56 & 0.666 \\
+  Volume $\mu$m$^{3}$ & +0.34 & 0.063 & +0.42$^{*}$ & 0.025 & +0.40 & 0.352 & +0.50 & 0.300 \\
+\midrule
+\multicolumn{9}{l}{\textit{Nucleus}} \\
+  Circularity ratio & -0.19 & 0.507 & +0.33 & 0.953 & -- & -- & -- & -- \\
+  Elongation ratio & -0.18 & 0.545 & -0.15 & 0.738 & -0.42 & 0.549 & -0.35 & 0.666 \\
+  Flatness ratio & -0.22 & 0.335 & -0.26 & 0.243 & -0.32 & 0.608 & -0.43 & 0.666 \\
+  Solidity ratio & +0.39 & 0.139 & +0.36 & 0.231 & +0.70 & 0.290 & +0.64 & 0.638 \\
+  Sphericity ratio & +0.48$^{*}$ & 0.029 & +0.33 & 0.953 & +0.67 & 0.290 & +0.49 & 0.638 \\
+  Volume $\mu$m$^{3}$ & -0.14 & 0.980 & +0.02 & 0.509 & -0.19 & 0.805 & +0.05 & 0.666 \\
+\bottomrule
+\multicolumn{9}{l}{\footnotesize $^{*}q < 0.05$ (BH-FDR).} \\
+\end{longtable}
+\end{document}

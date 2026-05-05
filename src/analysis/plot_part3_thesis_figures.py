@@ -439,8 +439,6 @@ def fig4_per_class(s1, s2):
             ax.set_title(f'{cls}', fontsize=10.5, fontweight='bold', pad=4)
             if col == 0:
                 ax.set_ylabel('Score', fontsize=10)
-            if row == 0 and col == 0:
-                ax.legend(frameon=False, loc='lower left', fontsize=8.5)
             despine(ax)
             ygrid(ax)
 
@@ -450,7 +448,10 @@ def fig4_per_class(s1, s2):
             fontsize=9.5, fontweight='bold', va='center', ha='right',
             rotation=90, color='#2C3E50')
 
-    plt.tight_layout()
+    handles = [mpatches.Patch(color=mcolors[m], alpha=0.85, label=mlabels[m]) for m in metrics]
+    fig.legend(handles=handles, loc='lower center', ncol=3, frameon=False,
+               fontsize=9.5, bbox_to_anchor=(0.5, 0.01))
+    plt.tight_layout(rect=[0, 0.07, 1, 1])
     save(fig, 'fig4_per_class_metrics')
 
 

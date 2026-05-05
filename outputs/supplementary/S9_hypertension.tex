@@ -1,0 +1,97 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S9 — Full Hypertension Analysis Results}
+Cohen's~$d$ for hypertensive vs.\ normotensive donors in the TAA cohort,
+at cell and patient level. $q$: BH-FDR. $^{*}$: $q<0.05$.
+\vspace{1em}
+\subsection*{Cell level}
+\begin{longtable}{lrrrrrr}
+\toprule
+Feature & $n_\text{HT}$ & $n_\text{norm}$ & $d$ & $p$ & $q$ & Sig. \\
+\midrule\endfirsthead
+\toprule Feature & $n_\text{HT}$ & $n_\text{norm}$ & $d$ & $p$ & $q$ & Sig. \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{7}{l}{\textit{Actin}} \\
+  Convex Hull Volume $\mu$m$^{3}$ & 61 & 15 & -0.81 & 0.008 & 0.021 & $^{*}$ \\
+  Extent ratio & 61 & 15 & -0.39 & 0.039 & 0.078 &  \\
+  Fractional Anisotropy ratio & 61 & 15 & +0.31 & 0.267 & 0.341 &  \\
+  Intermediate Axis $\mu$m & 61 & 15 & -0.47 & 0.103 & 0.181 &  \\
+  Major Axis $\mu$m & 61 & 15 & -0.29 & 0.434 & 0.520 &  \\
+  Minor Axis $\mu$m & 61 & 15 & -0.73 & 0.011 & 0.026 & $^{*}$ \\
+  Skeleton Length $\mu$m & 61 & 15 & +1.02 & 0.001 & 0.005 & $^{*}$ \\
+  Solidity ratio & 61 & 15 & -0.21 & 0.514 & 0.593 &  \\
+  Volume $\mu$m$^{3}$ & 61 & 15 & -0.77 & 0.001 & 0.005 & $^{*}$ \\
+\midrule
+\multicolumn{7}{l}{\textit{Mito}} \\
+  Branch Count n & 61 & 15 & +0.91 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Cyclomatic Number n & 61 & 15 & -1.07 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Fragment Count n & 61 & 15 & +0.48 & 0.092 & 0.173 &  \\
+  Junction Count n & 61 & 15 & +0.97 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Max Fragment Sphericity ratio & 61 & 15 & +0.34 & 0.221 & 0.316 &  \\
+  Mean Branch Length $\mu$m & 61 & 15 & -1.30 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Mean Fragment Sphericity ratio & 61 & 15 & -0.60 & 0.036 & 0.076 &  \\
+  Mean Fragment Volume $\mu$m$^{3}$ & 61 & 15 & +0.09 & 0.686 & 0.735 &  \\
+  Mean Tortuosity ratio & 61 & 15 & +1.72 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Min Fragment Sphericity ratio & 61 & 15 & -0.66 & 0.009 & 0.024 & $^{*}$ \\
+  Sphericity ratio & 61 & 15 & -0.95 & 0.002 & 0.008 & $^{*}$ \\
+  Std Fragment Sphericity ratio & 61 & 15 & +0.20 & 0.794 & 0.821 &  \\
+  Surface Area $\mu$m$^{2}$ & 61 & 15 & +0.35 & 0.273 & 0.341 &  \\
+  Total Network Length $\mu$m & 61 & 15 & +0.85 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Volume $\mu$m$^{3}$ & 61 & 15 & +0.09 & 0.896 & 0.896 &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Nucleus}} \\
+  Circularity ratio & 11 & 10 & +0.22 & 0.130 & 0.217 &  \\
+  Elongation ratio & 61 & 15 & +0.15 & 0.548 & 0.609 &  \\
+  Flatness ratio & 61 & 15 & +0.40 & 0.262 & 0.341 &  \\
+  Solidity ratio & 61 & 15 & +0.19 & 0.187 & 0.281 &  \\
+  Sphericity ratio & 61 & 15 & +0.92 & 0.007 & 0.021 & $^{*}$ \\
+  Volume $\mu$m$^{3}$ & 61 & 15 & -0.17 & 0.179 & 0.281 &  \\
+\bottomrule
+\end{longtable}
+\subsection*{Patient level}
+\begin{longtable}{lrrrrrr}
+\toprule
+Feature & $n_\text{HT}$ & $n_\text{norm}$ & $d$ & $p$ & $q$ & Sig. \\
+\midrule\endfirsthead
+\toprule Feature & $n_\text{HT}$ & $n_\text{norm}$ & $d$ & $p$ & $q$ & Sig. \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{7}{l}{\textit{Actin}} \\
+  Convex Hull Volume $\mu$m$^{3}$ & 11 & 3 & -0.82 & 0.225 & 0.503 &  \\
+  Extent ratio & 11 & 3 & -0.46 & 0.291 & 0.528 &  \\
+  Fractional Anisotropy ratio & 11 & 3 & +0.46 & 0.456 & 0.671 &  \\
+  Intermediate Axis $\mu$m & 11 & 3 & -0.51 & 0.456 & 0.671 &  \\
+  Major Axis $\mu$m & 11 & 3 & -0.29 & 0.769 & 0.826 &  \\
+  Minor Axis $\mu$m & 11 & 3 & -1.18 & 0.126 & 0.458 &  \\
+  Skeleton Length $\mu$m & 11 & 3 & +1.05 & 0.291 & 0.528 &  \\
+  Solidity ratio & 11 & 3 & -0.27 & 0.769 & 0.826 &  \\
+  Volume $\mu$m$^{3}$ & 11 & 3 & -0.83 & 0.225 & 0.503 &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Mito}} \\
+  Branch Count n & 11 & 3 & +0.98 & 0.038 & 0.292 &  \\
+  Cyclomatic Number n & 11 & 3 & -1.20 & 0.088 & 0.364 &  \\
+  Fragment Count n & 11 & 3 & +0.80 & 0.225 & 0.503 &  \\
+  Junction Count n & 11 & 3 & +1.05 & 0.038 & 0.292 &  \\
+  Max Fragment Sphericity ratio & 11 & 3 & +0.43 & 0.532 & 0.671 &  \\
+  Mean Branch Length $\mu$m & 11 & 3 & -1.25 & 0.060 & 0.292 &  \\
+  Mean Fragment Sphericity ratio & 11 & 3 & -0.84 & 0.225 & 0.503 &  \\
+  Mean Fragment Volume $\mu$m$^{3}$ & 11 & 3 & +0.09 & 0.885 & 0.885 &  \\
+  Mean Tortuosity ratio & 11 & 3 & +1.71 & 0.060 & 0.292 &  \\
+  Min Fragment Sphericity ratio & 11 & 3 & -1.03 & 0.170 & 0.503 &  \\
+  Sphericity ratio & 11 & 3 & -1.49 & 0.038 & 0.292 &  \\
+  Std Fragment Sphericity ratio & 11 & 3 & +0.25 & 0.555 & 0.671 &  \\
+  Surface Area $\mu$m$^{2}$ & 11 & 3 & +0.43 & 0.456 & 0.671 &  \\
+  Total Network Length $\mu$m & 11 & 3 & +0.92 & 0.060 & 0.292 &  \\
+  Volume $\mu$m$^{3}$ & 11 & 3 & +0.11 & 0.885 & 0.885 &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Nucleus}} \\
+  Elongation ratio & 11 & 3 & +0.20 & 0.555 & 0.671 &  \\
+  Flatness ratio & 11 & 3 & +0.63 & 0.555 & 0.671 &  \\
+  Solidity ratio & 11 & 3 & +0.35 & 0.555 & 0.671 &  \\
+  Sphericity ratio & 11 & 3 & +0.88 & 0.265 & 0.528 &  \\
+  Volume $\mu$m$^{3}$ & 11 & 3 & -0.24 & 0.769 & 0.826 &  \\
+\bottomrule
+\end{longtable}
+\end{document}

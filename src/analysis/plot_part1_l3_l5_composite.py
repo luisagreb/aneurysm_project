@@ -76,15 +76,15 @@ def get_organelle(f):
 plt.rcParams.update({
     'font.family':        'Arial',
     'font.sans-serif':    ['Arial'],
-    'font.size':          11,
+    'font.size':          18,
     'font.weight':        'bold',
-    'axes.labelsize':     12,
+    'axes.labelsize':     20,
     'axes.labelweight':   'bold',
-    'axes.titlesize':     11,
+    'axes.titlesize':     19,
     'axes.titleweight':   'bold',
-    'xtick.labelsize':    10,
-    'ytick.labelsize':    10,
-    'legend.fontsize':    10,
+    'xtick.labelsize':    17,
+    'ytick.labelsize':    17,
+    'legend.fontsize':    17,
     'axes.linewidth':     0.8,
     'xtick.major.width':  0.8,
     'ytick.major.width':  0.8,
@@ -100,7 +100,7 @@ plt.rcParams.update({
 # Top:    A — LMM heatmap (full width, horizontal: features=cols, terms=rows)
 # Bottom: B — Sex heatmap | C — Sex bars (patient + cell)
 n_feat = len(feat_cols)
-fig = plt.figure(figsize=(20, n_feat * 0.42 + 8))
+fig = plt.figure(figsize=(28, n_feat * 0.65 + 12))
 gs  = fig.add_gridspec(2, 1, height_ratios=[1, 2.5],
                         left=0.06, right=0.97, top=0.95, bottom=0.04,
                         hspace=0.55)
@@ -136,9 +136,9 @@ sig_lmm  = sig_piv.T.values
 im_lmm = ax_lmm.imshow(data_lmm, aspect='auto',
                         cmap='RdBu_r', vmin=-vmax_lmm, vmax=vmax_lmm)
 ax_lmm.set_yticks(np.arange(n_t))
-ax_lmm.set_yticklabels(term_order, fontsize=11, fontweight='bold')
+ax_lmm.set_yticklabels(term_order, fontsize=19, fontweight='bold')
 ax_lmm.set_xticks(np.arange(n_f))
-ax_lmm.set_xticklabels(x_labels_lmm, fontsize=9, fontweight='bold',
+ax_lmm.set_xticklabels(x_labels_lmm, fontsize=17, fontweight='bold',
                         rotation=45, ha='right', rotation_mode='anchor')
 ax_lmm.set_xticks(np.arange(-0.5, n_f, 1), minor=True)
 ax_lmm.set_yticks(np.arange(-0.5, n_t, 1), minor=True)
@@ -151,15 +151,15 @@ for i in range(n_t):
     for j in range(n_f):
         if sig_lmm[i, j]:
             ax_lmm.text(j, i, sig_stars(sig_map.iloc[j, i]),
-                        ha='center', va='center', fontsize=9, color='black')
+                        ha='center', va='center', fontsize=16, color='black')
 
 cbar_lmm = fig.colorbar(im_lmm, ax=ax_lmm, fraction=0.02, pad=0.01)
-cbar_lmm.set_label(r'$-\log_{10}(q)\times\mathrm{sign(\beta)}$', fontsize=10, fontweight='bold')
-cbar_lmm.ax.tick_params(labelsize=9)
+cbar_lmm.set_label(r'$-\log_{10}(q)\times\mathrm{sign(\beta)}$', fontsize=17, fontweight='bold')
+cbar_lmm.ax.tick_params(labelsize=15)
 
 ax_lmm.text(-0.04, 1.08, 'A', transform=ax_lmm.transAxes,
-            fontsize=13, fontweight='bold', va='bottom')
-ax_lmm.set_title('LMM — fixed effects', fontsize=10, pad=6, loc='left', fontweight='bold')
+            fontsize=24, fontweight='bold', va='bottom')
+ax_lmm.set_title('LMM — fixed effects', fontsize=19, pad=6, loc='left', fontweight='bold')
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PANEL B — Sex heatmap (Cohen's d Male−Female within each group)
@@ -206,9 +206,9 @@ vmax_sexh = max(2.0, float(d_df.abs().values.max()))
 im_sexh = ax_sexh.imshow(d_df.values, aspect='auto',
                           cmap='RdBu_r', vmin=-vmax_sexh, vmax=vmax_sexh)
 ax_sexh.set_xticks(range(n_ch))
-ax_sexh.set_xticklabels(col_labels, fontsize=10, fontweight='bold')
+ax_sexh.set_xticklabels(col_labels, fontsize=17, fontweight='bold')
 ax_sexh.set_yticks(range(n_fh))
-ax_sexh.set_yticklabels(y_labels_sexh, fontsize=10, fontweight='bold')
+ax_sexh.set_yticklabels(y_labels_sexh, fontsize=17, fontweight='bold')
 ax_sexh.set_xticks(np.arange(-0.5, n_ch, 1), minor=True)
 ax_sexh.set_yticks(np.arange(-0.5, n_fh, 1), minor=True)
 ax_sexh.grid(which='minor', color='white', linewidth=0.6)
@@ -218,15 +218,15 @@ for i in range(n_fh):
     for j in range(n_ch):
         if sig_df.iloc[i, j]:
             ax_sexh.text(j, i, sig_stars(q_df.iloc[i, j]),
-                         ha='center', va='center', fontsize=8, color='black')
+                         ha='center', va='center', fontsize=15, color='black')
 
 cbar_sexh = fig.colorbar(im_sexh, ax=ax_sexh, fraction=0.08, pad=0.04)
-cbar_sexh.set_label("Cohen's $d$ (Male−Female)", fontsize=10, fontweight='bold')
-cbar_sexh.ax.tick_params(labelsize=9)
+cbar_sexh.set_label("Cohen's $d$ (Male−Female)", fontsize=17, fontweight='bold')
+cbar_sexh.ax.tick_params(labelsize=15)
 
 ax_sexh.text(-0.30, 1.02, 'B', transform=ax_sexh.transAxes,
-             fontsize=13, fontweight='bold', va='bottom')
-ax_sexh.set_title('Sex heatmap', fontsize=10, pad=4, loc='left', fontweight='bold')
+             fontsize=24, fontweight='bold', va='bottom')
+ax_sexh.set_title('Sex heatmap', fontsize=19, pad=4, loc='left', fontweight='bold')
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PANEL C — Sex effect bars (patient + cell)
@@ -243,8 +243,8 @@ def draw_sex_bars(ax, res, panel_letter, sublabel):
         parts = f.split('_', 1)
         labels.append(parts[1].replace('_', ' ') if len(parts) > 1 else f.replace('_', ' '))
     ax.set_yticks(range(len(sub)))
-    ax.set_yticklabels(labels, fontsize=10, fontweight='bold')
-    ax.set_xlabel("Cohen's $d$  (Female → Male)", fontsize=12, fontweight='bold')
+    ax.set_yticklabels(labels, fontsize=17, fontweight='bold')
+    ax.set_xlabel("Cohen's $d$  (Female → Male)", fontsize=20, fontweight='bold')
 
     # stars annotation
     xlim = ax.get_xlim()
@@ -258,7 +258,7 @@ def draw_sex_bars(ax, res, panel_letter, sublabel):
             ax.text(sx, list(sub.index).index(i),
                     sig_stars(row['BH_q']),
                     va='center', ha='left' if x >= 0 else 'right',
-                    fontsize=8, color='#222222')
+                    fontsize=16, color='#222222')
     if star_xs:
         extra     = (xlim[1] - xlim[0]) * 0.10
         ax.set_xlim(min(xlim[0], min(star_xs)) - extra,
@@ -272,7 +272,7 @@ def draw_sex_bars(ax, res, panel_letter, sublabel):
         min_q  = sub.loc[sub['Significant'], 'BH_q'].min()
         title_str = f'{sublabel}  {sig_stars(min_q)}'
 
-    ax.set_title(title_str, fontsize=10, pad=4, loc='left', fontweight='bold')
+    ax.set_title(title_str, fontsize=19, pad=4, loc='left', fontweight='bold')
 
     ax.set_axisbelow(True)
     ax.xaxis.grid(True, color='#dddddd', linewidth=0.5, linestyle='--')
@@ -281,7 +281,7 @@ def draw_sex_bars(ax, res, panel_letter, sublabel):
 
     if panel_letter:
         ax.text(-0.20, 1.02, panel_letter, transform=ax.transAxes,
-                fontsize=13, fontweight='bold', va='bottom')
+                fontsize=24, fontweight='bold', va='bottom')
 
 draw_sex_bars(ax_pt,   sex_pt,   'C', 'Patient level')
 draw_sex_bars(ax_cell, sex_cell, '',  'Cell level')

@@ -1,0 +1,13 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S6 — Intraclass Correlation Coefficients (ICC)}
+ICC values quantify the proportion of total variance explained by donor identity 
+(random intercept) in the linear mixed model. These values were computed from the 
+fitted variance components: $\text{ICC} = \sigma^2_{\text{donor}} / (\sigma^2_{\text{donor}} + \sigma^2_{\text{residual}})$.
+
+\textbf{Note:} ICC extraction requires re-running the LMM with variance component 
+output enabled on the analysis server. This table will be populated upon re-run.
+\end{document}

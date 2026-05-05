@@ -1,0 +1,141 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S5 — Full LMM Output: Part~1 (Healthy vs.\ TAA)}
+Complete linear mixed model results for all 30 features.
+Model: \textit{Feature} $\sim$ Disease $+$ Collagen $+$ Disease:Collagen $+$ Age $+$ (1\,|\,Donor).
+$q$: BH-FDR across features within each term. $^{*}$: $q < 0.05$.
+\vspace{1em}
+\begin{longtable}{llrrrr}
+\toprule
+Feature & Term & Coef. & $p$ & $q$ & Sig. \\
+\midrule\endfirsthead
+\toprule Feature & Term & Coef. & $p$ & $q$ & Sig. \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{6}{l}{\textit{Actin}} \\
+  Convex Hull Volume $\mu$m$^{3}$ & Disease & +10787.554 & 0.335 & 0.547 &  \\
+   & Collagen & -1755.115 & 0.669 & 0.946 &  \\
+   & Interaction & -2280.072 & 0.698 & 0.890 &  \\
+   & Age & -393.891 & 0.447 & 0.648 &  \\
+  Extent ratio & Disease & -0.036 & 0.005 & 0.074 &  \\
+   & Collagen & -0.010 & 0.205 & 0.684 &  \\
+   & Interaction & +0.027 & 0.015 & 0.219 &  \\
+   & Age & -0.001 & 0.058 & 0.420 &  \\
+  Fractional Anisotropy ratio & Disease & -0.008 & 0.567 & 0.658 &  \\
+   & Collagen & -0.001 & 0.897 & 0.946 &  \\
+   & Interaction & +0.007 & 0.641 & 0.890 &  \\
+   & Age & +0.000 & 0.895 & 0.932 &  \\
+  Intermediate Axis $\mu$m & Disease & +4.055 & 0.552 & 0.658 &  \\
+   & Collagen & -0.190 & 0.946 & 0.946 &  \\
+   & Interaction & -0.202 & 0.960 & 0.978 &  \\
+   & Age & -0.292 & 0.351 & 0.535 &  \\
+  Major Axis $\mu$m & Disease & +4.125 & 0.698 & 0.778 &  \\
+   & Collagen & +2.154 & 0.662 & 0.946 &  \\
+   & Interaction & +3.489 & 0.620 & 0.890 &  \\
+   & Age & -0.481 & 0.318 & 0.535 &  \\
+  Minor Axis $\mu$m & Disease & -0.043 & 0.507 & 0.658 &  \\
+   & Collagen & -0.035 & 0.208 & 0.684 &  \\
+   & Interaction & +0.008 & 0.833 & 0.895 &  \\
+   & Age & +0.001 & 0.693 & 0.886 &  \\
+  Skeleton Length $\mu$m & Disease & +8187.930 & 0.077 & 0.328 &  \\
+   & Collagen & -2842.725 & 0.307 & 0.742 &  \\
+   & Interaction & +5461.859 & 0.169 & 0.446 &  \\
+   & Age & +1180.987 & $<$0.001 & $<$0.001 & $^{*}$ \\
+  Solidity ratio & Disease & -0.095 & $<$0.001 & 0.010 & $^{*}$ \\
+   & Collagen & -0.020 & 0.246 & 0.684 &  \\
+   & Interaction & +0.054 & 0.031 & 0.262 &  \\
+   & Age & -0.002 & 0.112 & 0.430 &  \\
+  Volume $\mu$m$^{3}$ & Disease & -2103.305 & 0.339 & 0.547 &  \\
+   & Collagen & -2183.266 & 0.016 & 0.231 &  \\
+   & Interaction & +2715.726 & 0.036 & 0.262 &  \\
+   & Age & -139.333 & 0.167 & 0.430 &  \\
+\midrule
+\multicolumn{6}{l}{\textit{Mito}} \\
+  Branch Count n & Disease & +10000.774 & 0.138 & 0.400 &  \\
+   & Collagen & +941.364 & 0.656 & 0.946 &  \\
+   & Interaction & -5403.194 & 0.074 & 0.358 &  \\
+   & Age & +437.717 & 0.164 & 0.430 &  \\
+  Cyclomatic Number n & Disease & -2145.887 & 0.204 & 0.455 &  \\
+   & Collagen & -101.782 & 0.848 & 0.946 &  \\
+   & Interaction & +1253.011 & 0.100 & 0.390 &  \\
+   & Age & -106.084 & 0.178 & 0.430 &  \\
+  Fragment Count n & Disease & +139.920 & 0.267 & 0.523 &  \\
+   & Collagen & +79.509 & 0.259 & 0.684 &  \\
+   & Interaction & +153.456 & 0.128 & 0.411 &  \\
+   & Age & +8.422 & 0.131 & 0.430 &  \\
+  Junction Count n & Disease & +11470.709 & 0.152 & 0.400 &  \\
+   & Collagen & +832.345 & 0.729 & 0.946 &  \\
+   & Interaction & -6349.069 & 0.065 & 0.358 &  \\
+   & Age & +504.090 & 0.178 & 0.430 &  \\
+  Max Fragment Sphericity ratio & Disease & +0.018 & 0.436 & 0.658 &  \\
+   & Collagen & -0.016 & 0.135 & 0.684 &  \\
+   & Interaction & +0.014 & 0.344 & 0.713 &  \\
+   & Age & +0.001 & 0.235 & 0.455 &  \\
+  Mean Branch Length $\mu$m & Disease & -0.167 & 0.726 & 0.780 &  \\
+   & Collagen & +0.156 & 0.001 & 0.038 & $^{*}$ \\
+   & Interaction & -0.018 & 0.796 & 0.895 &  \\
+   & Age & -0.034 & 0.133 & 0.430 &  \\
+  Mean Fragment Sphericity ratio & Disease & -0.014 & 0.546 & 0.658 &  \\
+   & Collagen & -0.009 & 0.439 & 0.849 &  \\
+   & Interaction & -0.004 & 0.833 & 0.895 &  \\
+   & Age & +0.000 & 0.932 & 0.932 &  \\
+  Mean Fragment Volume $\mu$m$^{3}$ & Disease & +21.264 & 0.079 & 0.328 &  \\
+   & Collagen & +6.829 & 0.354 & 0.790 &  \\
+   & Interaction & -29.990 & 0.004 & 0.126 &  \\
+   & Age & -0.657 & 0.213 & 0.441 &  \\
+  Mean Tortuosity ratio & Disease & -0.019 & 0.536 & 0.658 &  \\
+   & Collagen & -0.014 & 0.068 & 0.661 &  \\
+   & Interaction & -0.005 & 0.656 & 0.890 &  \\
+   & Age & +0.002 & 0.106 & 0.430 &  \\
+  Min Fragment Sphericity ratio & Disease & -0.033 & 0.016 & 0.158 &  \\
+   & Collagen & -0.002 & 0.769 & 0.946 &  \\
+   & Interaction & +0.010 & 0.303 & 0.676 &  \\
+   & Age & -0.000 & 0.703 & 0.886 &  \\
+  Sphericity ratio & Disease & -0.019 & 0.069 & 0.328 &  \\
+   & Collagen & +0.001 & 0.877 & 0.946 &  \\
+   & Interaction & -0.003 & 0.597 & 0.890 &  \\
+   & Age & -0.000 & 0.323 & 0.535 &  \\
+  Std Fragment Sphericity ratio & Disease & +0.002 & 0.777 & 0.805 &  \\
+   & Collagen & -0.004 & 0.143 & 0.684 &  \\
+   & Interaction & +0.002 & 0.706 & 0.890 &  \\
+   & Age & -0.000 & 0.801 & 0.930 &  \\
+  Surface Area $\mu$m$^{2}$ & Disease & +10394.734 & 0.144 & 0.400 &  \\
+   & Collagen & -431.077 & 0.876 & 0.946 &  \\
+   & Interaction & -2527.382 & 0.524 & 0.890 &  \\
+   & Age & +103.029 & 0.753 & 0.910 &  \\
+  Total Network Length $\mu$m & Disease & +10151.315 & 0.124 & 0.400 &  \\
+   & Collagen & +654.531 & 0.761 & 0.946 &  \\
+   & Interaction & -4948.481 & 0.108 & 0.390 &  \\
+   & Age & +390.344 & 0.204 & 0.441 &  \\
+  Volume $\mu$m$^{3}$ & Disease & +2406.222 & 0.183 & 0.442 &  \\
+   & Collagen & -304.192 & 0.654 & 0.946 &  \\
+   & Interaction & -417.287 & 0.668 & 0.890 &  \\
+   & Age & -79.122 & 0.343 & 0.535 &  \\
+\midrule
+\multicolumn{6}{l}{\textit{Nucleus}} \\
+  Elongation ratio & Disease & -2.426 & 0.535 & 0.658 &  \\
+   & Collagen & +2.902 & 0.254 & 0.684 &  \\
+   & Interaction & +0.100 & 0.978 & 0.978 &  \\
+   & Age & -0.026 & 0.877 & 0.932 &  \\
+  Flatness ratio & Disease & -0.023 & 0.334 & 0.547 &  \\
+   & Collagen & -0.020 & 0.401 & 0.831 &  \\
+   & Interaction & +0.046 & 0.162 & 0.446 &  \\
+   & Age & +0.001 & 0.479 & 0.661 &  \\
+  Solidity ratio & Disease & +0.054 & 0.060 & 0.328 &  \\
+   & Collagen & +0.007 & 0.746 & 0.946 &  \\
+   & Interaction & -0.011 & 0.701 & 0.890 &  \\
+   & Age & -0.000 & 0.932 & 0.932 &  \\
+  Sphericity ratio & Disease & +0.111 & 0.271 & 0.523 &  \\
+   & Collagen & -0.003 & 0.936 & 0.946 &  \\
+   & Interaction & -0.017 & 0.773 & 0.895 &  \\
+   & Age & +0.009 & 0.053 & 0.420 &  \\
+  Volume $\mu$m$^{3}$ & Disease & +19.142 & 0.950 & 0.950 &  \\
+   & Collagen & -217.022 & 0.141 & 0.684 &  \\
+   & Interaction & +223.303 & 0.285 & 0.676 &  \\
+   & Age & -31.379 & 0.022 & 0.318 &  \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize $^{*}q < 0.05$ (BH-FDR).} \\
+\end{longtable}
+\end{document}

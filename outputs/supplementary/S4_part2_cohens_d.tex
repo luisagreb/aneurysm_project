@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S4 — Full Cohen's~$d$ Table: Part~2: TAV-ATAA vs.\ BAV-ATAA}
+All 30 features for TAV-ATAA vs.\ BAV-ATAA, at both cell and patient level,
+raw and age-residualised. $q$: BH-FDR adjusted $p$-value. $^{*}$: $q < 0.05$.
+\vspace{1em}
+\begin{longtable}{lrrrrrrrr}
+\toprule
+ & \multicolumn{2}{c}{Cell (raw)} & \multicolumn{2}{c}{Cell (age-corr.)} & \multicolumn{2}{c}{Patient (raw)} & \multicolumn{2}{c}{Patient (age-corr.)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+Feature & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ \\
+\midrule\endfirsthead
+\toprule Feature & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ & $d$ & $q$ \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{9}{l}{\textit{Actin}} \\
+  Convex Hull Volume $\mu$m$^{3}$ & +0.47$^{*}$ & 0.032 & +0.47 & 0.056 & +0.48 & 0.463 & +0.48 & 0.521 \\
+  Extent ratio & +1.28$^{*}$ & $<$0.001 & +1.28$^{*}$ & $<$0.001 & +1.99$^{*}$ & 0.011 & +2.05$^{*}$ & 0.007 \\
+  Fractional Anisotropy ratio & -0.18 & 0.314 & -0.19 & 0.307 & -0.21 & 0.705 & -0.22 & 0.705 \\
+  Intermediate Axis $\mu$m & +0.69$^{*}$ & 0.018 & +0.68$^{*}$ & 0.020 & +0.79 & 0.234 & +0.78 & 0.275 \\
+  Major Axis $\mu$m & +0.92$^{*}$ & $<$0.001 & +0.90$^{*}$ & 0.004 & +1.17 & 0.073 & +1.16 & 0.124 \\
+  Minor Axis $\mu$m & -0.30 & 0.281 & -0.32 & 0.251 & -0.39 & 0.643 & -0.42 & 0.521 \\
+  Skeleton Length $\mu$m & -2.53$^{*}$ & $<$0.001 & -3.11$^{*}$ & $<$0.001 & -2.99$^{*}$ & 0.013 & -4.56$^{*}$ & 0.004 \\
+  Solidity ratio & +0.83$^{*}$ & 0.002 & +0.83$^{*}$ & 0.002 & +1.39$^{*}$ & 0.040 & +1.41 & 0.079 \\
+  Volume $\mu$m$^{3}$ & +1.03$^{*}$ & $<$0.001 & +1.04$^{*}$ & $<$0.001 & +1.05 & 0.094 & +1.10 & 0.153 \\
+\midrule
+\multicolumn{9}{l}{\textit{Mito}} \\
+  Branch Count n & -0.97$^{*}$ & $<$0.001 & -0.97$^{*}$ & $<$0.001 & -1.03$^{*}$ & 0.009 & -1.05$^{*}$ & 0.025 \\
+  Cyclomatic Number n & +1.14$^{*}$ & $<$0.001 & +1.15$^{*}$ & $<$0.001 & +1.25$^{*}$ & 0.016 & +1.29$^{*}$ & 0.025 \\
+  Fragment Count n & +0.04 & 0.314 & +0.05 & 0.573 & +0.02 & 0.767 & +0.03 & 0.705 \\
+  Junction Count n & -1.03$^{*}$ & $<$0.001 & -1.03$^{*}$ & $<$0.001 & -1.10$^{*}$ & 0.009 & -1.12$^{*}$ & 0.025 \\
+  Max Fragment Sphericity ratio & -1.45$^{*}$ & $<$0.001 & -1.45$^{*}$ & $<$0.001 & -1.87$^{*}$ & 0.016 & -1.87$^{*}$ & 0.011 \\
+  Mean Branch Length $\mu$m & +3.66$^{*}$ & $<$0.001 & +4.31$^{*}$ & $<$0.001 & +3.97$^{*}$ & 0.009 & +5.31$^{*}$ & 0.004 \\
+  Mean Fragment Sphericity ratio & -0.35 & 0.434 & -0.37 & 0.414 & -0.45 & 1.000 & -0.46 & 1.000 \\
+  Mean Fragment Volume $\mu$m$^{3}$ & +0.27 & 0.718 & +0.26 & 0.707 & +0.29 & 0.981 & +0.29 & 0.922 \\
+  Mean Tortuosity ratio & -3.19$^{*}$ & $<$0.001 & -3.55$^{*}$ & $<$0.001 & -3.36$^{*}$ & 0.013 & -3.96$^{*}$ & 0.004 \\
+  Min Fragment Sphericity ratio & +0.69$^{*}$ & 0.006 & +0.68$^{*}$ & 0.004 & +1.11 & 0.117 & +1.08 & 0.100 \\
+  Sphericity ratio & +0.56 & 0.098 & +0.55 & 0.056 & +0.83 & 0.408 & +0.86 & 0.234 \\
+  Std Fragment Sphericity ratio & -0.92$^{*}$ & $<$0.001 & -0.94$^{*}$ & $<$0.001 & -1.56$^{*}$ & 0.021 & -1.61$^{*}$ & 0.046 \\
+  Surface Area $\mu$m$^{2}$ & +0.06 & 0.932 & +0.06 & 0.975 & -0.01 & 0.981 & -0.01 & 1.000 \\
+  Total Network Length $\mu$m & -0.83$^{*}$ & $<$0.001 & -0.83$^{*}$ & $<$0.001 & -0.90$^{*}$ & 0.016 & -0.90 & 0.079 \\
+  Volume $\mu$m$^{3}$ & +0.41 & 0.434 & +0.41 & 0.414 & +0.39 & 0.643 & +0.39 & 0.767 \\
+\midrule
+\multicolumn{9}{l}{\textit{Nucleus}} \\
+  Circularity ratio & +0.23 & 0.434 & -0.11 & 0.689 & -- & -- & -- & -- \\
+  Elongation ratio & +0.84$^{*}$ & $<$0.001 & +0.85$^{*}$ & $<$0.001 & +1.71$^{*}$ & 0.021 & +1.75$^{*}$ & 0.025 \\
+  Flatness ratio & +0.28 & 0.381 & +0.30 & 0.442 & +0.44 & 0.609 & +0.47 & 0.581 \\
+  Solidity ratio & +0.06 & 0.884 & +0.05 & 0.573 & +0.17 & 1.000 & +0.16 & 0.981 \\
+  Sphericity ratio & -3.45$^{*}$ & $<$0.001 & -3.59$^{*}$ & $<$0.001 & -4.20$^{*}$ & 0.011 & -4.60$^{*}$ & 0.011 \\
+  Volume $\mu$m$^{3}$ & +0.95$^{*}$ & $<$0.001 & +0.96$^{*}$ & $<$0.001 & +1.31$^{*}$ & 0.030 & +1.41$^{*}$ & 0.035 \\
+\bottomrule
+\multicolumn{9}{l}{\footnotesize $^{*}q < 0.05$ (BH-FDR).} \\
+\end{longtable}
+\end{document}

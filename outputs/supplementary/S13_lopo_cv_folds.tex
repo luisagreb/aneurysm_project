@@ -1,0 +1,84 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S13 — Per-Fold LOPO-CV Results}
+Balanced accuracy for each held-out donor across all three classifiers,
+for Task~1 (Healthy vs.\ TAA) and Task~2 (TAV-ATAA vs.\ BAV-ATAA).
+Each fold holds out one donor; prediction is the majority vote across
+that donor's cells. LR: Logistic Regression; RF: Random Forest; SVM: Support Vector Machine.
+\vspace{1em}
+\subsection*{Task 1: Healthy vs.\ TAA}
+\begin{longtable}{llccc}
+\toprule
+Donor & Group & $N_\text{cells}$ & LR & RF \\
+\midrule\endfirsthead
+\toprule Donor & Group & $N_\text{cells}$ & LR & RF \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{5}{l}{\textit{BAV}} \\
+  02asc-17 & BAV & 5 & 1.00 & 0.40 \\
+  02asc-21 & BAV & 6 & 0.83 & 0.83 \\
+  02asc-29 & BAV & 5 & 0.80 & 0.80 \\
+  02asc-49 & BAV & 6 & 0.83 & 0.67 \\
+  02asc-77 & BAV & 6 & 0.50 & 0.67 \\
+\midrule
+\multicolumn{5}{l}{\textit{Healthy}} \\
+  01asc-180 & Healthy & 10 & 0.90 & 0.30 \\
+  01asc-230 & Healthy & 5 & 0.20 & 0.00 \\
+  01asc-231 & Healthy & 5 & 0.00 & 0.00 \\
+  01asc-232 & Healthy & 5 & 0.00 & 0.00 \\
+  01c-113 & Healthy & 5 & 1.00 & 1.00 \\
+  01c-117 & Healthy & 5 & 1.00 & 0.60 \\
+  01c-202 & Healthy & 5 & 0.60 & 0.80 \\
+  01c-222 & Healthy & 5 & 0.00 & 0.00 \\
+  01c-96 & Healthy & 5 & 1.00 & 1.00 \\
+  01c-97 & Healthy & 5 & 0.40 & 0.80 \\
+\midrule
+\multicolumn{5}{l}{\textit{TAA}} \\
+  02asc-47 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-24 & TAA & 10 & 0.80 & 0.70 \\
+  03asc-43 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-46 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-47 & TAA & 5 & 0.20 & 0.80 \\
+  03asc-51 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-54 & TAA & 5 & 0.80 & 0.80 \\
+  03asc-55 & TAA & 5 & 0.60 & 0.60 \\
+  03asc-56 & TAA & 5 & 1.00 & 0.60 \\
+  03asc-57 & TAA & 5 & 0.40 & 0.40 \\
+  03rt-45 & TAA & 5 & 1.00 & 1.00 \\
+\midrule
+  \textbf{Mean $\pm$ SD} & & & 0.69 $\pm$ 0.36 & 0.64 $\pm$ 0.34 \\
+\bottomrule
+\end{longtable}
+\subsection*{Task 2: TAV-ATAA vs.\ BAV-ATAA}
+\begin{longtable}{llccc}
+\toprule
+Donor & Group & $N_\text{cells}$ & LR & RF \\
+\midrule\endfirsthead
+\toprule Donor & Group & $N_\text{cells}$ & LR & RF \\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{5}{l}{\textit{BAV}} \\
+  02asc-17 & BAV & 5 & 1.00 & 1.00 \\
+  02asc-21 & BAV & 6 & 1.00 & 1.00 \\
+  02asc-29 & BAV & 5 & 1.00 & 1.00 \\
+  02asc-49 & BAV & 6 & 0.83 & 0.67 \\
+  02asc-77 & BAV & 6 & 1.00 & 1.00 \\
+\midrule
+\multicolumn{5}{l}{\textit{TAA}} \\
+  02asc-47 & TAA & 5 & 0.00 & 0.00 \\
+  03asc-24 & TAA & 10 & 1.00 & 1.00 \\
+  03asc-43 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-46 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-47 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-51 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-54 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-55 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-56 & TAA & 5 & 1.00 & 1.00 \\
+  03asc-57 & TAA & 5 & 1.00 & 1.00 \\
+  03rt-45 & TAA & 5 & 1.00 & 1.00 \\
+\midrule
+  \textbf{Mean $\pm$ SD} & & & 0.93 $\pm$ 0.25 & 0.92 $\pm$ 0.26 \\
+\bottomrule
+\end{longtable}
+\end{document}

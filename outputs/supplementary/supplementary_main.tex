@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype,graphicx,hyperref}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\title{\textbf{Supplementary Material}}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+\input{S1_cohort.tex}
+\clearpage
+\input{S2_shapiro_wilk.tex}
+\clearpage
+\input{S3_part1_cohens_d.tex}
+\clearpage
+\input{S4_part2_cohens_d.tex}
+\clearpage
+\input{S5a_lmm_part1.tex}
+\clearpage
+\input{S5b_lmm_part2.tex}
+\clearpage
+\input{S6_icc.tex}
+\clearpage
+\input{S7a_collagen_part1.tex}
+\clearpage
+\input{S7b_collagen_part2.tex}
+\clearpage
+\input{S8_diameter_correlation.tex}
+\clearpage
+\input{S9_hypertension.tex}
+\clearpage
+\input{S10_nnunet_training.tex}
+\clearpage
+\input{S11_segmentation_examples.tex}
+\clearpage
+\input{S13_lopo_cv_folds.tex}
+\clearpage
+
+\section*{S12 --- Feature Distributions (All 30 Features)}
+All 30 morphological features across the three groups (Healthy, TAA, BAV).
+Violins show the full distribution; horizontal bar: median.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{S12_feature_distributions.pdf}
+  \caption*{S12 --- Per-feature distribution by group.}
+\end{figure}
+\end{document}

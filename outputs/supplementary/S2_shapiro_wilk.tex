@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{booktabs,longtable,geometry,array,xcolor,microtype}
+\geometry{margin=2cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+\section*{S2 — Shapiro--Wilk Normality Test Results}
+Shapiro--Wilk test $p$-values for all 30 features in each group.
+Features with $p < 0.05$ in at least one group failed normality
+and received Mann--Whitney~U (cell level) or Wilcoxon signed-rank (patient level)
+tests instead of Welch $t$-tests. All 30 features failed normality in at least one
+group; the adaptive testing strategy therefore applied to the full feature set.
+\vspace{1em}
+\begin{longtable}{lrrr}
+\toprule
+Feature & BAV & Healthy & TAA \\
+ & \multicolumn{3}{c}{Shapiro--Wilk $p$-value} \\
+\midrule\endfirsthead
+\toprule Feature & BAV & Healthy & TAA\\\midrule\endhead
+\bottomrule\endfoot
+  Actin Convex Hull Volume $\mu$m$^{3}$ & 0.277 & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Actin Extent ratio & 0.013$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Actin Fractional Anisotropy ratio & 0.002$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Actin Intermediate Axis $\mu$m & 0.003$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Actin Major Axis $\mu$m & 0.206 & 0.842 & 0.576 \\
+  Actin Minor Axis $\mu$m & 0.072 & 0.285 & 0.172 \\
+  Actin Skeleton Length $\mu$m & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Actin Solidity ratio & 0.043$^{*}$ & 0.007$^{*}$ & 0.047$^{*}$ \\
+  Actin Volume $\mu$m$^{3}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Branch Count n & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Cyclomatic Number n & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Fragment Count n & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Junction Count n & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Max Fragment Sphericity ratio & 0.008$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Mean Branch Length $\mu$m & 0.040$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Mean Fragment Sphericity ratio & 0.009$^{*}$ & 0.484 & 0.153 \\
+  Mito Mean Fragment Volume $\mu$m$^{3}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Mean Tortuosity ratio & 0.006$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Min Fragment Sphericity ratio & 0.002$^{*}$ & $<$0.001$^{*}$ & 0.004$^{*}$ \\
+  Mito Sphericity ratio & 0.100 & $<$0.001$^{*}$ & 0.442 \\
+  Mito Std Fragment Sphericity ratio & 0.114 & $<$0.001$^{*}$ & 0.145 \\
+  Mito Surface Area $\mu$m$^{2}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Total Network Length $\mu$m & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Mito Volume $\mu$m$^{3}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Nucleus Circularity ratio & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Nucleus Elongation ratio & 0.085 & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Nucleus Flatness ratio & 0.053 & $<$0.001$^{*}$ & 0.089 \\
+  Nucleus Solidity ratio & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Nucleus Sphericity ratio & 0.887 & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+  Nucleus Volume $\mu$m$^{3}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ & $<$0.001$^{*}$ \\
+\bottomrule
+\multicolumn{4}{l}{\footnotesize $^{*}p < 0.05$: failed normality.} \\
+\end{longtable}
+\end{document}
