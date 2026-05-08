@@ -15,6 +15,16 @@ venv/
 __pycache__/
 .DS_Store
 
+# macOS junk
+**/.DS_Store
+~$*.xlsx
+~$*.docx
+
+# logs
+*.log
+hs_err_pid*.log
+server_debug.log
+
 # Experiments and Results (New)
 experiments/
 training_*.log
